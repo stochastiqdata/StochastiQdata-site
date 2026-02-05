@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initClock();
   initSearch();
   initUserMenu();
+  initMobileSidebar();
 });
 
 // ============================================
@@ -165,6 +166,47 @@ function initUserMenu() {
     if (!userMenuBtn?.contains(e.target) && !userMenu?.contains(e.target)) {
       userMenu?.classList.add('hidden');
     }
+  });
+}
+
+// ============================================
+// SIDEBAR MOBILE
+// ============================================
+function initMobileSidebar() {
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+
+  if (!sidebar || !overlay) return;
+
+  // Fonction pour ouvrir le sidebar
+  const openSidebar = () => {
+    sidebar.classList.remove('-translate-x-[calc(100%+3rem)]');
+    sidebar.classList.add('translate-x-0');
+    overlay.classList.remove('hidden');
+  };
+
+  // Fonction pour fermer le sidebar
+  const closeSidebar = () => {
+    sidebar.classList.add('-translate-x-[calc(100%+3rem)]');
+    sidebar.classList.remove('translate-x-0');
+    overlay.classList.add('hidden');
+  };
+
+  // Toggle depuis bouton hamburger
+  hamburgerBtn?.addEventListener('click', openSidebar);
+
+  // Fermer au clic sur overlay
+  overlay.addEventListener('click', closeSidebar);
+
+  // Fermer quand on clique sur un lien de navigation (mobile)
+  const navLinks = sidebar.querySelectorAll('.nav-item, a[href]');
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth < 1024) {
+        closeSidebar();
+      }
+    });
   });
 }
 

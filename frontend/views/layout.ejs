@@ -19,16 +19,19 @@
   </div>
 
   <div class="relative flex min-h-screen">
-    <!-- Sidebar -->
+    <!-- Sidebar Desktop uniquement -->
     <%- include('partials/sidebar') %>
 
+    <!-- Overlay pour mobile -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[80] lg:hidden hidden"></div>
+
     <!-- Main Content Area -->
-    <div class="flex-1 ml-72 p-6">
+    <div class="flex-1 lg:ml-72 p-3 sm:p-4 lg:p-6">
       <!-- Header -->
       <%- include('partials/header') %>
 
       <!-- Page Content -->
-      <main class="mt-6">
+      <main class="mt-4 lg:mt-6">
         <%- body %>
       </main>
     </div>
