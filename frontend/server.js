@@ -29,21 +29,22 @@ const logger = winston.createLogger({
     winston.format.errors({ stack: true }),
     winston.format.json()
   ),
-  transports: [
-    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'logs/combined.log' })
-  ]
+  transports: []
 });
 
-// Add console transport in development
+// Add file transports only in development (Vercel filesystem is read-only)
 if (!IS_PRODUCTION) {
-  logger.add(new winston.transports.Console({
-    format: winston.format.combine(
-      winston.format.colorize(),
-      winston.format.simple()
-    )
-  }));
+  logger.add(new winston.transports.File({ filename: 'logs/error.log', level: 'error' }));
+  logger.add(new winston.transports.File({ filename: 'logs/combined.log' }));
 }
+
+// Add console transport (works in both dev and production)
+logger.add(new winston.transports.Console({
+  format: winston.format.combine(
+    winston.format.colorize(),
+    winston.format.simple()
+  )
+}));
 
 // Suppress console.log in production
 if (IS_PRODUCTION) {
