@@ -12,8 +12,6 @@
     "test:prod": "NODE_ENV=production node server.js"
   },
   "dependencies": {
-    "@clerk/clerk-js": "^5.122.0",
-    "@clerk/express": "^1.7.68",
     "axios": "^1.6.0",
     "compression": "^1.7.4",
     "dotenv": "^17.2.3",

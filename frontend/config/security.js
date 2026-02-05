@@ -25,9 +25,7 @@ const helmetConfig = helmet({
       scriptSrc: [
         "'self'",
         "'unsafe-inline'", // Nécessaire pour EJS inline scripts
-        "https://cdn.jsdelivr.net",
-        "https://*.clerk.accounts.dev",
-        "https://*.clerk.com"
+        "https://cdn.jsdelivr.net"
       ],
       styleSrc: [
         "'self'",
@@ -41,13 +39,7 @@ const helmetConfig = helmet({
       imgSrc: ["'self'", "data:", "https:", "blob:"],
       connectSrc: [
         "'self'",
-        "https://mjqtthaypifkdlaneymx.supabase.co",
-        "https://*.clerk.accounts.dev",
-        "https://*.clerk.com"
-      ],
-      frameSrc: [
-        "https://*.clerk.accounts.dev",
-        "https://*.clerk.com"
+        "https://mjqtthaypifkdlaneymx.supabase.co"
       ]
     }
   },

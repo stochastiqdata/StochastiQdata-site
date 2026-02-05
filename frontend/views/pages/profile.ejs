@@ -29,8 +29,7 @@
         </svg>
       </div>
       <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Connexion requise</h2>
-      <p class="text-gray-500 dark:text-gray-400 mb-6">Connectez-vous pour voir et gérer votre profil.</p>
-      <button onclick="openSignIn()" class="btn-primary inline-flex">Se connecter</button>
+      <p class="text-gray-500 dark:text-gray-400 mb-6">L'authentification sera réimplémentée prochainement.</p>
     </div>
   </div>
 
@@ -40,12 +39,6 @@
     <div class="card p-6">
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-xl font-bold text-gray-900 dark:text-white">Informations personnelles</h2>
-        <button onclick="openClerkProfile()" class="btn-outline text-sm">
-          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
-          </svg>
-          Modifier
-        </button>
       </div>
 
       <div class="flex items-start gap-6">
@@ -164,103 +157,19 @@
             <p class="text-sm text-gray-500 dark:text-gray-400">Gérer vos préférences</p>
           </div>
         </a>
-
-        <button onclick="openClerkProfile()" class="flex items-center gap-3 p-4 rounded-xl bg-gray-50 dark:bg-navy-700 hover:bg-gray-100 dark:hover:bg-navy-600 transition-all text-left">
-          <svg class="w-5 h-5 text-teal-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
-          </svg>
-          <div>
-            <p class="font-medium text-gray-900 dark:text-white">Modifier le profil</p>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Mettre à jour vos informations</p>
-          </div>
-        </button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// Ouvrir le profil Clerk pour modification
-function openClerkProfile() {
-  if (window.clerk) {
-    window.clerk.openUserProfile();
-  }
-}
-
-// Charger les informations du profil
-document.addEventListener('DOMContentLoaded', async () => {
+// Authentification supprimée - Page affichera simplement le message de connexion requise
+document.addEventListener('DOMContentLoaded', () => {
   const loadingEl = document.getElementById('profile-loading');
   const loginEl = document.getElementById('profile-login');
-  const contentEl = document.getElementById('profile-content');
 
-  // Attendre que Clerk soit chargé
-  await new Promise(resolve => {
-    if (window.isUserLoggedIn && window.isUserLoggedIn()) {
-      resolve();
-    } else if (window.clerk) {
-      resolve();
-    } else {
-      const checkClerk = setInterval(() => {
-        if (window.clerk) {
-          clearInterval(checkClerk);
-          resolve();
-        }
-      }, 100);
-      setTimeout(() => {
-        clearInterval(checkClerk);
-        resolve();
-      }, 5000);
-    }
-  });
-
-  // Vérifier si l'utilisateur est connecté
-  if (!window.isUserLoggedIn || !window.isUserLoggedIn()) {
-    loadingEl.classList.add('hidden');
-    loginEl.classList.remove('hidden');
-    return;
-  }
-
-  if (window.clerk && window.clerk.user) {
-    const user = window.clerk.user;
-
-    // Remplir les informations
-    document.getElementById('profile-avatar').src = user.imageUrl || '/images/default-avatar.png';
-    document.getElementById('profile-name').textContent = user.fullName || user.firstName || 'Utilisateur';
-    document.getElementById('profile-email').textContent = user.emailAddresses[0]?.emailAddress || '-';
-
-    const createdDate = new Date(user.createdAt);
-    document.getElementById('profile-created').textContent = createdDate.toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-
-    loadingEl.classList.add('hidden');
-    contentEl.classList.remove('hidden');
-
-    // Charger les statistiques en arrière-plan
-    loadUserStats();
-  } else {
-    // Afficher le message de connexion requise
-    loadingEl.classList.add('hidden');
-    loginEl.classList.remove('hidden');
-  }
+  // Afficher le message de connexion requise
+  loadingEl.classList.add('hidden');
+  loginEl.classList.remove('hidden');
 });
-
-// Charger les statistiques utilisateur
-async function loadUserStats() {
-  try {
-    // Favoris supprimés - mettre 0
-    document.getElementById('favorites-count').textContent = 0;
-
-    // Charger les datasets ajoutés (à implémenter côté backend)
-    // Pour l'instant, on garde 0
-
-    // Charger les notations (à implémenter côté backend)
-    // Pour l'instant, on garde 0
-
-  } catch (error) {
-    console.error('Error loading stats:', error);
-  }
-}
 </script>

@@ -8,6 +8,16 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================================
+// SÉCURITÉ - PROTECTION XSS
+// ============================================
+function escapeHtml(text) {
+  if (!text) return '';
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// ============================================
 // GESTION DU THÈME (MODE SOMBRE)
 // ============================================
 function initTheme() {
@@ -79,7 +89,7 @@ function initSearch() {
         } else {
           searchResults.innerHTML = `
             <div class="p-4 text-center text-gray-500 dark:text-gray-400">
-              Aucun résultat pour "<span class="text-gray-900 dark:text-white font-medium">${query}</span>"
+              Aucun résultat pour "<span class="text-gray-900 dark:text-white font-medium">${escapeHtml(query)}</span>"
             </div>
           `;
           searchResults?.classList.remove('hidden');
@@ -111,7 +121,7 @@ function renderSearchResults(datasets) {
   if (!searchResults) return;
 
   const html = datasets.map(dataset => `
-    <a href="/modeling/${dataset.id}" class="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-navy-700 transition-colors border-b border-gray-100 dark:border-navy-700 last:border-0">
+    <a href="/modeling/${escapeHtml(dataset.id)}" class="flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-navy-700 transition-colors border-b border-gray-100 dark:border-navy-700 last:border-0">
       <div class="w-10 h-10 rounded-lg bg-primary-100 dark:bg-primary-500/20 flex items-center justify-center shrink-0">
         <svg class="w-5 h-5 text-primary-600 dark:text-primary-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4"/>
@@ -119,11 +129,11 @@ function renderSearchResults(datasets) {
         </svg>
       </div>
       <div class="flex-1 min-w-0">
-        <p class="text-gray-900 dark:text-white font-medium truncate">${dataset.name}</p>
-        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">${dataset.description || 'Pas de description'}</p>
+        <p class="text-gray-900 dark:text-white font-medium truncate">${escapeHtml(dataset.name)}</p>
+        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">${escapeHtml(dataset.description) || 'Pas de description'}</p>
       </div>
       <div class="text-sm font-bold ${getScoreClass(dataset.global_score)}">
-        ${dataset.global_score || 0}
+        ${parseInt(dataset.global_score) || 0}
       </div>
     </a>
   `).join('');

@@ -40,7 +40,11 @@
       "Bash(python -m uvicorn:*)",
       "Bash(netstat:*)",
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git config:*)",
+      "Bash(npm audit fix:*)",
+      "Bash(npx update-browserslist-db@latest:*)"
     ]
   }
 }

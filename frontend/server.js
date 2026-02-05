@@ -3,7 +3,6 @@ const express = require('express');
 const axios = require('axios');
 const path = require('path');
 const expressLayouts = require('express-ejs-layouts');
-const { clerkMiddleware, getAuth } = require('@clerk/express');
 const compression = require('compression');
 const winston = require('winston');
 const validator = require('validator');
@@ -14,9 +13,11 @@ const { limiter, helmetConfig } = require('./config/security');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const API_URL = process.env.API_URL || 'http://localhost:8000/api/v1';
-const CLERK_PUBLISHABLE_KEY = process.env.CLERK_PUBLISHABLE_KEY;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const IS_PRODUCTION = NODE_ENV === 'production';
+
+// Configure Axios defaults
+axios.defaults.timeout = 10000; // 10 seconds timeout
 
 // ============================================
 // LOGGER CONFIGURATION
@@ -82,8 +83,8 @@ app.set('layout', 'layout');
 // ============================================
 // BASIC MIDDLEWARES
 // ============================================
-app.use(express.json());
-app.use(clerkMiddleware());
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Static files with cache headers
 app.use(express.static(path.join(__dirname, 'public'), {
@@ -104,11 +105,6 @@ app.use((req, res, next) => {
     hour: '2-digit',
     minute: '2-digit'
   });
-  res.locals.clerkPublishableKey = CLERK_PUBLISHABLE_KEY;
-
-  const auth = getAuth(req);
-  res.locals.userId = auth.userId;
-  res.locals.isAuthenticated = !!auth.userId;
 
   next();
 });
