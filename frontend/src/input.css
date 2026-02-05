@@ -1,0 +1,256 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-gray-200 dark:border-navy-700;
+  }
+
+  body {
+    @apply bg-slate-100 text-gray-900 antialiased font-sans;
+  }
+
+  html.dark body {
+    @apply bg-navy-900 text-gray-100;
+  }
+}
+
+@layer components {
+  /* Glassmorphism containers - Light */
+  .glass {
+    @apply bg-white/85 backdrop-blur-xl border border-white/30 shadow-glass;
+  }
+
+  /* Glassmorphism containers - Dark */
+  html.dark .glass {
+    @apply bg-navy-800/90 backdrop-blur-xl border-navy-700/50 shadow-glass;
+  }
+
+  /* Boutons */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-primary-500 px-4 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 shadow-sm hover:shadow-md;
+  }
+
+  html.dark .btn-primary {
+    @apply ring-offset-navy-900;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-gray-100 px-4 py-2.5 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 border border-gray-200;
+  }
+
+  html.dark .btn-secondary {
+    @apply bg-navy-700 text-gray-200 border-navy-600 hover:bg-navy-600 hover:text-white ring-offset-navy-900;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900;
+  }
+
+  html.dark .btn-ghost {
+    @apply text-gray-400 hover:bg-navy-700 hover:text-white;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium border-2 border-primary-500 text-primary-600 transition-all duration-200 hover:bg-primary-500 hover:text-white;
+  }
+
+  html.dark .btn-outline {
+    @apply border-primary-400 text-primary-400 hover:bg-primary-500 hover:text-white;
+  }
+
+  /* Cartes */
+  .card {
+    @apply bg-white rounded-2xl border border-gray-100 shadow-card transition-all duration-300 hover:shadow-card-hover relative overflow-hidden;
+  }
+
+  html.dark .card {
+    @apply bg-navy-800/95 border-navy-700 shadow-glass;
+  }
+
+  /* Badges source */
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold;
+  }
+
+  .badge-iard {
+    @apply bg-orange-100 text-orange-700;
+  }
+  html.dark .badge-iard {
+    @apply bg-orange-500/20 text-orange-400;
+  }
+
+  .badge-kaggle {
+    @apply bg-sky-100 text-sky-600;
+  }
+  html.dark .badge-kaggle {
+    @apply bg-sky-500/20 text-sky-400;
+  }
+
+  .badge-insee {
+    @apply bg-red-100 text-red-600;
+  }
+  html.dark .badge-insee {
+    @apply bg-red-500/20 text-red-400;
+  }
+
+  .badge-opendata {
+    @apply bg-teal-100 text-teal-600;
+  }
+  html.dark .badge-opendata {
+    @apply bg-teal-500/20 text-teal-400;
+  }
+
+  .badge-other {
+    @apply bg-gray-100 text-gray-600;
+  }
+  html.dark .badge-other {
+    @apply bg-gray-500/20 text-gray-400;
+  }
+
+  /* Tags métier - style pilule */
+  .tag {
+    @apply inline-flex items-center rounded-lg px-3 py-1.5 text-xs font-semibold transition-all;
+  }
+
+  .tag-iard {
+    @apply bg-orange-500 text-white;
+  }
+
+  .tag-sante {
+    @apply bg-teal-500 text-white;
+  }
+
+  .tag-vie {
+    @apply bg-blue-500 text-white;
+  }
+
+  .tag-glm, .tag-pricing {
+    @apply bg-violet-500 text-white;
+  }
+
+  .tag-reserving {
+    @apply bg-cyan-500 text-white;
+  }
+
+  .tag-fraude {
+    @apply bg-red-500 text-white;
+  }
+
+  .tag-machine_learning {
+    @apply bg-pink-500 text-white;
+  }
+
+  /* Input de recherche */
+  .search-input {
+    @apply w-full pl-10 pr-4 py-2.5 rounded-xl bg-gray-100 border border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all;
+  }
+
+  html.dark .search-input {
+    @apply bg-navy-700/80 border-navy-600 text-white placeholder-gray-500;
+  }
+
+  /* Select dropdown custom */
+  .select-input {
+    @apply px-4 py-2.5 pr-10 rounded-xl border border-gray-200 bg-white text-gray-900 text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none cursor-pointer transition-all;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+  }
+
+  .select-input:hover {
+    @apply border-primary-300 bg-gray-50;
+  }
+
+  .select-input option {
+    @apply py-3 px-4 bg-white text-gray-900;
+  }
+
+  html.dark .select-input {
+    @apply bg-navy-700 border-navy-600 text-white;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%9ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  }
+
+  html.dark .select-input:hover {
+    @apply border-primary-500 bg-navy-600;
+  }
+
+  html.dark .select-input option {
+    @apply bg-navy-700 text-white;
+  }
+
+  /* Filter pills */
+  .filter-pill {
+    @apply px-4 py-2 rounded-xl text-sm font-medium cursor-pointer transition-all bg-white border border-gray-200 text-gray-600 hover:border-primary-300;
+  }
+
+  .filter-pill.active {
+    @apply bg-primary-500 text-white border-primary-500;
+  }
+
+  html.dark .filter-pill {
+    @apply bg-navy-700 border-navy-600 text-gray-300 hover:border-primary-500;
+  }
+
+  html.dark .filter-pill.active {
+    @apply bg-primary-500 text-white border-primary-500;
+  }
+
+  /* Navigation sidebar */
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 transition-all duration-200 hover:bg-white/10 hover:text-white;
+  }
+
+  .nav-item.active {
+    @apply bg-primary-500/20 text-primary-400 font-medium;
+  }
+}
+
+@layer utilities {
+  /* Fond avec dégradé mesh - Light */
+  .bg-mesh {
+    background:
+      linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, transparent 50%),
+      linear-gradient(225deg, rgba(236, 72, 153, 0.08) 0%, transparent 50%),
+      linear-gradient(315deg, rgba(20, 184, 166, 0.05) 0%, transparent 50%),
+      #f1f5f9;
+  }
+
+  /* Fond avec dégradé mesh - Dark */
+  html.dark .bg-mesh {
+    background:
+      linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+      linear-gradient(225deg, rgba(236, 72, 153, 0.12) 0%, transparent 50%),
+      linear-gradient(315deg, rgba(20, 184, 166, 0.1) 0%, transparent 50%),
+      #0f172a;
+  }
+
+  /* Cercle de score */
+  .score-circle {
+    @apply relative inline-flex items-center justify-center;
+  }
+
+  .score-circle svg {
+    @apply transform -rotate-90;
+  }
+
+  .score-value {
+    @apply absolute inset-0 flex items-center justify-center font-bold;
+  }
+
+  /* Text colors for dark mode */
+  .text-adaptive {
+    @apply text-gray-900 dark:text-white;
+  }
+
+  .text-adaptive-muted {
+    @apply text-gray-600 dark:text-gray-300;
+  }
+
+  .text-adaptive-subtle {
+    @apply text-gray-500 dark:text-gray-400;
+  }
+}

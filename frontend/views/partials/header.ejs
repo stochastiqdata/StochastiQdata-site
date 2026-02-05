@@ -1,0 +1,80 @@
+<!-- Header Principal - Flottant avec effet glass -->
+<header class="glass rounded-2xl px-6 py-4 flex items-center relative z-[60]">
+  <!-- Logo texte -->
+  <div class="hidden lg:flex items-center gap-2 mr-8">
+    <span class="text-xl font-bold text-gray-900 dark:text-white">
+      <span class="text-primary-500">◈</span> StochastiQdata
+    </span>
+  </div>
+
+  <!-- Barre de recherche -->
+  <div class="flex-1 max-w-xl relative z-[70]">
+    <div class="relative">
+      <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/>
+        <path d="m21 21-4.3-4.3"/>
+      </svg>
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Rechercher..."
+        class="search-input pl-12"
+        autocomplete="off"
+      />
+      <!-- Résultats de recherche -->
+      <div id="searchResults" class="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-navy-800 rounded-xl border border-gray-200 dark:border-navy-700 shadow-2xl hidden overflow-hidden z-[100]">
+        <!-- Les résultats seront injectés ici par JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions à droite -->
+  <div class="flex items-center gap-3 ml-6">
+    <!-- Date et heure -->
+    <div class="hidden xl:flex flex-col items-end text-sm">
+      <span id="currentDate" class="text-gray-600 dark:text-gray-300 font-medium"><%= currentDate %></span>
+    </div>
+
+    <!-- Bouton Ajouter un dataset -->
+    <a href="/add-dataset" class="btn-outline">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14"/>
+        <path d="M12 5v14"/>
+      </svg>
+      <span class="hidden sm:inline">Ajouter un dataset</span>
+    </a>
+
+    <!-- Section utilisateur (dynamique selon l'état de connexion) -->
+    <div id="header-user-section">
+      <!-- Bouton Se connecter (affiché si non connecté) -->
+      <button class="btn-primary" onclick="openSignIn()" id="headerLoginBtn">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+          <polyline points="10 17 15 12 10 7"/>
+          <line x1="15" y1="12" x2="3" y2="12"/>
+        </svg>
+        <span class="hidden sm:inline">Se connecter</span>
+      </button>
+    </div>
+
+    <!-- Toggle Mode Sombre -->
+    <button id="themeToggle" class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-navy-700 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-navy-600 transition-all" title="Toggle dark mode">
+      <!-- Soleil (visible en mode sombre) -->
+      <svg id="sunIcon" class="w-5 h-5 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2"/>
+        <path d="M12 20v2"/>
+        <path d="m4.93 4.93 1.41 1.41"/>
+        <path d="m17.66 17.66 1.41 1.41"/>
+        <path d="M2 12h2"/>
+        <path d="M20 12h2"/>
+        <path d="m6.34 17.66-1.41 1.41"/>
+        <path d="m19.07 4.93-1.41 1.41"/>
+      </svg>
+      <!-- Lune (visible en mode clair) -->
+      <svg id="moonIcon" class="w-5 h-5 block dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+      </svg>
+    </button>
+  </div>
+</header>

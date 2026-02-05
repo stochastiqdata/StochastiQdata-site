@@ -1,0 +1,266 @@
+<div class="max-w-4xl mx-auto py-8">
+  <!-- En-tête -->
+  <div class="flex items-center gap-4 mb-8">
+    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-teal-500 flex items-center justify-center shadow-lg">
+      <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M20 21a8 8 0 0 0-16 0"/>
+      </svg>
+    </div>
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Mon Profil</h1>
+      <p class="text-gray-500 dark:text-gray-400">Gérez vos informations personnelles et vos préférences</p>
+    </div>
+  </div>
+
+  <!-- État de chargement -->
+  <div id="profile-loading" class="text-center py-12">
+    <div class="w-12 h-12 mx-auto mb-4 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+    <p class="text-gray-500 dark:text-gray-400">Chargement de votre profil...</p>
+  </div>
+
+  <!-- Message non connecté -->
+  <div id="profile-login" class="hidden">
+    <div class="card p-8 text-center max-w-md mx-auto">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-navy-700 flex items-center justify-center">
+        <svg class="w-8 h-8 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M20 21a8 8 0 0 0-16 0"/>
+        </svg>
+      </div>
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Connexion requise</h2>
+      <p class="text-gray-500 dark:text-gray-400 mb-6">Connectez-vous pour voir et gérer votre profil.</p>
+      <button onclick="openSignIn()" class="btn-primary inline-flex">Se connecter</button>
+    </div>
+  </div>
+
+  <!-- Contenu du profil -->
+  <div id="profile-content" class="hidden space-y-6">
+    <!-- Carte informations personnelles -->
+    <div class="card p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white">Informations personnelles</h2>
+        <button onclick="openClerkProfile()" class="btn-outline text-sm">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+          </svg>
+          Modifier
+        </button>
+      </div>
+
+      <div class="flex items-start gap-6">
+        <img id="profile-avatar"
+             src="/images/default-avatar.png"
+             alt="Avatar"
+             class="w-24 h-24 rounded-full object-cover border-4 border-primary-500"
+             onerror="this.src='/images/default-avatar.png'">
+
+        <div class="flex-1 space-y-4">
+          <div>
+            <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Nom complet</label>
+            <p id="profile-name" class="text-lg font-semibold text-gray-900 dark:text-white">-</p>
+          </div>
+          <div>
+            <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Email</label>
+            <p id="profile-email" class="text-gray-900 dark:text-white">-</p>
+          </div>
+          <div>
+            <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Membre depuis</label>
+            <p id="profile-created" class="text-gray-900 dark:text-white">-</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <a href="/favorites" class="card p-6 text-center hover:shadow-lg transition-all cursor-pointer hover:scale-[1.02]">
+        <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center">
+          <svg class="w-6 h-6 text-pink-500" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+          </svg>
+        </div>
+        <p id="favorites-count" class="text-3xl font-bold text-gray-900 dark:text-white mb-1">0</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Favoris</p>
+      </a>
+
+      <div class="card p-6 text-center">
+        <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+          <svg class="w-6 h-6 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        </div>
+        <p id="datasets-count" class="text-3xl font-bold text-gray-900 dark:text-white mb-1">0</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Datasets ajoutés</p>
+      </div>
+
+      <div class="card p-6 text-center">
+        <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center">
+          <svg class="w-6 h-6 text-teal-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+          </svg>
+        </div>
+        <p id="ratings-count" class="text-3xl font-bold text-gray-900 dark:text-white mb-1">0</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Notations</p>
+      </div>
+    </div>
+
+    <!-- Activité récente -->
+    <div class="card p-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white">Activité récente</h2>
+        <a href="/" class="text-sm text-primary-500 hover:text-primary-600 font-medium">Voir tout</a>
+      </div>
+      <div id="recent-activity" class="space-y-3">
+        <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-navy-700">
+          <div class="w-10 h-10 rounded-lg bg-gray-200 dark:bg-navy-600 flex items-center justify-center">
+            <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+          </div>
+          <div class="flex-1">
+            <p class="text-sm text-gray-500 dark:text-gray-400">Aucune activité récente</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions rapides -->
+    <div class="card p-6">
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Actions rapides</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <a href="/favorites" class="flex items-center gap-3 p-4 rounded-xl bg-gray-50 dark:bg-navy-700 hover:bg-gray-100 dark:hover:bg-navy-600 transition-all">
+          <svg class="w-5 h-5 text-pink-500" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+          </svg>
+          <div>
+            <p class="font-medium text-gray-900 dark:text-white">Mes Favoris</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Voir mes datasets favoris</p>
+          </div>
+        </a>
+
+        <a href="/add-dataset" class="flex items-center gap-3 p-4 rounded-xl bg-gray-50 dark:bg-navy-700 hover:bg-gray-100 dark:hover:bg-navy-600 transition-all">
+          <svg class="w-5 h-5 text-primary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14"/>
+            <path d="M12 5v14"/>
+          </svg>
+          <div>
+            <p class="font-medium text-gray-900 dark:text-white">Ajouter un dataset</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Partager un nouveau dataset</p>
+          </div>
+        </a>
+
+        <a href="/settings" class="flex items-center gap-3 p-4 rounded-xl bg-gray-50 dark:bg-navy-700 hover:bg-gray-100 dark:hover:bg-navy-600 transition-all">
+          <svg class="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v6m0 6v6"/>
+            <path d="m1 12 6-6m6 6 6-6m-6 6-6 6m6-6 6 6"/>
+          </svg>
+          <div>
+            <p class="font-medium text-gray-900 dark:text-white">Paramètres</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Gérer vos préférences</p>
+          </div>
+        </a>
+
+        <button onclick="openClerkProfile()" class="flex items-center gap-3 p-4 rounded-xl bg-gray-50 dark:bg-navy-700 hover:bg-gray-100 dark:hover:bg-navy-600 transition-all text-left">
+          <svg class="w-5 h-5 text-teal-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+          </svg>
+          <div>
+            <p class="font-medium text-gray-900 dark:text-white">Modifier le profil</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Mettre à jour vos informations</p>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Ouvrir le profil Clerk pour modification
+function openClerkProfile() {
+  if (window.clerk) {
+    window.clerk.openUserProfile();
+  }
+}
+
+// Charger les informations du profil
+document.addEventListener('DOMContentLoaded', async () => {
+  const loadingEl = document.getElementById('profile-loading');
+  const loginEl = document.getElementById('profile-login');
+  const contentEl = document.getElementById('profile-content');
+
+  // Attendre que Clerk soit chargé
+  await new Promise(resolve => {
+    if (window.isUserLoggedIn && window.isUserLoggedIn()) {
+      resolve();
+    } else if (window.clerk) {
+      resolve();
+    } else {
+      const checkClerk = setInterval(() => {
+        if (window.clerk) {
+          clearInterval(checkClerk);
+          resolve();
+        }
+      }, 100);
+      setTimeout(() => {
+        clearInterval(checkClerk);
+        resolve();
+      }, 5000);
+    }
+  });
+
+  // Vérifier si l'utilisateur est connecté
+  if (!window.isUserLoggedIn || !window.isUserLoggedIn()) {
+    loadingEl.classList.add('hidden');
+    loginEl.classList.remove('hidden');
+    return;
+  }
+
+  if (window.clerk && window.clerk.user) {
+    const user = window.clerk.user;
+
+    // Remplir les informations
+    document.getElementById('profile-avatar').src = user.imageUrl || '/images/default-avatar.png';
+    document.getElementById('profile-name').textContent = user.fullName || user.firstName || 'Utilisateur';
+    document.getElementById('profile-email').textContent = user.emailAddresses[0]?.emailAddress || '-';
+
+    const createdDate = new Date(user.createdAt);
+    document.getElementById('profile-created').textContent = createdDate.toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+    loadingEl.classList.add('hidden');
+    contentEl.classList.remove('hidden');
+
+    // Charger les statistiques en arrière-plan
+    loadUserStats();
+  } else {
+    // Afficher le message de connexion requise
+    loadingEl.classList.add('hidden');
+    loginEl.classList.remove('hidden');
+  }
+});
+
+// Charger les statistiques utilisateur
+async function loadUserStats() {
+  try {
+    // Favoris supprimés - mettre 0
+    document.getElementById('favorites-count').textContent = 0;
+
+    // Charger les datasets ajoutés (à implémenter côté backend)
+    // Pour l'instant, on garde 0
+
+    // Charger les notations (à implémenter côté backend)
+    // Pour l'instant, on garde 0
+
+  } catch (error) {
+    console.error('Error loading stats:', error);
+  }
+}
+</script>

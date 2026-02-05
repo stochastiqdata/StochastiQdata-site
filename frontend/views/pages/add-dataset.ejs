@@ -1,0 +1,311 @@
+<div class="max-w-3xl mx-auto">
+  <!-- Header -->
+  <div class="mb-8">
+    <nav class="mb-4">
+      <a href="/" class="text-primary-500 hover:text-primary-600 text-sm flex items-center gap-1">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="m15 18-6-6 6-6"/>
+        </svg>
+        Retour au catalogue
+      </a>
+    </nav>
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Proposer un dataset</h1>
+    <p class="text-gray-600 dark:text-gray-400">Partagez un dataset de qualité avec la communauté. Vous ne stockez aucune donnée, uniquement un lien vers la source.</p>
+  </div>
+
+  <!-- Formulaire -->
+  <form id="addDatasetForm" class="space-y-6">
+    <!-- Section 1: Informations principales -->
+    <div class="card p-6">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-primary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        Informations principales
+      </h2>
+
+      <!-- Nom -->
+      <div class="mb-4">
+        <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Nom du dataset <span class="text-red-500">*</span>
+        </label>
+        <input type="text" id="name" name="name" required
+          class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all"
+          placeholder="Ex: French Motor Third-Party Liability Claims">
+      </div>
+
+      <!-- Description -->
+      <div class="mb-4">
+        <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Description
+        </label>
+        <textarea id="description" name="description" rows="3"
+          class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all resize-none"
+          placeholder="Décrivez le contenu du dataset, son utilité pour les professionnels..."></textarea>
+      </div>
+
+      <!-- Source + URL -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label for="source" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Source <span class="text-red-500">*</span>
+          </label>
+          <select id="source" name="source" required
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all">
+            <option value="kaggle">Kaggle</option>
+            <option value="insee">INSEE</option>
+            <option value="opendata">OpenData (data.gouv.fr)</option>
+            <option value="other">Autre source</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="source_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Lien vers les données <span class="text-red-500">*</span>
+          </label>
+          <input type="url" id="source_url" name="source_url" required
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all"
+            placeholder="https://www.kaggle.com/datasets/...">
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 2: Métadonnées -->
+    <div class="card p-6">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-teal-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+          <line x1="3" y1="9" x2="21" y2="9"/>
+          <line x1="9" y1="21" x2="9" y2="9"/>
+        </svg>
+        Métadonnées (optionnel)
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div>
+          <label for="row_count" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Nombre de lignes
+          </label>
+          <input type="number" id="row_count" name="row_count" min="0"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all"
+            placeholder="Ex: 678013">
+        </div>
+
+        <div>
+          <label for="column_count" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Nombre de colonnes
+          </label>
+          <input type="number" id="column_count" name="column_count" min="0"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all"
+            placeholder="Ex: 12">
+        </div>
+
+        <div>
+          <label for="file_size_mb" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Taille (MB)
+          </label>
+          <input type="number" id="file_size_mb" name="file_size_mb" min="0" step="0.1"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all"
+            placeholder="Ex: 45.2">
+        </div>
+      </div>
+
+      <!-- Documentation URL -->
+      <div>
+        <label for="data_dictionary_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Lien vers la documentation
+        </label>
+        <input type="url" id="data_dictionary_url" name="data_dictionary_url"
+          class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all"
+          placeholder="Lien vers le dictionnaire des variables, README, etc.">
+      </div>
+    </div>
+
+    <!-- Section 3: Classification -->
+    <div class="card p-6">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-violet-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+          <line x1="7" y1="7" x2="7.01" y2="7"/>
+        </svg>
+        Classification
+      </h2>
+
+      <!-- Tags métier -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          Domaines métier
+        </label>
+        <div class="flex flex-wrap gap-2">
+          <%
+            const tagOptions = [
+              { value: 'iard', label: 'IARD', color: 'blue' },
+              { value: 'sante', label: 'Santé', color: 'green' },
+              { value: 'vie', label: 'Vie', color: 'purple' },
+              { value: 'glm', label: 'GLM', color: 'orange' },
+              { value: 'pricing', label: 'Pricing', color: 'teal' },
+              { value: 'reserving', label: 'Provisionnement', color: 'indigo' },
+              { value: 'fraude', label: 'Fraude', color: 'red' },
+              { value: 'machine_learning', label: 'Machine Learning', color: 'pink' }
+            ];
+            tagOptions.forEach(tag => {
+          %>
+            <label class="tag-checkbox cursor-pointer">
+              <input type="checkbox" name="tags" value="<%= tag.value %>" class="hidden peer">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border-2 border-gray-200 dark:border-navy-600 text-gray-600 dark:text-gray-400 peer-checked:border-primary-500 peer-checked:bg-primary-50 dark:peer-checked:bg-primary-500/20 peer-checked:text-primary-600 dark:peer-checked:text-primary-400 transition-all hover:border-gray-300 dark:hover:border-navy-500">
+                <%= tag.label %>
+              </span>
+            </label>
+          <% }); %>
+        </div>
+      </div>
+
+      <!-- Types de modélisation -->
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          Types de modélisation
+        </label>
+        <div class="flex flex-wrap gap-2">
+          <%
+            const modelingOptions = [
+              { value: 'classification', label: 'Classification' },
+              { value: 'regression', label: 'Régression' },
+              { value: 'time_series', label: 'Séries temporelles' },
+              { value: 'clustering', label: 'Clustering' },
+              { value: 'survival', label: 'Survie' },
+              { value: 'other', label: 'Autre' }
+            ];
+            modelingOptions.forEach(opt => {
+          %>
+            <label class="tag-checkbox cursor-pointer">
+              <input type="checkbox" name="modeling_types" value="<%= opt.value %>" class="hidden peer">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border-2 border-gray-200 dark:border-navy-600 text-gray-600 dark:text-gray-400 peer-checked:border-teal-500 peer-checked:bg-teal-50 dark:peer-checked:bg-teal-500/20 peer-checked:text-teal-600 dark:peer-checked:text-teal-400 transition-all hover:border-gray-300 dark:hover:border-navy-500">
+                <%= opt.label %>
+              </span>
+            </label>
+          <% }); %>
+        </div>
+      </div>
+
+      <!-- Modèles recommandés -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          Modèles recommandés
+        </label>
+        <div class="flex flex-wrap gap-2">
+          <%
+            const modelOptions = [
+              { value: 'glm', label: 'GLM' },
+              { value: 'xgboost', label: 'XGBoost' },
+              { value: 'lightgbm', label: 'LightGBM' },
+              { value: 'random_forest', label: 'Random Forest' },
+              { value: 'catboost', label: 'CatBoost' },
+              { value: 'neural_network', label: 'Neural Network' },
+              { value: 'chain_ladder', label: 'Chain Ladder' },
+              { value: 'mack', label: 'Mack' },
+              { value: 'bornhuetter_ferguson', label: 'Bornhuetter-Ferguson' },
+              { value: 'cox', label: 'Cox' },
+              { value: 'kaplan_meier', label: 'Kaplan-Meier' }
+            ];
+            modelOptions.forEach(opt => {
+          %>
+            <label class="tag-checkbox cursor-pointer">
+              <input type="checkbox" name="best_fit_models" value="<%= opt.value %>" class="hidden peer">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border-2 border-gray-200 dark:border-navy-600 text-gray-600 dark:text-gray-400 peer-checked:border-violet-500 peer-checked:bg-violet-50 dark:peer-checked:bg-violet-500/20 peer-checked:text-violet-600 dark:peer-checked:text-violet-400 transition-all hover:border-gray-300 dark:hover:border-navy-500">
+                <%= opt.label %>
+              </span>
+            </label>
+          <% }); %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message d'erreur/succès -->
+    <div id="formMessage" class="hidden"></div>
+
+    <!-- Boutons -->
+    <div class="flex gap-4">
+      <a href="/" class="btn-secondary flex-1 text-center py-3">
+        Annuler
+      </a>
+      <button type="submit" id="submitBtn" class="btn-primary flex-1 py-3 flex items-center justify-center gap-2">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14"/>
+          <path d="M5 12h14"/>
+        </svg>
+        Proposer ce dataset
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+document.getElementById('addDatasetForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const submitBtn = document.getElementById('submitBtn');
+  const formMessage = document.getElementById('formMessage');
+
+  // Disable button
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<svg class="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg> Envoi en cours...';
+
+  // Collect form data
+  const formData = {
+    name: document.getElementById('name').value,
+    description: document.getElementById('description').value || null,
+    source: document.getElementById('source').value,
+    source_url: document.getElementById('source_url').value,
+    row_count: document.getElementById('row_count').value ? parseInt(document.getElementById('row_count').value) : null,
+    column_count: document.getElementById('column_count').value ? parseInt(document.getElementById('column_count').value) : null,
+    file_size_mb: document.getElementById('file_size_mb').value ? parseFloat(document.getElementById('file_size_mb').value) : null,
+    data_dictionary_url: document.getElementById('data_dictionary_url').value || null,
+    tags: [...document.querySelectorAll('input[name="tags"]:checked')].map(cb => cb.value),
+    modeling_types: [...document.querySelectorAll('input[name="modeling_types"]:checked')].map(cb => cb.value),
+    best_fit_models: [...document.querySelectorAll('input[name="best_fit_models"]:checked')].map(cb => cb.value),
+    pivot_variables: []
+  };
+
+  try {
+    // Get Supabase token if user is signed in
+    let token = null;
+    if (typeof getAccessToken === 'function') {
+      token = await getAccessToken();
+    }
+
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch('/api/datasets', {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(formData)
+    });
+
+    if (response.ok) {
+      formMessage.className = 'p-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300';
+      formMessage.innerHTML = '<div class="flex items-center gap-2"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Dataset ajouté avec succès ! Redirection...</div>';
+      formMessage.classList.remove('hidden');
+
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1500);
+    } else {
+      const error = await response.json();
+      throw new Error(error.detail || 'Erreur lors de l\'ajout');
+    }
+  } catch (error) {
+    formMessage.className = 'p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300';
+    formMessage.innerHTML = `<div class="flex items-center gap-2"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> ${error.message}</div>`;
+    formMessage.classList.remove('hidden');
+
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Proposer ce dataset';
+  }
+});
+</script>

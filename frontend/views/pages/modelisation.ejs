@@ -1,0 +1,338 @@
+<div class="max-w-5xl mx-auto px-4 py-8">
+  <!-- En-tête -->
+  <div class="mb-12">
+    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">Modélisation Actuarielle</h1>
+    <p class="text-lg text-gray-500 dark:text-gray-400">Maîtrisez les techniques de modélisation à travers des cas pratiques et des datasets réels</p>
+  </div>
+
+  <!-- Parcours par Domaine -->
+  <div class="card p-8 mb-10">
+    <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-8 flex items-center gap-3">
+      <svg class="w-6 h-6 text-primary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 17l10 5 10-5"/>
+        <path d="M2 12l10 5 10-5"/>
+      </svg>
+      Parcours par Domaine
+    </h2>
+
+    <div class="grid gap-8 md:grid-cols-3">
+      <!-- IARD -->
+      <div class="border border-gray-200 dark:border-navy-700 rounded-xl p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </div>
+          <div>
+            <span class="tag tag-iard">IARD</span>
+            <h3 class="font-semibold text-gray-900 dark:text-white text-sm">Assurance Non-Vie</h3>
+          </div>
+        </div>
+        <ul class="space-y-3 mb-5 text-sm text-gray-600 dark:text-gray-300">
+          <li class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs">1</span>
+            Tarification Auto (GLM)
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-blue-400 text-white flex items-center justify-center text-xs">2</span>
+            Détection Fraude
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-blue-300 text-white flex items-center justify-center text-xs">3</span>
+            Provisionnement IBNR
+          </li>
+        </ul>
+        <a href="/?tags=iard" class="text-blue-600 dark:text-blue-400 text-sm font-medium hover:underline">
+          Explorer →
+        </a>
+      </div>
+
+      <!-- Santé -->
+      <div class="border border-gray-200 dark:border-navy-700 rounded-xl p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+            <svg class="w-5 h-5 text-green-600 dark:text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+            </svg>
+          </div>
+          <div>
+            <span class="tag tag-sante">Santé</span>
+            <h3 class="font-semibold text-gray-900 dark:text-white text-sm">Assurance Santé</h3>
+          </div>
+        </div>
+        <ul class="space-y-3 mb-5 text-sm text-gray-600 dark:text-gray-300">
+          <li class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-green-500 text-white flex items-center justify-center text-xs">1</span>
+            Prédiction Coûts
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-green-400 text-white flex items-center justify-center text-xs">2</span>
+            Segmentation Patients
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-green-300 text-white flex items-center justify-center text-xs">3</span>
+            Risque Hospitalisation
+          </li>
+        </ul>
+        <a href="/?tags=sante" class="text-green-600 dark:text-green-400 text-sm font-medium hover:underline">
+          Explorer →
+        </a>
+      </div>
+
+      <!-- Vie -->
+      <div class="border border-gray-200 dark:border-navy-700 rounded-xl p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+            <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+          </div>
+          <div>
+            <span class="tag tag-vie">Vie</span>
+            <h3 class="font-semibold text-gray-900 dark:text-white text-sm">Assurance Vie</h3>
+          </div>
+        </div>
+        <ul class="space-y-3 mb-5 text-sm text-gray-600 dark:text-gray-300">
+          <li class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-purple-500 text-white flex items-center justify-center text-xs">1</span>
+            Tables Mortalité
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-purple-400 text-white flex items-center justify-center text-xs">2</span>
+            Analyse Survie
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-purple-300 text-white flex items-center justify-center text-xs">3</span>
+            Prédiction Rachats
+          </li>
+        </ul>
+        <a href="/?tags=vie" class="text-purple-600 dark:text-purple-400 text-sm font-medium hover:underline">
+          Explorer →
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cas d'Étude -->
+  <div class="card p-8 mb-10">
+    <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-8 flex items-center gap-3">
+      <svg class="w-6 h-6 text-primary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="2" y="3" width="20" height="14" rx="2"/>
+        <line x1="8" y1="21" x2="16" y2="21"/>
+        <line x1="12" y1="17" x2="12" y2="21"/>
+      </svg>
+      Cas d'Étude Réels
+    </h2>
+
+    <div class="space-y-6">
+      <!-- Tarification Auto -->
+      <div class="border-b border-gray-200 dark:border-navy-700 pb-6">
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="font-semibold text-gray-900 dark:text-white">Tarification Automobile avec GLM</h3>
+          <span class="px-2 py-0.5 rounded text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300">Intermédiaire</span>
+        </div>
+        <p class="text-gray-600 dark:text-gray-300 text-sm mb-3">
+          Construisez un modèle de tarification complet : fréquence (Poisson) et coût moyen (Gamma) pour calculer la prime pure.
+        </p>
+        <div class="flex items-center justify-between">
+          <div class="flex gap-2">
+            <span class="tag tag-iard text-xs">IARD</span>
+            <span class="tag tag-glm text-xs">GLM</span>
+          </div>
+          <a href="/?search=french+motor" class="text-primary-500 text-sm font-medium hover:underline">Voir dataset →</a>
+        </div>
+      </div>
+
+      <!-- Fraude -->
+      <div class="border-b border-gray-200 dark:border-navy-700 pb-6">
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="font-semibold text-gray-900 dark:text-white">Détection de Fraude à l'Assurance</h3>
+          <span class="px-2 py-0.5 rounded text-xs font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300">Avancé</span>
+        </div>
+        <p class="text-gray-600 dark:text-gray-300 text-sm mb-3">
+          Système de détection avec gestion du déséquilibre de classes (SMOTE), feature engineering et XGBoost.
+        </p>
+        <div class="flex items-center justify-between">
+          <div class="flex gap-2">
+            <span class="tag tag-fraude text-xs">Fraude</span>
+            <span class="tag tag-machine_learning text-xs">ML</span>
+          </div>
+          <a href="/?search=fraud" class="text-primary-500 text-sm font-medium hover:underline">Voir dataset →</a>
+        </div>
+      </div>
+
+      <!-- Provisionnement -->
+      <div class="border-b border-gray-200 dark:border-navy-700 pb-6">
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="font-semibold text-gray-900 dark:text-white">Provisionnement Chain Ladder</h3>
+          <span class="px-2 py-0.5 rounded text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300">Intermédiaire</span>
+        </div>
+        <p class="text-gray-600 dark:text-gray-300 text-sm mb-3">
+          Triangles de liquidation, Chain Ladder, Bornhuetter-Ferguson et estimation de l'incertitude avec Mack.
+        </p>
+        <div class="flex items-center justify-between">
+          <div class="flex gap-2">
+            <span class="tag tag-iard text-xs">IARD</span>
+            <span class="tag tag-reserving text-xs">Reserving</span>
+          </div>
+          <a href="/?tags=reserving" class="text-primary-500 text-sm font-medium hover:underline">Voir datasets →</a>
+        </div>
+      </div>
+
+      <!-- Survie -->
+      <div class="pb-6">
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="font-semibold text-gray-900 dark:text-white">Analyse de Mortalité & Survie</h3>
+          <span class="px-2 py-0.5 rounded text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">Débutant</span>
+        </div>
+        <p class="text-gray-600 dark:text-gray-300 text-sm mb-3">
+          Courbes de Kaplan-Meier, modèle de Cox et construction de tables de mortalité.
+        </p>
+        <div class="flex items-center justify-between">
+          <div class="flex gap-2">
+            <span class="tag tag-vie text-xs">Vie</span>
+          </div>
+          <a href="/?tags=vie" class="text-primary-500 text-sm font-medium hover:underline">Voir datasets →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Boîte à Outils -->
+  <div class="card p-8 mb-10">
+    <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-8 flex items-center gap-3">
+      <svg class="w-6 h-6 text-primary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+      </svg>
+      Boîte à Outils
+    </h2>
+
+    <div class="grid gap-6 md:grid-cols-4">
+      <div class="text-center p-5 border border-gray-200 dark:border-navy-700 rounded-xl">
+        <div class="w-12 h-12 mx-auto mb-3 rounded-lg bg-gradient-to-br from-blue-500 to-yellow-400 flex items-center justify-center">
+          <span class="text-white font-bold text-sm">Py</span>
+        </div>
+        <h3 class="font-semibold text-gray-900 dark:text-white text-sm mb-1">Python</h3>
+        <p class="text-xs text-gray-500 dark:text-gray-400">pandas, scikit-learn</p>
+      </div>
+
+      <div class="text-center p-5 border border-gray-200 dark:border-navy-700 rounded-xl">
+        <div class="w-12 h-12 mx-auto mb-3 rounded-lg bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center">
+          <span class="text-white font-bold text-sm">R</span>
+        </div>
+        <h3 class="font-semibold text-gray-900 dark:text-white text-sm mb-1">R</h3>
+        <p class="text-xs text-gray-500 dark:text-gray-400">ChainLadder, survival</p>
+      </div>
+
+      <div class="text-center p-5 border border-gray-200 dark:border-navy-700 rounded-xl">
+        <div class="w-12 h-12 mx-auto mb-3 rounded-lg bg-gradient-to-br from-green-500 to-teal-500 flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
+          </svg>
+        </div>
+        <h3 class="font-semibold text-gray-900 dark:text-white text-sm mb-1">Métriques</h3>
+        <p class="text-xs text-gray-500 dark:text-gray-400">Gini, AUC, RMSE</p>
+      </div>
+
+      <div class="text-center p-5 border border-gray-200 dark:border-navy-700 rounded-xl">
+        <div class="w-12 h-12 mx-auto mb-3 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+        </div>
+        <h3 class="font-semibold text-gray-900 dark:text-white text-sm mb-1">Visualisation</h3>
+        <p class="text-xs text-gray-500 dark:text-gray-400">plotly, seaborn</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Types de Modélisation -->
+  <div class="card p-8">
+    <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-8 flex items-center gap-3">
+      <svg class="w-6 h-6 text-primary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M12 1v6m0 6v10"/>
+      </svg>
+      Types de Modélisation
+    </h2>
+
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <a href="/?modelingTypes=classification" class="flex items-center gap-4 p-4 border border-gray-200 dark:border-navy-700 rounded-xl hover:border-blue-400 dark:hover:border-blue-500 transition-colors">
+        <div class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+          <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </div>
+        <div>
+          <h3 class="font-medium text-gray-900 dark:text-white text-sm">Classification</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Fraude, sinistre</p>
+        </div>
+      </a>
+
+      <a href="/?modelingTypes=regression" class="flex items-center gap-4 p-4 border border-gray-200 dark:border-navy-700 rounded-xl hover:border-green-400 dark:hover:border-green-500 transition-colors">
+        <div class="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+          <svg class="w-4 h-4 text-green-600 dark:text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>
+        </div>
+        <div>
+          <h3 class="font-medium text-gray-900 dark:text-white text-sm">Régression</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Prime, coût</p>
+        </div>
+      </a>
+
+      <a href="/?modelingTypes=time_series" class="flex items-center gap-4 p-4 border border-gray-200 dark:border-navy-700 rounded-xl hover:border-orange-400 dark:hover:border-orange-500 transition-colors">
+        <div class="w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+          <svg class="w-4 h-4 text-orange-600 dark:text-orange-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+        </div>
+        <div>
+          <h3 class="font-medium text-gray-900 dark:text-white text-sm">Séries Temporelles</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Provisions, tendances</p>
+        </div>
+      </a>
+
+      <a href="/?modelingTypes=clustering" class="flex items-center gap-4 p-4 border border-gray-200 dark:border-navy-700 rounded-xl hover:border-purple-400 dark:hover:border-purple-500 transition-colors">
+        <div class="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+          <svg class="w-4 h-4 text-purple-600 dark:text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="12" cy="18" r="3"/></svg>
+        </div>
+        <div>
+          <h3 class="font-medium text-gray-900 dark:text-white text-sm">Clustering</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Portefeuilles, profils</p>
+        </div>
+      </a>
+
+      <a href="/?modelingTypes=survival" class="flex items-center gap-4 p-4 border border-gray-200 dark:border-navy-700 rounded-xl hover:border-red-400 dark:hover:border-red-500 transition-colors">
+        <div class="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+          <svg class="w-4 h-4 text-red-600 dark:text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <div>
+          <h3 class="font-medium text-gray-900 dark:text-white text-sm">Analyse de Survie</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Mortalité, résiliation</p>
+        </div>
+      </a>
+
+      <a href="/" class="flex items-center gap-4 p-4 border border-gray-200 dark:border-navy-700 rounded-xl hover:border-primary-400 dark:hover:border-primary-500 transition-colors">
+        <div class="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+          <svg class="w-4 h-4 text-primary-600 dark:text-primary-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </div>
+        <div>
+          <h3 class="font-medium text-gray-900 dark:text-white text-sm">Tous les Datasets</h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Catalogue complet</p>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="mt-12 text-center">
+    <p class="text-gray-500 dark:text-gray-400 text-base mb-4">
+      Prêt à développer vos compétences en modélisation actuarielle ?
+    </p>
+    <a href="/" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-teal-500 hover:from-primary-600 hover:to-teal-600 text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+      </svg>
+      Explorer les Datasets
+    </a>
+  </div>
+</div>

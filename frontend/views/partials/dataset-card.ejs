@@ -1,0 +1,176 @@
+<%
+  // Fonction pour calculer la couleur du score
+  function getScoreColor(score) {
+    if (score >= 70) return '#14B8A6'; // Teal
+    if (score >= 50) return '#3B82F6'; // Bleu
+    if (score >= 30) return '#EAB308'; // Jaune
+    return '#EF4444'; // Rouge
+  }
+
+  // Calcul du pourcentage pour le cercle
+  const score = dataset.global_score || 0;
+  const circumference = 2 * Math.PI * 36; // rayon = 36
+  const strokeDasharray = circumference;
+  const strokeDashoffset = circumference - (score / 100) * circumference;
+  const scoreColor = getScoreColor(score);
+
+  // Calcul des jours depuis la mise à jour
+  const updatedAt = dataset.data_updated_at ? new Date(dataset.data_updated_at) : new Date(dataset.created_at);
+  const daysAgo = Math.floor((new Date() - updatedAt) / (1000 * 60 * 60 * 24));
+
+  // Modèle recommandé
+  const recommendedModel = dataset.best_fit_models && dataset.best_fit_models.length > 0
+    ? MODEL_LABELS[dataset.best_fit_models[0]] || dataset.best_fit_models[0]
+    : 'N/A';
+%>
+
+<article class="card p-5 flex flex-col cursor-pointer group hover:scale-[1.02] transition-all duration-300" onclick="window.location.href='/modeling/<%= dataset.id %>'">
+  <!-- Header: Label -->
+  <div class="flex items-center justify-between mb-3">
+    <span class="text-sm font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide">Dataset</span>
+  </div>
+
+  <!-- Titre du dataset -->
+  <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-primary-500 transition-colors line-clamp-2">
+    <%= dataset.name %>
+  </h3>
+
+  <!-- Source badges -->
+  <div class="flex flex-wrap items-center gap-2 mb-4">
+    <span class="badge badge-<%= dataset.source %>">
+      <% if (dataset.source === 'kaggle') { %>
+        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M18.825 23.859c-.022.092-.117.141-.281.141h-3.139c-.187 0-.351-.082-.492-.248l-5.178-6.589-1.448 1.374v5.111c0 .235-.117.352-.351.352H5.505c-.236 0-.354-.117-.354-.352V.353c0-.233.118-.353.354-.353h2.431c.234 0 .351.12.351.353v14.343l6.203-6.272c.165-.165.33-.246.495-.246h3.239c.144 0 .236.06.285.18.046.149.034.255-.036.315l-6.555 6.344 6.836 8.507c.095.104.117.208.071.358z"/></svg>
+      <% } else if (dataset.source === 'insee') { %>
+        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+      <% } %>
+      <%= SOURCE_LABELS[dataset.source] || dataset.source %>
+    </span>
+    <% if (dataset.tags && dataset.tags.includes('iard')) { %>
+      <span class="badge badge-iard">
+        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+        IARD
+      </span>
+    <% } %>
+    <span class="badge badge-opendata">
+      <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      OpenData
+    </span>
+  </div>
+
+  <!-- Tags métier -->
+  <div class="flex flex-wrap gap-2 mb-4">
+    <% (dataset.tags || []).slice(0, 4).forEach(tag => { %>
+      <span class="tag tag-<%= tag %>">
+        <%= TAG_LABELS[tag] || tag %>
+      </span>
+    <% }); %>
+  </div>
+
+  <!-- Score cercle centré -->
+  <div class="flex justify-center my-4">
+    <div class="score-circle" title="Score: <%= score %>/100">
+      <svg width="100" height="100" viewBox="0 0 80 80">
+        <!-- Cercle de fond -->
+        <circle
+          cx="40"
+          cy="40"
+          r="36"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="6"
+          class="text-gray-200 dark:text-navy-600"
+        />
+        <!-- Dégradé teal -->
+        <defs>
+          <linearGradient id="scoreGradient-<%= dataset.id %>" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#14B8A6" />
+            <stop offset="100%" stop-color="#06B6D4" />
+          </linearGradient>
+        </defs>
+        <!-- Cercle de progression -->
+        <circle
+          cx="40"
+          cy="40"
+          r="36"
+          fill="none"
+          stroke="url(#scoreGradient-<%= dataset.id %>)"
+          stroke-width="6"
+          stroke-linecap="round"
+          stroke-dasharray="<%= strokeDasharray %>"
+          stroke-dashoffset="<%= strokeDashoffset %>"
+          style="transition: stroke-dashoffset 0.8s ease-in-out;"
+        />
+      </svg>
+      <span class="score-value text-2xl text-gray-900 dark:text-white">
+        <%= score %><span class="text-sm text-gray-400 dark:text-gray-500">/100</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- Informations supplémentaires -->
+  <div class="flex items-center justify-center gap-2 text-xs mb-4 flex-wrap">
+    <div class="flex items-center gap-1.5 bg-gray-100 dark:bg-navy-700 rounded-full px-3 py-1.5">
+      <svg class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+      </svg>
+      <span class="text-gray-600 dark:text-gray-300 font-medium"><%= dataset.review_count || 0 %> contrib.</span>
+    </div>
+    <div class="flex items-center gap-1.5 bg-gray-100 dark:bg-navy-700 rounded-full px-3 py-1.5">
+      <svg class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+      <span class="text-gray-600 dark:text-gray-300 font-medium"><%= dataset.review_count || 0 %> avis</span>
+    </div>
+    <div class="flex items-center gap-1.5 bg-gray-100 dark:bg-navy-700 rounded-full px-3 py-1.5">
+      <svg class="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+      <span class="text-gray-600 dark:text-gray-300 font-medium"><%= daysAgo === 0 ? 'Aujourd\'hui' : 'Il y a ' + daysAgo + 'j' %></span>
+    </div>
+  </div>
+
+  <!-- Recommandation de modèle -->
+  <div class="flex items-center gap-2 text-sm bg-gray-50 dark:bg-navy-700/50 rounded-xl px-4 py-3 mt-auto">
+    <svg class="w-5 h-5 text-primary-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+      <line x1="12" y1="19" x2="12" y2="22"/>
+    </svg>
+    <span class="text-gray-600 dark:text-gray-300">Recommandé : <strong class="text-primary-500"><%= recommendedModel %></strong></span>
+  </div>
+
+  <!-- Bouton principal: Accéder aux données -->
+  <% if (dataset.source_url) { %>
+  <a href="<%= dataset.source_url %>"
+     target="_blank"
+     rel="noopener noreferrer"
+     class="flex items-center justify-center gap-2 w-full mt-4 py-3 px-4 bg-gradient-to-r from-primary-500 to-teal-500 hover:from-primary-600 hover:to-teal-600 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-[1.02]"
+     onclick="event.stopPropagation()">
+    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+      <polyline points="15 3 21 3 21 9"/>
+      <line x1="10" y1="14" x2="21" y2="3"/>
+    </svg>
+    Accéder aux données
+    <% if (dataset.source === 'kaggle') { %>
+      <span class="text-xs opacity-75">· Kaggle</span>
+    <% } else if (dataset.source === 'insee') { %>
+      <span class="text-xs opacity-75">· INSEE</span>
+    <% } else if (dataset.source === 'opendata') { %>
+      <span class="text-xs opacity-75">· OpenData</span>
+    <% } %>
+  </a>
+  <% } %>
+
+  <!-- Actions secondaires -->
+  <div class="flex gap-2 mt-3 pt-3 border-t border-gray-100 dark:border-navy-700 opacity-0 group-hover:opacity-100 transition-opacity">
+    <a href="/modeling/<%= dataset.id %>" class="btn-secondary flex-1 text-center text-sm" onclick="event.stopPropagation()">
+      Voir détails
+    </a>
+    <button class="btn-primary flex-1 text-sm" onclick="event.stopPropagation(); openRatingModal('<%= dataset.id %>')">
+      Noter
+    </button>
+  </div>
+</article>

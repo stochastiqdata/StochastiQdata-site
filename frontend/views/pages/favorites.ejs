@@ -1,0 +1,201 @@
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <!-- En-tête -->
+  <div class="flex items-center gap-4 mb-8">
+    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center shadow-lg">
+      <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+      </svg>
+    </div>
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Mes Favoris</h1>
+      <p class="text-gray-500 dark:text-gray-400">Retrouvez ici vos datasets favoris</p>
+    </div>
+  </div>
+
+  <!-- État de chargement -->
+  <div id="favorites-loading" class="text-center py-12">
+    <div class="w-12 h-12 mx-auto mb-4 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+    <p class="text-gray-500 dark:text-gray-400">Chargement de vos favoris...</p>
+  </div>
+
+  <!-- Message non connecté -->
+  <div id="favorites-login" class="hidden">
+    <div class="card p-8 text-center max-w-md mx-auto">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-navy-700 flex items-center justify-center">
+        <svg class="w-8 h-8 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M20 21a8 8 0 0 0-16 0"/>
+        </svg>
+      </div>
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Connexion requise</h2>
+      <p class="text-gray-500 dark:text-gray-400 mb-6">Connectez-vous pour voir et gérer vos datasets favoris.</p>
+      <button onclick="openSignIn()" class="btn-primary inline-flex">Se connecter</button>
+    </div>
+  </div>
+
+  <!-- Message aucun favori -->
+  <div id="favorites-empty" class="hidden">
+    <div class="card p-8 text-center max-w-md mx-auto">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center">
+        <svg class="w-8 h-8 text-pink-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+        </svg>
+      </div>
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Aucun favori</h2>
+      <p class="text-gray-500 dark:text-gray-400 mb-6">
+        Vous n'avez pas encore de favoris. Parcourez le catalogue et cliquez sur le coeur pour ajouter des datasets à vos favoris !
+      </p>
+      <a href="/" class="btn-primary inline-flex">Explorer le catalogue</a>
+    </div>
+  </div>
+
+  <!-- Grille des favoris -->
+  <div id="favorites-grid" class="hidden">
+    <div class="flex items-center justify-between mb-6">
+      <p class="text-gray-500 dark:text-gray-400">
+        <span id="favorites-count">0</span> dataset(s) favori(s)
+      </p>
+    </div>
+    <div id="favorites-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Les favoris seront insérés ici dynamiquement -->
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const loadingEl = document.getElementById('favorites-loading');
+  const loginEl = document.getElementById('favorites-login');
+  const emptyEl = document.getElementById('favorites-empty');
+  const gridEl = document.getElementById('favorites-grid');
+  const listEl = document.getElementById('favorites-list');
+  const countEl = document.getElementById('favorites-count');
+
+  // Attendre que Clerk soit chargé (timeout réduit)
+  await new Promise(resolve => {
+    if (window.isUserLoggedIn && window.isUserLoggedIn()) {
+      resolve();
+    } else if (window.clerk) {
+      resolve();
+    } else {
+      const checkClerk = setInterval(() => {
+        if (window.clerk) {
+          clearInterval(checkClerk);
+          resolve();
+        }
+      }, 50);
+      // Timeout après 3 secondes
+      setTimeout(() => {
+        clearInterval(checkClerk);
+        resolve();
+      }, 3000);
+    }
+  });
+
+  // Vérifier si l'utilisateur est connecté
+  if (!window.isUserLoggedIn || !window.isUserLoggedIn()) {
+    loadingEl.classList.add('hidden');
+    loginEl.classList.remove('hidden');
+    return;
+  }
+
+  try {
+    // Utiliser fetchWithAuth qui ajoute automatiquement le token
+    const response = await window.fetchWithAuth('/api/v1/favorites');
+
+    loadingEl.classList.add('hidden');
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        loginEl.classList.remove('hidden');
+        return;
+      }
+      throw new Error('Erreur lors du chargement');
+    }
+
+    const favorites = await response.json();
+
+    if (favorites.length === 0) {
+      emptyEl.classList.remove('hidden');
+      return;
+    }
+
+    // Afficher les favoris
+    countEl.textContent = favorites.length;
+    gridEl.classList.remove('hidden');
+
+    listEl.innerHTML = favorites.map(dataset => `
+      <article class="card p-5 flex flex-col hover:scale-[1.02] transition-all duration-300">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-sm font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide">Dataset</span>
+          <button
+            class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors"
+            onclick="removeFavorite('${dataset.id}', this)"
+            title="Retirer des favoris"
+          >
+            <svg class="w-5 h-5 text-pink-500" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+            </svg>
+          </button>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-3 line-clamp-2">
+          <a href="/modeling/${dataset.id}" class="hover:text-primary-500 transition-colors">${dataset.name}</a>
+        </h3>
+        <div class="flex flex-wrap gap-2 mb-4">
+          ${(dataset.tags || []).slice(0, 3).map(tag => `
+            <span class="tag tag-${tag}">${tag}</span>
+          `).join('')}
+        </div>
+        <div class="mt-auto flex items-center justify-between">
+          <span class="text-2xl font-bold ${dataset.global_score >= 70 ? 'text-teal-500' : dataset.global_score >= 50 ? 'text-blue-500' : 'text-amber-500'}">
+            ${dataset.global_score || 0}<span class="text-sm text-gray-400">/100</span>
+          </span>
+          <a href="/modeling/${dataset.id}" class="btn-primary text-sm">Voir détails</a>
+        </div>
+      </article>
+    `).join('');
+
+  } catch (error) {
+    console.error('Erreur:', error);
+    loadingEl.classList.add('hidden');
+    emptyEl.classList.remove('hidden');
+  }
+});
+
+// Fonction pour retirer un favori
+async function removeFavorite(datasetId, button) {
+  if (!window.getAuthToken) return;
+
+  const token = await window.getAuthToken();
+  if (!token) return;
+
+  try {
+    // Utiliser fetchWithAuth pour le DELETE
+    const response = await window.fetchWithAuth(`/api/v1/favorites/${datasetId}`, {
+      method: 'DELETE'
+    });
+
+    if (response.ok) {
+      // Supprimer la carte avec animation
+      const card = button.closest('article');
+      card.style.opacity = '0';
+      card.style.transform = 'scale(0.9)';
+      setTimeout(() => {
+        card.remove();
+        // Mettre à jour le compteur
+        const countEl = document.getElementById('favorites-count');
+        const newCount = parseInt(countEl.textContent) - 1;
+        countEl.textContent = newCount;
+
+        // Si plus de favoris, afficher le message vide
+        if (newCount === 0) {
+          document.getElementById('favorites-grid').classList.add('hidden');
+          document.getElementById('favorites-empty').classList.remove('hidden');
+        }
+      }, 300);
+    }
+  } catch (error) {
+    console.error('Erreur:', error);
+  }
+}
+</script>

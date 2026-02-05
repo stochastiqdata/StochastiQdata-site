@@ -1,0 +1,124 @@
+<!-- Sidebar - Barre latérale flottante avec effet glass -->
+<aside class="fixed left-6 top-6 bottom-6 w-60 bg-navy-800/95 backdrop-blur-xl rounded-3xl flex flex-col z-50 shadow-glass-lg border border-navy-700/50">
+  <!-- Logo -->
+  <div class="p-6 border-b border-navy-700/50">
+    <a href="/" class="flex items-center gap-3 group">
+      <!-- Logo cube 3D -->
+      <div class="w-12 h-12 rounded-2xl overflow-hidden shadow-lg group-hover:shadow-primary-500/30 transition-all duration-300 group-hover:scale-105">
+        <img src="/images/logo.png" alt="StochastiQdata" class="w-full h-full object-cover">
+      </div>
+      <div>
+        <h1 class="text-lg font-bold text-white">StochastiQ<span class="text-primary-400">data</span></h1>
+      </div>
+    </a>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="flex-1 p-4 space-y-2">
+    <a href="/" class="nav-item <%= currentPath === '/' ? 'active' : '' %>">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1"/>
+        <rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/>
+        <rect x="14" y="14" width="7" height="7" rx="1"/>
+      </svg>
+      <span>Dashboard</span>
+    </a>
+
+    <a href="/modelisation" class="nav-item <%= currentPath === '/modelisation' ? 'active' : '' %>">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 3v18h18"/>
+        <path d="m19 9-5 5-4-4-3 3"/>
+      </svg>
+      <span>Modélisation</span>
+    </a>
+
+    <a href="/profile" class="nav-item <%= currentPath === '/profile' ? 'active' : '' %>">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M20 21a8 8 0 0 0-16 0"/>
+      </svg>
+      <span>Mon Profil</span>
+    </a>
+
+    <a href="/settings" class="nav-item <%= currentPath === '/settings' ? 'active' : '' %>">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>
+      <span>Paramètres</span>
+    </a>
+
+    <!-- Bouton Ajouter un dataset -->
+    <div class="pt-4 mt-4 border-t border-navy-700/50">
+      <a href="/add-dataset" class="flex items-center justify-center gap-2 w-full py-3 px-4 bg-gradient-to-r from-primary-500 to-teal-500 hover:from-primary-600 hover:to-teal-600 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-[1.02]">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 5v14"/>
+          <path d="M5 12h14"/>
+        </svg>
+        Ajouter un dataset
+      </a>
+    </div>
+  </nav>
+
+  <!-- Documentation et Aide -->
+  <div class="px-4 py-2 border-t border-navy-700/50">
+    <div class="flex items-center justify-center gap-4">
+      <a href="/guide" class="flex items-center gap-1.5 text-xs text-gray-400 hover:text-primary-400 transition-colors <%= currentPath === '/guide' ? 'text-primary-400' : '' %>" title="Guide">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+        <span>Guide</span>
+      </a>
+      <a href="/faq" class="flex items-center gap-1.5 text-xs text-gray-400 hover:text-primary-400 transition-colors <%= currentPath === '/faq' ? 'text-primary-400' : '' %>" title="FAQ">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+        <span>FAQ</span>
+      </a>
+      <a href="/mission" class="flex items-center gap-1.5 text-xs text-gray-400 hover:text-primary-400 transition-colors <%= currentPath === '/mission' ? 'text-primary-400' : '' %>" title="Notre Mission">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+        <span>Mission</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Liens légaux -->
+  <div class="px-4 py-2 border-t border-navy-700/50">
+    <div class="flex items-center justify-center gap-3 flex-wrap">
+      <a href="/mentions-legales" class="text-[10px] text-gray-500 hover:text-primary-400 transition-colors <%= currentPath === '/mentions-legales' ? 'text-primary-400' : '' %>">
+        Mentions légales
+      </a>
+      <span class="text-gray-600">·</span>
+      <a href="/politique-confidentialite" class="text-[10px] text-gray-500 hover:text-primary-400 transition-colors <%= currentPath === '/politique-confidentialite' ? 'text-primary-400' : '' %>">
+        Confidentialité
+      </a>
+      <span class="text-gray-600">·</span>
+      <a href="/cgu" class="text-[10px] text-gray-500 hover:text-primary-400 transition-colors <%= currentPath === '/cgu' ? 'text-primary-400' : '' %>">
+        CGU
+      </a>
+    </div>
+  </div>
+
+  <!-- User Section -->
+  <div class="px-4 py-3 border-t border-navy-700/50">
+    <div id="user-section">
+      <!-- Bouton par défaut, remplacé par JS si connecté -->
+      <button onclick="openSignIn()" class="w-full flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-medium text-white bg-gradient-to-r from-primary-500 to-teal-500 hover:from-primary-600 hover:to-teal-600 rounded-xl transition-all shadow-lg">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+          <polyline points="10 17 15 12 10 7"/>
+          <line x1="15" y1="12" x2="3" y2="12"/>
+        </svg>
+        Se connecter
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer Sidebar -->
+  <div class="px-4 py-3 border-t border-navy-700/50">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-1.5 text-gray-500 text-xs">
+        <div class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+        <span>En ligne</span>
+      </div>
+      <span class="text-xs text-gray-600">v1.0</span>
+    </div>
+  </div>
+</aside>

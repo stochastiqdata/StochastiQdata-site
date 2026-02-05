@@ -1,0 +1,374 @@
+// StochastiQdata - Authentification Supabase
+// Ce fichier gère la connexion, inscription et déconnexion avec Supabase
+
+let supabaseClient = null;
+
+// Initialiser le client Supabase
+function initSupabase(supabaseUrl, supabaseAnonKey) {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.error('Supabase URL ou clé manquante');
+    return null;
+  }
+
+  supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+  // Écouter les changements d'authentification
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    console.log('Auth state changed:', event);
+    updateUserUI(session?.user || null);
+
+    if (event === 'SIGNED_IN') {
+      closeAuthModal();
+      showNotification('Connexion réussie !', 'success');
+    } else if (event === 'SIGNED_OUT') {
+      showNotification('Déconnexion réussie', 'info');
+    }
+  });
+
+  // Vérifier l'état initial
+  checkAuthState();
+
+  return supabaseClient;
+}
+
+// Vérifier l'état d'authentification au chargement
+async function checkAuthState() {
+  if (!supabaseClient) return;
+
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    updateUserUI(session?.user || null);
+  } catch (error) {
+    console.error('Erreur lors de la vérification de la session:', error);
+  }
+}
+
+// Inscription avec email/mot de passe
+async function signUp(email, password, fullName) {
+  if (!supabaseClient) {
+    showNotification('Erreur: Client non initialisé', 'error');
+    return { error: { message: 'Client non initialisé' } };
+  }
+
+  try {
+    setAuthLoading(true);
+
+    const { data, error } = await supabaseClient.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+        }
+      }
+    });
+
+    if (error) {
+      showNotification(translateAuthError(error.message), 'error');
+      return { error };
+    }
+
+    // Vérifier si une confirmation email est nécessaire
+    if (data.user && !data.session) {
+      showNotification('Un email de confirmation a été envoyé. Vérifiez votre boîte de réception.', 'info');
+      closeAuthModal();
+    }
+
+    return { data };
+  } catch (error) {
+    showNotification('Une erreur est survenue', 'error');
+    return { error };
+  } finally {
+    setAuthLoading(false);
+  }
+}
+
+// Connexion avec email/mot de passe
+async function signIn(email, password) {
+  if (!supabaseClient) {
+    showNotification('Erreur: Client non initialisé', 'error');
+    return { error: { message: 'Client non initialisé' } };
+  }
+
+  try {
+    setAuthLoading(true);
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      showNotification(translateAuthError(error.message), 'error');
+      return { error };
+    }
+
+    return { data };
+  } catch (error) {
+    showNotification('Une erreur est survenue', 'error');
+    return { error };
+  } finally {
+    setAuthLoading(false);
+  }
+}
+
+// Connexion avec Google
+async function signInWithGoogle() {
+  if (!supabaseClient) {
+    showNotification('Erreur: Client non initialisé', 'error');
+    return;
+  }
+
+  try {
+    const { data, error } = await supabaseClient.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin
+      }
+    });
+
+    if (error) {
+      showNotification(translateAuthError(error.message), 'error');
+    }
+  } catch (error) {
+    showNotification('Une erreur est survenue', 'error');
+  }
+}
+
+// Connexion avec GitHub
+async function signInWithGitHub() {
+  if (!supabaseClient) {
+    showNotification('Erreur: Client non initialisé', 'error');
+    return;
+  }
+
+  try {
+    const { data, error } = await supabaseClient.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        redirectTo: window.location.origin
+      }
+    });
+
+    if (error) {
+      showNotification(translateAuthError(error.message), 'error');
+    }
+  } catch (error) {
+    showNotification('Une erreur est survenue', 'error');
+  }
+}
+
+// Déconnexion
+async function signOut() {
+  if (!supabaseClient) return;
+
+  try {
+    const { error } = await supabaseClient.auth.signOut();
+    if (error) {
+      showNotification('Erreur lors de la déconnexion', 'error');
+    }
+    // Recharger la page pour réinitialiser l'état
+    window.location.reload();
+  } catch (error) {
+    showNotification('Une erreur est survenue', 'error');
+  }
+}
+
+// Mot de passe oublié
+async function resetPassword(email) {
+  if (!supabaseClient) {
+    showNotification('Erreur: Client non initialisé', 'error');
+    return;
+  }
+
+  try {
+    setAuthLoading(true);
+
+    const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+
+    if (error) {
+      showNotification(translateAuthError(error.message), 'error');
+      return;
+    }
+
+    showNotification('Un email de réinitialisation a été envoyé', 'success');
+    closeAuthModal();
+  } catch (error) {
+    showNotification('Une erreur est survenue', 'error');
+  } finally {
+    setAuthLoading(false);
+  }
+}
+
+// Mettre à jour l'UI utilisateur
+function updateUserUI(user) {
+  const userSection = document.getElementById('user-section');
+  if (!userSection) return;
+
+  if (user) {
+    const displayName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Utilisateur';
+    const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture;
+    const initials = displayName.charAt(0).toUpperCase();
+
+    userSection.innerHTML = `
+      <div class="flex items-center gap-3">
+        ${avatarUrl
+          ? `<img src="${avatarUrl}" alt="${displayName}" class="w-10 h-10 rounded-full object-cover border-2 border-primary-500">`
+          : `<div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-teal-500 flex items-center justify-center text-white font-bold">${initials}</div>`
+        }
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-white truncate">${displayName}</p>
+          <p class="text-xs text-gray-400 truncate">${user.email}</p>
+        </div>
+        <button onclick="signOut()" class="p-2 text-gray-400 hover:text-red-400 transition-colors" title="Se déconnecter">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </button>
+      </div>
+    `;
+  } else {
+    userSection.innerHTML = `
+      <button onclick="openAuthModal()" class="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-white/10 hover:bg-white/20 text-white font-medium rounded-xl transition-all">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M20 21a8 8 0 0 0-16 0"/>
+        </svg>
+        Se connecter
+      </button>
+    `;
+  }
+}
+
+// Ouvrir le modal d'authentification
+function openAuthModal(mode = 'login') {
+  const modal = document.getElementById('authModal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    switchAuthMode(mode);
+  }
+}
+
+// Fermer le modal d'authentification
+function closeAuthModal() {
+  const modal = document.getElementById('authModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    // Réinitialiser les formulaires
+    document.getElementById('loginForm')?.reset();
+    document.getElementById('signupForm')?.reset();
+    document.getElementById('resetForm')?.reset();
+  }
+}
+
+// Changer de mode (login/signup/reset)
+function switchAuthMode(mode) {
+  const loginView = document.getElementById('loginView');
+  const signupView = document.getElementById('signupView');
+  const resetView = document.getElementById('resetView');
+
+  loginView?.classList.add('hidden');
+  signupView?.classList.add('hidden');
+  resetView?.classList.add('hidden');
+
+  if (mode === 'login') {
+    loginView?.classList.remove('hidden');
+  } else if (mode === 'signup') {
+    signupView?.classList.remove('hidden');
+  } else if (mode === 'reset') {
+    resetView?.classList.remove('hidden');
+  }
+}
+
+// Afficher l'état de chargement
+function setAuthLoading(isLoading) {
+  const buttons = document.querySelectorAll('#authModal button[type="submit"]');
+  buttons.forEach(btn => {
+    btn.disabled = isLoading;
+    if (isLoading) {
+      btn.dataset.originalText = btn.innerHTML;
+      btn.innerHTML = `
+        <svg class="animate-spin h-5 w-5 mx-auto" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+        </svg>
+      `;
+    } else if (btn.dataset.originalText) {
+      btn.innerHTML = btn.dataset.originalText;
+    }
+  });
+}
+
+// Traduire les erreurs d'authentification
+function translateAuthError(message) {
+  const translations = {
+    'Invalid login credentials': 'Email ou mot de passe incorrect',
+    'Email not confirmed': 'Veuillez confirmer votre email',
+    'User already registered': 'Un compte existe déjà avec cet email',
+    'Password should be at least 6 characters': 'Le mot de passe doit contenir au moins 6 caractères',
+    'Unable to validate email address: invalid format': 'Format d\'email invalide',
+    'For security purposes, you can only request this once every 60 seconds': 'Veuillez patienter 60 secondes avant de réessayer',
+  };
+
+  return translations[message] || message;
+}
+
+// Afficher une notification
+function showNotification(message, type = 'info') {
+  // Supprimer les notifications existantes
+  document.querySelectorAll('.auth-notification').forEach(el => el.remove());
+
+  const colors = {
+    success: 'bg-green-500',
+    error: 'bg-red-500',
+    info: 'bg-blue-500',
+    warning: 'bg-yellow-500'
+  };
+
+  const notification = document.createElement('div');
+  notification.className = `auth-notification fixed top-4 right-4 z-[9999] px-6 py-3 rounded-xl text-white font-medium shadow-lg ${colors[type]} transform translate-x-full opacity-0 transition-all duration-300`;
+  notification.textContent = message;
+
+  document.body.appendChild(notification);
+
+  // Animation d'entrée
+  setTimeout(() => {
+    notification.classList.remove('translate-x-full', 'opacity-0');
+  }, 10);
+
+  // Animation de sortie
+  setTimeout(() => {
+    notification.classList.add('translate-x-full', 'opacity-0');
+    setTimeout(() => notification.remove(), 300);
+  }, 4000);
+}
+
+// Récupérer l'utilisateur actuel
+function getCurrentUser() {
+  if (!supabaseClient) return null;
+  return supabaseClient.auth.getUser();
+}
+
+// Récupérer la session actuelle
+function getSession() {
+  if (!supabaseClient) return null;
+  return supabaseClient.auth.getSession();
+}
+
+// Exporter les fonctions globalement
+window.initSupabase = initSupabase;
+window.signUp = signUp;
+window.signIn = signIn;
+window.signInWithGoogle = signInWithGoogle;
+window.signInWithGitHub = signInWithGitHub;
+window.signOut = signOut;
+window.resetPassword = resetPassword;
+window.openAuthModal = openAuthModal;
+window.closeAuthModal = closeAuthModal;
+window.switchAuthMode = switchAuthMode;
+window.getCurrentUser = getCurrentUser;
+window.getSession = getSession;
