@@ -7,6 +7,10 @@
     @apply border-gray-200 dark:border-navy-700;
   }
 
+  html, body {
+    @apply overflow-x-hidden;
+  }
+
   body {
     @apply bg-slate-100 text-gray-900 antialiased font-sans;
   }
