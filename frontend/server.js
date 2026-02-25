@@ -213,6 +213,20 @@ app.get('/modelisation', (req, res) => {
   res.render('pages/modelisation', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
 });
 
+// Route de prévisualisation avec données mock (dev/test)
+app.get('/modeling/preview/:type', (req, res) => {
+  const type = req.params.type;
+  const mockDatasets = {
+    iard: { name: 'freMTPL2freq', description: 'French Motor Third-Party Liability — fréquence des sinistres auto.', global_score: 87, source: 'cas', tags: ['iard', 'pricing'], best_fit_models: ['glm_poisson', 'xgboost'], row_count: 678013, column_count: 12, file_size_mb: 45, review_count: 3, source_url: 'https://dutangc.github.io/CASdatasets/', data_dictionary_url: null },
+    reserving: { name: 'CAS Loss Reserving DB', description: 'NAIC Schedule P — triangles de développement pour le provisionnement.', global_score: 82, source: 'cas', tags: ['reserving'], best_fit_models: ['chain_ladder', 'bornhuetter_ferguson'], row_count: 200, column_count: 8, file_size_mb: 2, review_count: 1, source_url: null, data_dictionary_url: null },
+    vie: { name: 'HMD Human Mortality', description: 'Tables de mortalité historiques de 40+ pays depuis le 19ème siècle.', global_score: 95, source: 'insee', tags: ['vie'], best_fit_models: ['kaplan_meier', 'cox'], row_count: 50000, column_count: 6, file_size_mb: 12, review_count: 2, source_url: null, data_dictionary_url: null },
+    fraude: { name: 'Vehicle Claim Fraud', description: 'Détection de fraude dans les sinistres automobiles.', global_score: 74, source: 'kaggle', tags: ['fraude', 'iard'], best_fit_models: ['xgboost', 'logistic'], row_count: 15420, column_count: 33, file_size_mb: 8, review_count: 5, source_url: null, data_dictionary_url: null },
+    sante: { name: 'MEPS Health Expenditure', description: 'Dépenses de santé individuelles aux États-Unis — Medical Expenditure Panel Survey.', global_score: 79, source: 'soa', tags: ['sante'], best_fit_models: ['tweedie', 'xgboost'], row_count: 31880, column_count: 22, file_size_mb: 18, review_count: 0, source_url: null, data_dictionary_url: null }
+  };
+  const dataset = mockDatasets[type] || mockDatasets.iard;
+  res.render('pages/modeling', { dataset, TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
+});
+
 // Modeling specific dataset
 app.get('/modeling/:id', async (req, res, next) => {
   try {

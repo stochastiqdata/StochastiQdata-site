@@ -258,100 +258,687 @@
     </div>
   </div>
 
-  <!-- Section: Exemple de projet -->
+  <!-- Section: Parcours Actuariel A→Z -->
   <div class="card p-6 mb-6">
-    <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center">
+    <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center shrink-0">
         <svg class="w-5 h-5 text-cyan-600 dark:text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-          <line x1="8" y1="21" x2="16" y2="21"/>
-          <line x1="12" y1="17" x2="12" y2="21"/>
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
         </svg>
       </div>
-      Exemple de projet avec ce dataset
+      Parcours actuariel complet — de A à Z
     </h2>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 ml-14">
+      Suivez chaque étape du travail concret d'un actuaire avec ce dataset.
+    </p>
 
-    <!-- Étapes du projet -->
-    <div class="relative">
-      <div class="absolute left-6 top-8 bottom-8 w-0.5 bg-gray-200 dark:bg-navy-600"></div>
+    <%
+      // Définir les étapes selon le type de dataset
+      let workflowSteps = [];
 
-      <div class="space-y-6">
-        <!-- Étape 1 -->
-        <div class="relative flex gap-4">
-          <div class="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center z-10 shrink-0">
-            <span class="text-blue-600 dark:text-blue-400 font-bold">1</span>
-          </div>
-          <div class="flex-1 pt-2">
-            <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Exploration des données</h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              Analysez la structure, les distributions, les valeurs manquantes et les corrélations entre variables.
-            </p>
-            <div class="mt-2 flex flex-wrap gap-2">
-              <span class="text-xs px-2 py-1 rounded-md bg-gray-100 dark:bg-navy-700 text-gray-600 dark:text-gray-400">pandas.describe()</span>
-              <span class="text-xs px-2 py-1 rounded-md bg-gray-100 dark:bg-navy-700 text-gray-600 dark:text-gray-400">seaborn.heatmap()</span>
-            </div>
-          </div>
-        </div>
+      if (isIARD || isPricing) {
+        workflowSteps = [
+          {
+            num: 1,
+            color: 'blue',
+            icon: 'database',
+            title: 'Collecte & Import des données',
+            goal: 'Charger et comprendre la structure brute du dataset.',
+            actions: [
+              'Importer le CSV/Parquet avec pandas',
+              'Vérifier le nombre de lignes, colonnes et types',
+              'Identifier la variable cible (ClaimNb, Exposure)',
+              'Comprendre le dictionnaire des variables'
+            ],
+            tools: ['pandas', 'polars', 'pyarrow'],
+            code: 'df = pd.read_csv("freMTPL2freq.csv")\nprint(df.dtypes)\nprint(df.shape)  # ex: (678013, 12)'
+          },
+          {
+            num: 2,
+            color: 'green',
+            icon: 'filter',
+            title: 'Nettoyage & Préparation',
+            goal: 'Nettoyer et transformer les données pour la modélisation.',
+            actions: [
+              'Traiter les valeurs manquantes (NaN)',
+              'Supprimer ou plafonner les outliers (ex: Exposure > 1)',
+              'Créer la variable réponse : fréquence = ClaimNb / Exposure',
+              'Encoder les variables catégorielles (VehBrand, Region)',
+              'Découper train / test (80/20 par millésime)'
+            ],
+            tools: ['pandas', 'sklearn.preprocessing', 'feature_engine'],
+            code: 'df["Frequency"] = df["ClaimNb"] / df["Exposure"]\ndf = df[df["Exposure"] <= 1]  # Plafonner l\'exposure\ndf["VehBrand"] = df["VehBrand"].astype("category")'
+          },
+          {
+            num: 3,
+            color: 'teal',
+            icon: 'chart',
+            title: 'Analyse Exploratoire (EDA)',
+            goal: 'Comprendre la sinistralité brute avant modélisation.',
+            actions: [
+              'Calculer la fréquence moyenne par segment (âge, région, bonus)',
+              'Tracer les distributions des sinistres et de l\'exposition',
+              'Identifier les corrélations entre features',
+              'Visualiser les outliers avec boxplots',
+              'Analyser le ratio sinistres/primes brut'
+            ],
+            tools: ['matplotlib', 'seaborn', 'plotly'],
+            code: 'freq_by_age = df.groupby("DrivAge")["Frequency"].mean()\nfreq_by_age.plot(kind="bar", title="Fréquence par âge du conducteur")'
+          },
+          {
+            num: 4,
+            color: 'violet',
+            icon: 'model',
+            title: 'Modélisation GLM',
+            goal: 'Estimer la fréquence et la sévérité par GLM.',
+            actions: [
+              'Modèle fréquence : GLM Poisson avec offset = log(Exposure)',
+              'Modèle sévérité : GLM Gamma sur les sinistres non-nuls',
+              'Calculer la prime pure = Fréquence × Sévérité',
+              'Comparer avec XGBoost / GBM en benchmark',
+              'Analyser les coefficients (relativités par variable)'
+            ],
+            tools: ['statsmodels', 'sklearn', 'glum', 'xgboost'],
+            code: 'import statsmodels.api as sm\nglm_freq = sm.GLM(\n  y, X, family=sm.families.Poisson(),\n  offset=np.log(df["Exposure"])\n).fit()\nprint(glm_freq.summary())'
+          },
+          {
+            num: 5,
+            color: 'orange',
+            icon: 'price',
+            title: 'Tarification',
+            goal: 'Construire une grille tarifaire actuarielle.',
+            actions: [
+              'Calculer la prime de référence (profil neutre)',
+              'Extraire les coefficients multiplicatifs par variable',
+              'Construire la grille tarifaire (tableau de relativités)',
+              'Comparer les primes modélisées vs primes marché',
+              'Tester différents scénarios de chargements'
+            ],
+            tools: ['pandas', 'matplotlib', 'openpyxl'],
+            code: '# Relativités par classe d\'âge\nrelativites = np.exp(glm_freq.params)\ngrille = pd.DataFrame({\n  "Variable": X.columns,\n  "Relativite": relativites\n})'
+          },
+          {
+            num: 6,
+            color: 'red',
+            icon: 'validate',
+            title: 'Validation & Monitoring',
+            goal: 'Mesurer la performance et la stabilité du modèle.',
+            actions: [
+              'Calculer Gini, AUC sur le test set',
+              'Tracer la courbe de lift (classement des risques)',
+              'Faire un backtesting sur données hors-période',
+              'Analyser le ratio S/P modélisé vs observé par décile',
+              'Documenter les limites et biais potentiels'
+            ],
+            tools: ['sklearn.metrics', 'SHAP', 'matplotlib'],
+            code: 'from sklearn.metrics import roc_auc_score\ngini = 2 * roc_auc_score(y_test, y_pred) - 1\nprint(f"Gini coefficient: {gini:.4f}")'
+          }
+        ];
+      } else if (isReserving) {
+        workflowSteps = [
+          {
+            num: 1,
+            color: 'blue',
+            icon: 'database',
+            title: 'Import & Construction des triangles',
+            goal: 'Construire les triangles de développement à partir des données brutes.',
+            actions: [
+              'Importer les données de sinistres par année de survenance',
+              'Construire le triangle cumulé (paid claims)',
+              'Construire le triangle incrémental',
+              'Vérifier la cohérence des données'
+            ],
+            tools: ['pandas', 'numpy', 'chainladder'],
+            code: 'import chainladder as cl\ntriangle = cl.Triangle(\n  df, origin="AccidentYear",\n  development="DevelopmentYear", columns="CumPaid"\n)'
+          },
+          {
+            num: 2,
+            color: 'green',
+            icon: 'filter',
+            title: 'Nettoyage & Contrôles qualité',
+            goal: 'Valider la cohérence des données avant modélisation.',
+            actions: [
+              'Vérifier la monotonie des paiements cumulés',
+              'Identifier les anomalies (sinistres rouverts, etc.)',
+              'Traiter les colonnes manquantes (dernières diagonales)',
+              'Valider les totaux par ligne de produit'
+            ],
+            tools: ['pandas', 'numpy'],
+            code: 'print(triangle.sum())\n# Vérifier la cohérence des cumuls\nassert (triangle.diff() >= 0).all()'
+          },
+          {
+            num: 3,
+            color: 'teal',
+            icon: 'chart',
+            title: 'Analyse des développements',
+            goal: 'Comprendre les patterns de développement avant estimation.',
+            actions: [
+              'Calculer les facteurs de développement bruts par colonne',
+              'Visualiser les queues de développement',
+              'Comparer les années de survenance entre elles',
+              'Identifier les effets calendar year (inflation)',
+              'Analyser la queue infinie (tail factor)'
+            ],
+            tools: ['matplotlib', 'chainladder'],
+            code: 'ldf = triangle.link_ratio\nprint(ldf.mean())\ntriangle.plot(kind="link_ratio")'
+          },
+          {
+            num: 4,
+            color: 'violet',
+            icon: 'model',
+            title: 'Méthode Chain Ladder',
+            goal: 'Estimer les provisions IBNR par la méthode de référence.',
+            actions: [
+              'Calculer les facteurs de développement pondérés (LDFs)',
+              'Projeter le triangle jusqu\'à la maturité ultime',
+              'Calculer l\'IBNR = Ultimate - Reported',
+              'Calculer le Best Estimate total',
+              'Valider avec la méthode de Mack (intervalles de confiance)'
+            ],
+            tools: ['chainladder', 'numpy'],
+            code: 'dev = cl.Development().fit(triangle)\ncl_model = cl.Chainladder().fit(dev.transform(triangle))\nibnr = cl_model.ibnr_\nprint(f"IBNR total: {ibnr.sum().values[0,0]:,.0f}")'
+          },
+          {
+            num: 5,
+            color: 'orange',
+            icon: 'price',
+            title: 'Méthodes alternatives (BF, Cape Cod)',
+            goal: 'Comparer les estimations pour robustifier le Best Estimate.',
+            actions: [
+              'Appliquer la méthode Bornhuetter-Ferguson (a priori + développements)',
+              'Utiliser Cape Cod pour estimer le ratio de sinistralité',
+              'Comparer les 3 estimations (CL, BF, CC) par ligne de produit',
+              'Constituer une provision prudentielle (Risk Margin)'
+            ],
+            tools: ['chainladder'],
+            code: 'bf = cl.BornhuetterFerguson(apriori=0.65).fit(\n  dev.transform(triangle)\n)\nprint(bf.ibnr_.sum())'
+          },
+          {
+            num: 6,
+            color: 'red',
+            icon: 'validate',
+            title: 'Validation & Reporting',
+            goal: 'Tester la robustesse et documenter pour le reporting réglementaire.',
+            actions: [
+              'Backtesting sur données antérieures (year cut-off test)',
+              'Calculer l\'incertitude via bootstrap (Mack / ODP)',
+              'Comparer avec les provisions comptables',
+              'Préparer le rapport SII (ORSA / SCR provisions)',
+              'Documenter les hypothèses et sensibilités'
+            ],
+            tools: ['chainladder', 'scipy', 'openpyxl'],
+            code: 'mack = cl.MackChainladder().fit(dev.transform(triangle))\nprint(f"CV: {mack.total_mack_cv_:.2%}")\nprint(f"75th pct: {mack.total_process_risk_ + mack.ibnr_.sum():,.0f}")'
+          }
+        ];
+      } else if (isVie) {
+        workflowSteps = [
+          {
+            num: 1,
+            color: 'blue',
+            icon: 'database',
+            title: 'Import des données de mortalité',
+            goal: 'Charger les tables ou données brutes de mortalité.',
+            actions: [
+              'Importer les données (tables HMD, INSEE, SOA)',
+              'Identifier les variables : âge, sexe, année, décès, exposés',
+              'Vérifier la cohérence (Dx ≤ Ex pour tout âge)',
+              'Normaliser la structure temporelle'
+            ],
+            tools: ['pandas', 'numpy', 'lifelines'],
+            code: 'df = pd.read_csv("mortality_data.csv")\ndf["qx"] = df["Deaths"] / df["Exposure"]\nprint(df.groupby("Age")["qx"].mean())'
+          },
+          {
+            num: 2,
+            color: 'green',
+            icon: 'filter',
+            title: 'Nettoyage & Traitement des censures',
+            goal: 'Gérer les observations censurées (sortie sans décès).',
+            actions: [
+              'Identifier les individus censurés (contrats terminés vivants)',
+              'Calculer l\'exposition correcte (fraction d\'année)',
+              'Traiter les ages extrêmes (fermeture de tables)',
+              'Homogénéiser les tranches d\'âge'
+            ],
+            tools: ['lifelines', 'pandas'],
+            code: 'from lifelines import KaplanMeierFitter\nkmf = KaplanMeierFitter()\nkmf.fit(T=df["duration"], event_observed=df["event"])'
+          },
+          {
+            num: 3,
+            color: 'teal',
+            icon: 'chart',
+            title: 'Analyse de Survie (EDA)',
+            goal: 'Visualiser les probabilités de survie brutes avant lissage.',
+            actions: [
+              'Tracer les courbes Kaplan-Meier par âge et sexe',
+              'Comparer mortalité observée vs table de référence',
+              'Calculer les SMR (Standardized Mortality Ratios)',
+              'Analyser l\'effet cohorte vs effet période'
+            ],
+            tools: ['lifelines', 'matplotlib', 'seaborn'],
+            code: 'kmf.plot_survival_function()\nplt.title("Courbe de survie - Kaplan-Meier")\nsmr = df["Deaths"].sum() / (df["Exposure"] * qx_ref).sum()'
+          },
+          {
+            num: 4,
+            color: 'violet',
+            icon: 'model',
+            title: 'Construction de la table de mortalité',
+            goal: 'Estimer les qx ajustés par âge et cohorte.',
+            actions: [
+              'Estimer les qx bruts par âge (méthode des exposés centraux)',
+              'Lisser la courbe qx (loi de Makeham, Perks, ou splines)',
+              'Modèle de Cox pour les facteurs de risque',
+              'Projeter la mortalité future (modèle Lee-Carter ou CBD)'
+            ],
+            tools: ['statsmodels', 'lifelines', 'scipy'],
+            code: 'from lifelines import CoxPHFitter\ncph = CoxPHFitter()\ncph.fit(df, duration_col="duration",\n  event_col="event", formula="age + gender")\ncph.print_summary()'
+          },
+          {
+            num: 5,
+            color: 'orange',
+            icon: 'price',
+            title: 'Projections & Best Estimate',
+            goal: 'Projeter la mortalité future et calculer les provisions.',
+            actions: [
+              'Appliquer Lee-Carter pour les tendances de mortalité',
+              'Calculer l\'espérance de vie aux différents âges',
+              'Estimer les provisions mathématiques : PM = Σ CF_t × v^t',
+              'Analyser la sensibilité aux hypothèses de mortalité'
+            ],
+            tools: ['numpy', 'pandas', 'scipy'],
+            code: '# Provision mathématique (vie entière)\ndef calcul_pm(qx_table, i, capital):\n  v = 1 / (1 + i)\n  ax = sum([np.prod(1-qx_table[:t]) * v**t for t in range(len(qx_table))])\n  return capital * ax'
+          },
+          {
+            num: 6,
+            color: 'red',
+            icon: 'validate',
+            title: 'Validation & Tests de sensibilité',
+            goal: 'Tester la robustesse des hypothèses actuarielles.',
+            actions: [
+              'Comparer provisions avec différentes tables (TGH05, TF00)',
+              'Tester la sensibilité au taux d\'actualisation ±100bp',
+              'Analyser le risque de longévité (scénarios choc SII)',
+              'Backtesting sur données historiques'
+            ],
+            tools: ['numpy', 'scipy', 'matplotlib'],
+            code: '# Analyse de sensibilité au taux\nfor taux in [0.01, 0.02, 0.03, 0.04]:\n  pm = calcul_pm(qx_table, taux, 100000)\n  print(f"i={taux:.0%} → PM = {pm:,.0f} €")'
+          }
+        ];
+      } else if (isFraude) {
+        workflowSteps = [
+          {
+            num: 1,
+            color: 'blue',
+            icon: 'database',
+            title: 'Import & Analyse du déséquilibre',
+            goal: 'Comprendre la structure des données et le ratio fraude/non-fraude.',
+            actions: [
+              'Importer le dataset de sinistres',
+              'Calculer le taux de fraude (souvent < 5%)',
+              'Analyser les variables disponibles',
+              'Identifier les features discriminantes potentielles'
+            ],
+            tools: ['pandas', 'numpy'],
+            code: 'taux_fraude = df["Fraud"].mean()\nprint(f"Taux de fraude: {taux_fraude:.2%}")\n# Souvent 2-8% → problème de déséquilibre!'
+          },
+          {
+            num: 2,
+            color: 'green',
+            icon: 'filter',
+            title: 'Feature Engineering anti-fraude',
+            goal: 'Créer des signaux forts pour distinguer fraude et honnêteté.',
+            actions: [
+              'Calculer le délai déclaration - sinistre',
+              'Créer des features comportementales (historique client)',
+              'Encoder les variables catégorielles (target encoding)',
+              'Créer des interactions entre variables clés',
+              'Normaliser les montants (log-transformation)'
+            ],
+            tools: ['pandas', 'feature_engine', 'category_encoders'],
+            code: 'df["delai_declaration"] = (\n  df["ClaimDate"] - df["AccidentDate"]\n).dt.days\ndf["log_montant"] = np.log1p(df["ClaimAmount"])'
+          },
+          {
+            num: 3,
+            color: 'teal',
+            icon: 'chart',
+            title: 'EDA — Patterns de fraude',
+            goal: 'Visualiser les patterns qui distinguent les fraudes.',
+            actions: [
+              'Comparer les distributions fraude vs non-fraude par variable',
+              'Identifier les segments à risque élevé',
+              'Analyser les corrélations avec la cible',
+              'Cartographier la fraude géographiquement'
+            ],
+            tools: ['seaborn', 'matplotlib', 'plotly'],
+            code: 'import seaborn as sns\nsns.boxplot(x="Fraud", y="delai_declaration", data=df)\n# Les fraudes ont souvent un délai plus long!'
+          },
+          {
+            num: 4,
+            color: 'violet',
+            icon: 'model',
+            title: 'Modélisation & Gestion du déséquilibre',
+            goal: 'Entraîner des modèles avec rééchantillonnage adapté.',
+            actions: [
+              'Appliquer SMOTE pour rééquilibrer les classes',
+              'Entraîner : Logistic Regression (baseline), XGBoost, LightGBM',
+              'Optimiser les hyperparamètres (Optuna/GridSearch)',
+              'Utiliser class_weight=\'balanced\' ou scale_pos_weight',
+              'Construire un score de fraude [0, 1]'
+            ],
+            tools: ['imbalanced-learn', 'xgboost', 'lightgbm', 'sklearn'],
+            code: 'from imblearn.over_sampling import SMOTE\nX_res, y_res = SMOTE().fit_resample(X_train, y_train)\nmodel = XGBClassifier(scale_pos_weight=10).fit(X_res, y_res)'
+          },
+          {
+            num: 5,
+            color: 'orange',
+            icon: 'price',
+            title: 'Calibration du seuil de décision',
+            goal: 'Choisir le seuil optimal selon le coût métier.',
+            actions: [
+              'Tracer la courbe Precision/Recall',
+              'Calculer le F-beta score (β selon priorité)',
+              'Modéliser le coût : faux positif (rejet abusif) vs faux négatif (fraude acceptée)',
+              'Fixer le seuil de déclenchement alerte',
+              'Construire le barème de priorité (faible / moyen / fort risque)'
+            ],
+            tools: ['sklearn.metrics', 'matplotlib'],
+            code: 'from sklearn.metrics import precision_recall_curve\np, r, thresholds = precision_recall_curve(y_test, y_scores)\n# Choisir threshold qui maximise F2 (rappel prioritaire)\nf2 = (5*p*r) / (4*p + r)'
+          },
+          {
+            num: 6,
+            color: 'red',
+            icon: 'validate',
+            title: 'Déploiement & Monitoring',
+            goal: 'Intégrer le score fraude dans le workflow de gestion des sinistres.',
+            actions: [
+              'Exporter le modèle (joblib / ONNX)',
+              'Créer un pipeline de scoring en temps réel',
+              'Mettre en place le monitoring du modèle (drift détection)',
+              'Définir les règles de ré-entraînement',
+              'Mesurer l\'impact business (fraudes détectées × montant moyen)'
+            ],
+            tools: ['joblib', 'mlflow', 'evidently'],
+            code: 'import joblib\njoblib.dump(model, "fraud_scorer_v1.pkl")\n# Scoring en production\nscore = model.predict_proba(new_claim)[:, 1]'
+          }
+        ];
+      } else if (isSante) {
+        workflowSteps = [
+          {
+            num: 1,
+            color: 'blue',
+            icon: 'database',
+            title: 'Import des données de santé',
+            goal: 'Charger et comprendre les données de consommation de soins.',
+            actions: [
+              'Importer les données MEPS / PMSI / bases remboursements',
+              'Identifier les unités : individu, acte, séjour',
+              'Vérifier les clés de jointure entre tables',
+              'Comprendre la codification (CIM-10, CCAM, GHM)'
+            ],
+            tools: ['pandas', 'pyarrow', 'duckdb'],
+            code: 'df = pd.read_parquet("meps_health_data.parquet")\nprint(df.groupby("PANEL")["TOTEXP"].describe())'
+          },
+          {
+            num: 2,
+            color: 'green',
+            icon: 'filter',
+            title: 'Nettoyage & Segmentation',
+            goal: 'Préparer les données pour la modélisation des coûts.',
+            actions: [
+              'Traiter les valeurs manquantes (coûts non renseignés)',
+              'Plafonner les grands sinistres (franchise haute)',
+              'Créer des segments démographiques (âge, sexe, région)',
+              'Calculer le coût annuel par bénéficiaire',
+              'Séparer fréquence de recours et coût moyen'
+            ],
+            tools: ['pandas', 'sklearn'],
+            code: 'df["cout_annuel"] = df.groupby("ID")["TOTEXP"].transform("sum")\ncap_99 = df["TOTEXP"].quantile(0.99)\ndf["TOTEXP_cap"] = df["TOTEXP"].clip(upper=cap_99)'
+          },
+          {
+            num: 3,
+            color: 'teal',
+            icon: 'chart',
+            title: 'EDA — Profils de consommation',
+            goal: 'Identifier les segments et drivers des dépenses de santé.',
+            actions: [
+              'Analyser les dépenses par âge, sexe, pathologie',
+              'Tracer la courbe de concentration (Lorenz)',
+              'Identifier les "gros consommateurs" (top 10% = 70% des coûts)',
+              'Analyser la saisonnalité des recours',
+              'Cartographier les disparités géographiques'
+            ],
+            tools: ['seaborn', 'plotly', 'matplotlib'],
+            code: 'cout_by_age = df.groupby("AGE")["cout_annuel"].mean()\ncout_by_age.plot(title="Coût moyen par âge")\n# Courbe en J typique de l\'assurance santé'
+          },
+          {
+            num: 4,
+            color: 'violet',
+            icon: 'model',
+            title: 'Modélisation des coûts de santé',
+            goal: 'Prédire les dépenses individuelles par modèle à deux parties.',
+            actions: [
+              'Modèle 1 : probabilité de recours (logistique)',
+              'Modèle 2 : coût conditionnel si recours (GLM Gamma ou Tweedie)',
+              'Ou modèle Tweedie unifié (fréquence × sévérité)',
+              'Comparer avec Random Forest et XGBoost',
+              'Calculer la prime pure individuelle'
+            ],
+            tools: ['statsmodels', 'sklearn', 'xgboost'],
+            code: 'from sklearn.linear_model import TweedieRegressor\nglm = TweedieRegressor(power=1.5, alpha=0.1)\nglm.fit(X_train, y_train)\n# power=1.5 → entre Poisson (1) et Gamma (2)'
+          },
+          {
+            num: 5,
+            color: 'orange',
+            icon: 'price',
+            title: 'Tarification & Chargements',
+            goal: 'Construire le tarif collectif ou individuel.',
+            actions: [
+              'Calculer la prime de référence (coût attendu moyen)',
+              'Appliquer les chargements (frais de gestion, profit)',
+              'Analyser l\'anti-sélection potentielle',
+              'Comparer avec les tarifs du marché',
+              'Tester la soutenabilité financière du régime'
+            ],
+            tools: ['pandas', 'numpy'],
+            code: 'prime_pure = glm.predict(X_test)\nchargement = 1.20  # 20% de chargements\nprime_commerciale = prime_pure * chargement'
+          },
+          {
+            num: 6,
+            color: 'red',
+            icon: 'validate',
+            title: 'Validation & Équilibre technique',
+            goal: 'Vérifier l\'équilibre du portefeuille et la robustesse du modèle.',
+            actions: [
+              'Calculer le ratio S/P modélisé vs observé par segment',
+              'Tester sur données hors-période',
+              'Analyser l\'impact d\'un vieillissement du portefeuille',
+              'Stress-test : impact d\'une pandémie (+20% de recours)',
+              'Documenter les limites du modèle'
+            ],
+            tools: ['sklearn.metrics', 'SHAP', 'scipy'],
+            code: 'ratio_sp = y_test.sum() / glm.predict(X_test).sum()\nprint(f"Ratio S/P: {ratio_sp:.2%}")  # Cible ≈ 100%'
+          }
+        ];
+      } else {
+        // Générique
+        workflowSteps = [
+          {
+            num: 1, color: 'blue', icon: 'database',
+            title: 'Collecte & Import',
+            goal: 'Charger les données et comprendre leur structure.',
+            actions: ['Importer le dataset', 'Analyser les types et dimensions', 'Identifier la variable cible'],
+            tools: ['pandas', 'numpy'], code: 'df = pd.read_csv("dataset.csv")\nprint(df.shape, df.dtypes)'
+          },
+          {
+            num: 2, color: 'green', icon: 'filter',
+            title: 'Nettoyage & Préparation',
+            goal: 'Traiter les valeurs manquantes et outliers.',
+            actions: ['Gérer les NaN', 'Supprimer les outliers', 'Encoder les catégories'],
+            tools: ['pandas', 'sklearn.preprocessing'], code: 'df.fillna(df.median())\ndf = df[df["value"] < df["value"].quantile(0.99)]'
+          },
+          {
+            num: 3, color: 'teal', icon: 'chart',
+            title: 'Analyse Exploratoire (EDA)',
+            goal: 'Comprendre les distributions et corrélations.',
+            actions: ['Statistiques descriptives', 'Matrices de corrélation', 'Visualisations'],
+            tools: ['seaborn', 'matplotlib', 'plotly'], code: 'import seaborn as sns\nsns.heatmap(df.corr(), annot=True)\ndf.describe()'
+          },
+          {
+            num: 4, color: 'violet', icon: 'model',
+            title: 'Modélisation',
+            goal: 'Entraîner et comparer plusieurs modèles.',
+            actions: ['Choisir les features', 'Entraîner baseline', 'Optimiser les hyperparamètres'],
+            tools: ['sklearn', 'xgboost', 'statsmodels'], code: 'from sklearn.ensemble import GradientBoostingRegressor\nmodel = GradientBoostingRegressor().fit(X_train, y_train)'
+          },
+          {
+            num: 5, color: 'orange', icon: 'price',
+            title: 'Évaluation des performances',
+            goal: 'Mesurer la qualité des prédictions avec les bonnes métriques.',
+            actions: ['Calculer RMSE, MAE, Gini', 'Courbes de lift', 'SHAP pour l\'interprétabilité'],
+            tools: ['sklearn.metrics', 'SHAP'], code: 'from sklearn.metrics import mean_squared_error\nrmse = mean_squared_error(y_test, y_pred, squared=False)'
+          },
+          {
+            num: 6, color: 'red', icon: 'validate',
+            title: 'Documentation & Déploiement',
+            goal: 'Documenter et industrialiser le modèle.',
+            actions: ['Rédiger le rapport technique', 'Exporter le modèle', 'Mettre en place le monitoring'],
+            tools: ['joblib', 'mlflow', 'FastAPI'], code: 'import joblib\njoblib.dump(model, "model_v1.pkl")'
+          }
+        ];
+      }
 
-        <!-- Étape 2 -->
-        <div class="relative flex gap-4">
-          <div class="w-12 h-12 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center z-10 shrink-0">
-            <span class="text-green-600 dark:text-green-400 font-bold">2</span>
-          </div>
-          <div class="flex-1 pt-2">
-            <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Préparation & Feature Engineering</h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              Nettoyez les données, créez de nouvelles variables et préparez les features pour la modélisation.
-            </p>
-            <div class="mt-2 flex flex-wrap gap-2">
-              <span class="text-xs px-2 py-1 rounded-md bg-gray-100 dark:bg-navy-700 text-gray-600 dark:text-gray-400">sklearn.preprocessing</span>
-              <span class="text-xs px-2 py-1 rounded-md bg-gray-100 dark:bg-navy-700 text-gray-600 dark:text-gray-400">feature_engine</span>
-            </div>
-          </div>
-        </div>
+      const stepColors = {
+        blue:   { bg: 'bg-blue-100 dark:bg-blue-900/30',   text: 'text-blue-600 dark:text-blue-400',   badge: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800', tag: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' },
+        green:  { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-600 dark:text-green-400', badge: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800', tag: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' },
+        teal:   { bg: 'bg-teal-100 dark:bg-teal-900/30',   text: 'text-teal-600 dark:text-teal-400',   badge: 'bg-teal-50 dark:bg-teal-900/20 border-teal-200 dark:border-teal-800', tag: 'bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300' },
+        violet: { bg: 'bg-violet-100 dark:bg-violet-900/30', text: 'text-violet-600 dark:text-violet-400', badge: 'bg-violet-50 dark:bg-violet-900/20 border-violet-200 dark:border-violet-800', tag: 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300' },
+        orange: { bg: 'bg-orange-100 dark:bg-orange-900/30', text: 'text-orange-600 dark:text-orange-400', badge: 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800', tag: 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300' },
+        red:    { bg: 'bg-red-100 dark:bg-red-900/30',     text: 'text-red-600 dark:text-red-400',     badge: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800', tag: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300' }
+      };
+    %>
 
-        <!-- Étape 3 -->
-        <div class="relative flex gap-4">
-          <div class="w-12 h-12 rounded-xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center z-10 shrink-0">
-            <span class="text-violet-600 dark:text-violet-400 font-bold">3</span>
-          </div>
-          <div class="flex-1 pt-2">
-            <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Modélisation</h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              Entraînez plusieurs modèles, optimisez les hyperparamètres et comparez les performances.
-            </p>
-            <div class="mt-2 flex flex-wrap gap-2">
-              <% if (dataset.best_fit_models && dataset.best_fit_models.length > 0) { %>
-                <% dataset.best_fit_models.slice(0, 3).forEach(model => { %>
-                  <span class="text-xs px-2 py-1 rounded-md bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400"><%= MODEL_LABELS[model] || model %></span>
-                <% }); %>
-              <% } else { %>
-                <span class="text-xs px-2 py-1 rounded-md bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400">scikit-learn</span>
-                <span class="text-xs px-2 py-1 rounded-md bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400">statsmodels</span>
-              <% } %>
-            </div>
-          </div>
-        </div>
-
-        <!-- Étape 4 -->
-        <div class="relative flex gap-4">
-          <div class="w-12 h-12 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center z-10 shrink-0">
-            <span class="text-orange-600 dark:text-orange-400 font-bold">4</span>
-          </div>
-          <div class="flex-1 pt-2">
-            <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Évaluation & Interprétation</h3>
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              Évaluez les performances avec les métriques adaptées et interprétez les résultats métier.
-            </p>
-            <div class="mt-2 flex flex-wrap gap-2">
-              <span class="text-xs px-2 py-1 rounded-md bg-gray-100 dark:bg-navy-700 text-gray-600 dark:text-gray-400">Gini / AUC</span>
-              <span class="text-xs px-2 py-1 rounded-md bg-gray-100 dark:bg-navy-700 text-gray-600 dark:text-gray-400">RMSE / MAE</span>
-              <span class="text-xs px-2 py-1 rounded-md bg-gray-100 dark:bg-navy-700 text-gray-600 dark:text-gray-400">SHAP</span>
-            </div>
-          </div>
-        </div>
-      </div>
+    <!-- Barre de progression des étapes -->
+    <div class="flex items-center gap-1 mb-8 overflow-x-auto pb-2">
+      <% workflowSteps.forEach((step, idx) => { %>
+        <% const sc = stepColors[step.color]; %>
+        <button
+          onclick="scrollToStep(<%= step.num %>)"
+          class="flex items-center gap-2 px-3 py-1.5 rounded-lg <%= sc.bg %> <%= sc.text %> text-xs font-semibold shrink-0 hover:opacity-80 transition-opacity cursor-pointer border-0 bg-transparent"
+        >
+          <span class="w-5 h-5 rounded-full <%= sc.bg %> flex items-center justify-center text-xs font-bold"><%= step.num %></span>
+          <span class="hidden sm:inline"><%= step.title.split(' ').slice(0, 2).join(' ') %></span>
+        </button>
+        <% if (idx < workflowSteps.length - 1) { %>
+          <svg class="w-3 h-3 text-gray-300 dark:text-navy-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+        <% } %>
+      <% }); %>
     </div>
+
+    <!-- Étapes détaillées -->
+    <div class="space-y-4">
+      <% workflowSteps.forEach((step) => { %>
+        <% const sc = stepColors[step.color]; %>
+        <div id="step-<%= step.num %>" class="rounded-2xl border border-gray-200 dark:border-navy-700 overflow-hidden">
+
+          <!-- En-tête cliquable -->
+          <button
+            onclick="toggleStep(<%= step.num %>)"
+            class="w-full flex items-center gap-4 p-4 sm:p-5 text-left hover:bg-gray-50 dark:hover:bg-navy-700/50 transition-colors"
+          >
+            <!-- Numéro -->
+            <div class="w-11 h-11 rounded-xl <%= sc.bg %> flex items-center justify-center shrink-0">
+              <span class="<%= sc.text %> font-bold text-lg"><%= step.num %></span>
+            </div>
+
+            <!-- Titre + objectif -->
+            <div class="flex-1 min-w-0">
+              <h3 class="font-bold text-gray-900 dark:text-white text-sm sm:text-base"><%= step.title %></h3>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate"><%= step.goal %></p>
+            </div>
+
+            <!-- Outils pills (desktop) -->
+            <div class="hidden md:flex items-center gap-1.5 shrink-0">
+              <% step.tools.slice(0, 2).forEach(tool => { %>
+                <span class="text-xs px-2 py-0.5 rounded-md <%= sc.tag %>"><%= tool %></span>
+              <% }); %>
+            </div>
+
+            <!-- Chevron -->
+            <svg id="chevron-<%= step.num %>" class="w-5 h-5 text-gray-400 shrink-0 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="m6 9 6 6 6-6"/>
+            </svg>
+          </button>
+
+          <!-- Contenu dépliable -->
+          <div id="content-<%= step.num %>" class="hidden border-t border-gray-100 dark:border-navy-700">
+            <div class="p-4 sm:p-5 grid md:grid-cols-2 gap-5">
+
+              <!-- Actions concrètes -->
+              <div>
+                <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3">Actions concrètes</h4>
+                <ul class="space-y-2">
+                  <% step.actions.forEach(action => { %>
+                    <li class="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
+                      <svg class="w-4 h-4 <%= sc.text %> mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                      <%= action %>
+                    </li>
+                  <% }); %>
+                </ul>
+
+                <!-- Outils -->
+                <div class="mt-4">
+                  <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Librairies & outils</h4>
+                  <div class="flex flex-wrap gap-2">
+                    <% step.tools.forEach(tool => { %>
+                      <span class="text-xs px-2.5 py-1 rounded-lg <%= sc.tag %> font-mono"><%= tool %></span>
+                    <% }); %>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Code snippet -->
+              <div>
+                <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3">Exemple de code</h4>
+                <div class="rounded-xl bg-gray-900 dark:bg-navy-950 p-4 overflow-x-auto">
+                  <pre class="text-xs text-green-400 font-mono leading-relaxed whitespace-pre"><%= step.code %></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+
+    <!-- Script accordéon -->
+    <script>
+      function toggleStep(num) {
+        const content = document.getElementById('content-' + num);
+        const chevron = document.getElementById('chevron-' + num);
+        if (content.classList.contains('hidden')) {
+          content.classList.remove('hidden');
+          chevron.style.transform = 'rotate(180deg)';
+        } else {
+          content.classList.add('hidden');
+          chevron.style.transform = 'rotate(0deg)';
+        }
+      }
+      function scrollToStep(num) {
+        const el = document.getElementById('step-' + num);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          // Ouvrir l'étape si fermée
+          const content = document.getElementById('content-' + num);
+          if (content && content.classList.contains('hidden')) {
+            toggleStep(num);
+          }
+        }
+      }
+      // Ouvrir la première étape par défaut
+      document.addEventListener('DOMContentLoaded', () => toggleStep(1));
+    </script>
   </div>
 
   <!-- Modèles recommandés -->
