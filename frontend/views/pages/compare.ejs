@@ -1,0 +1,198 @@
+<div class="max-w-5xl mx-auto px-4 py-8">
+
+  <!-- En-tête -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Comparateur de Datasets</h1>
+    <p class="text-gray-500 dark:text-gray-400 text-sm">Comparez deux datasets côte à côte — scores, métadonnées, variables et modèles recommandés.</p>
+  </div>
+
+  <!-- Sélection des deux datasets -->
+  <div class="card p-6 mb-8">
+    <form method="GET" action="/compare" class="grid md:grid-cols-2 gap-6">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Dataset A</label>
+        <select name="a" class="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-navy-700 bg-white dark:bg-navy-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+          <option value="">-- Choisir un dataset --</option>
+          <% allDatasets.forEach(function(ds) { %>
+            <option value="<%= ds.id %>" <%= datasetA && datasetA.id === ds.id ? 'selected' : '' %>>
+              <%= ds.name %>
+            </option>
+          <% }); %>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Dataset B</label>
+        <select name="b" class="w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-navy-700 bg-white dark:bg-navy-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+          <option value="">-- Choisir un dataset --</option>
+          <% allDatasets.forEach(function(ds) { %>
+            <option value="<%= ds.id %>" <%= datasetB && datasetB.id === ds.id ? 'selected' : '' %>>
+              <%= ds.name %>
+            </option>
+          <% }); %>
+        </select>
+      </div>
+      <div class="md:col-span-2 flex justify-center">
+        <button type="submit" class="px-6 py-2.5 rounded-xl bg-primary-500 hover:bg-primary-600 text-white font-medium text-sm transition-colors">
+          Comparer →
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <% if (datasetA && datasetB) { %>
+
+  <!-- Comparaison côte à côte -->
+
+  <!-- Noms & Scores -->
+  <div class="grid md:grid-cols-2 gap-6 mb-6">
+    <% [datasetA, datasetB].forEach(function(ds, idx) { %>
+    <div class="card p-6">
+      <div class="flex items-start justify-between mb-3">
+        <span class="text-xs font-bold px-2 py-0.5 rounded-full <%= idx === 0 ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300' %>">
+          Dataset <%= idx === 0 ? 'A' : 'B' %>
+        </span>
+        <span class="text-2xl font-bold <%= (ds.global_score || 0) >= 80 ? 'text-green-500' : (ds.global_score || 0) >= 60 ? 'text-amber-500' : 'text-red-500' %>">
+          <%= ds.global_score || '—' %>/100
+        </span>
+      </div>
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-1"><%= ds.name %></h2>
+      <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2"><%= ds.description || '—' %></p>
+    </div>
+    <% }); %>
+  </div>
+
+  <!-- Métadonnées -->
+  <div class="card p-6 mb-6">
+    <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 uppercase tracking-wide">Métadonnées</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-gray-200 dark:border-navy-700">
+            <th class="py-2 text-left text-xs text-gray-400 font-medium w-1/3">Critère</th>
+            <th class="py-2 text-center text-xs text-blue-500 font-semibold"><%= datasetA.name %></th>
+            <th class="py-2 text-center text-xs text-violet-500 font-semibold"><%= datasetB.name %></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-navy-700">
+          <tr>
+            <td class="py-2.5 text-gray-500 dark:text-gray-400 text-xs">Lignes</td>
+            <td class="py-2.5 text-center font-mono text-xs font-semibold text-gray-900 dark:text-white"><%= datasetA.row_count ? datasetA.row_count.toLocaleString('fr-FR') : '—' %></td>
+            <td class="py-2.5 text-center font-mono text-xs font-semibold text-gray-900 dark:text-white"><%= datasetB.row_count ? datasetB.row_count.toLocaleString('fr-FR') : '—' %></td>
+          </tr>
+          <tr>
+            <td class="py-2.5 text-gray-500 dark:text-gray-400 text-xs">Colonnes</td>
+            <td class="py-2.5 text-center font-mono text-xs font-semibold text-gray-900 dark:text-white"><%= datasetA.column_count || '—' %></td>
+            <td class="py-2.5 text-center font-mono text-xs font-semibold text-gray-900 dark:text-white"><%= datasetB.column_count || '—' %></td>
+          </tr>
+          <tr>
+            <td class="py-2.5 text-gray-500 dark:text-gray-400 text-xs">Taille</td>
+            <td class="py-2.5 text-center font-mono text-xs font-semibold text-gray-900 dark:text-white"><%= datasetA.file_size_mb ? datasetA.file_size_mb + ' MB' : '—' %></td>
+            <td class="py-2.5 text-center font-mono text-xs font-semibold text-gray-900 dark:text-white"><%= datasetB.file_size_mb ? datasetB.file_size_mb + ' MB' : '—' %></td>
+          </tr>
+          <tr>
+            <td class="py-2.5 text-gray-500 dark:text-gray-400 text-xs">Source</td>
+            <td class="py-2.5 text-center text-xs text-gray-700 dark:text-gray-300"><%= datasetA.source || '—' %></td>
+            <td class="py-2.5 text-center text-xs text-gray-700 dark:text-gray-300"><%= datasetB.source || '—' %></td>
+          </tr>
+          <tr>
+            <td class="py-2.5 text-gray-500 dark:text-gray-400 text-xs">Avis</td>
+            <td class="py-2.5 text-center font-mono text-xs font-semibold text-gray-900 dark:text-white"><%= datasetA.review_count || 0 %></td>
+            <td class="py-2.5 text-center font-mono text-xs font-semibold text-gray-900 dark:text-white"><%= datasetB.review_count || 0 %></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Score visuel -->
+  <div class="card p-6 mb-6">
+    <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 uppercase tracking-wide">Score comparé</h3>
+    <canvas id="chart-compare-score" height="100"></canvas>
+  </div>
+
+  <!-- Tags -->
+  <div class="grid md:grid-cols-2 gap-6 mb-6">
+    <% [datasetA, datasetB].forEach(function(ds, idx) { %>
+    <div class="card p-5">
+      <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+        Tags — Dataset <%= idx === 0 ? 'A' : 'B' %>
+      </h3>
+      <div class="flex flex-wrap gap-2">
+        <% (ds.tags || []).forEach(function(tag) { %>
+          <span class="tag tag-<%= tag %> text-xs"><%= TAG_LABELS[tag] || tag %></span>
+        <% }); %>
+        <% if (!(ds.tags && ds.tags.length)) { %>
+          <span class="text-xs text-gray-400">Aucun tag</span>
+        <% } %>
+      </div>
+    </div>
+    <% }); %>
+  </div>
+
+  <!-- Modèles recommandés -->
+  <div class="grid md:grid-cols-2 gap-6 mb-6">
+    <% [datasetA, datasetB].forEach(function(ds, idx) { %>
+    <div class="card p-5">
+      <h3 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">
+        Modèles recommandés — Dataset <%= idx === 0 ? 'A' : 'B' %>
+      </h3>
+      <div class="flex flex-wrap gap-2">
+        <% (ds.best_fit_models || []).forEach(function(m) { %>
+          <span class="px-2 py-0.5 rounded text-xs bg-gray-100 dark:bg-navy-700 text-gray-700 dark:text-gray-300 font-mono"><%= MODEL_LABELS[m] || m %></span>
+        <% }); %>
+        <% if (!(ds.best_fit_models && ds.best_fit_models.length)) { %>
+          <span class="text-xs text-gray-400">Non renseigné</span>
+        <% } %>
+      </div>
+    </div>
+    <% }); %>
+  </div>
+
+  <!-- Liens -->
+  <div class="flex justify-center gap-4">
+    <a href="/modeling/<%= datasetA.id %>" class="px-5 py-2 rounded-xl border border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-400 text-sm hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
+      Voir Dataset A →
+    </a>
+    <a href="/modeling/<%= datasetB.id %>" class="px-5 py-2 rounded-xl border border-violet-300 dark:border-violet-700 text-violet-600 dark:text-violet-400 text-sm hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-colors">
+      Voir Dataset B →
+    </a>
+  </div>
+
+  <script>
+  (function() {
+    var isDark = document.documentElement.classList.contains('dark');
+    var tick = isDark ? '#94a3b8' : '#64748b';
+    var grid = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
+    new Chart(document.getElementById('chart-compare-score'), {
+      type: 'bar',
+      data: {
+        labels: ['Score global'],
+        datasets: [
+          { label: '<%= datasetA.name.replace(/'/g, "\\'") %>', data: [<%= datasetA.global_score || 0 %>], backgroundColor: '#3b82f6', borderRadius: 6 },
+          { label: '<%= datasetB.name.replace(/'/g, "\\'") %>', data: [<%= datasetB.global_score || 0 %>], backgroundColor: '#8b5cf6', borderRadius: 6 }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: true, labels: { color: tick, font: { size: 11 } } } },
+        scales: {
+          x: { grid: { color: grid }, ticks: { color: tick } },
+          y: { grid: { color: grid }, ticks: { color: tick, callback: function(v){ return v + '/100'; } }, min: 0, max: 100 }
+        }
+      }
+    });
+  })();
+  </script>
+
+  <% } else { %>
+  <!-- Aucun dataset sélectionné -->
+  <div class="flex flex-col items-center justify-center py-20 text-center">
+    <svg class="w-16 h-16 text-gray-200 dark:text-navy-700 mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <rect x="2" y="3" width="9" height="18" rx="2"/><rect x="13" y="3" width="9" height="18" rx="2"/>
+    </svg>
+    <p class="text-gray-500 dark:text-gray-400 font-medium mb-1">Sélectionnez deux datasets ci-dessus</p>
+    <p class="text-gray-400 dark:text-gray-600 text-sm">La comparaison apparaîtra ici</p>
+  </div>
+  <% } %>
+
+</div>

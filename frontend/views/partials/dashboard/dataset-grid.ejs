@@ -1,0 +1,85 @@
+<!-- Erreur -->
+<% if (typeof error !== 'undefined' && error) { %>
+  <div class="glass rounded-2xl p-6 text-center mb-6 border-red-300 dark:border-red-500/30">
+    <p class="text-red-600 dark:text-red-400"><%= error %></p>
+    <a href="/" class="btn-primary mt-4 inline-flex">Réessayer</a>
+  </div>
+<% } %>
+
+<!-- Grille de datasets -->
+<% if (datasets && datasets.length > 0) { %>
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    <% datasets.forEach(dataset => { %>
+      <%- include('../dataset-card', { dataset, TAG_LABELS, SOURCE_LABELS, MODEL_LABELS }) %>
+    <% }); %>
+  </div>
+
+  <!-- Pagination -->
+  <% if (totalPages > 1) { %>
+    <%
+      // Construire l'URL avec tous les filtres
+      const buildPageUrl = (pageNum) => {
+        const params = new URLSearchParams();
+        params.append('page', pageNum);
+        params.append('sortBy', filters.sortBy || 'created_at');
+        if (filters.source) params.append('source', filters.source);
+        if (filters.tags) params.append('tags', filters.tags);
+        if (filters.search) params.append('search', filters.search);
+        if (filters.modelingTypes) params.append('modelingTypes', filters.modelingTypes);
+        return '?' + params.toString();
+      };
+    %>
+    <div class="flex items-center justify-center gap-3 mt-8">
+      <% if (page > 1) { %>
+        <a href="<%= buildPageUrl(page - 1) %>" class="btn-secondary">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m15 18-6-6 6-6"/>
+          </svg>
+          Précédent
+        </a>
+      <% } else { %>
+        <button disabled class="btn-secondary opacity-50 cursor-not-allowed">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m15 18-6-6 6-6"/>
+          </svg>
+          Précédent
+        </button>
+      <% } %>
+
+      <div class="glass px-6 py-2 rounded-xl">
+        <span class="text-sm font-medium text-gray-600 dark:text-gray-300">
+          Page <strong class="text-gray-900 dark:text-white"><%= page %></strong> sur <strong class="text-gray-900 dark:text-white"><%= totalPages %></strong>
+        </span>
+      </div>
+
+      <% if (page < totalPages) { %>
+        <a href="<%= buildPageUrl(page + 1) %>" class="btn-secondary">
+          Suivant
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 18 6-6-6-6"/>
+          </svg>
+        </a>
+      <% } else { %>
+        <button disabled class="btn-secondary opacity-50 cursor-not-allowed">
+          Suivant
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m9 18 6-6-6-6"/>
+          </svg>
+        </button>
+      <% } %>
+    </div>
+  <% } %>
+<% } else { %>
+  <!-- État vide -->
+  <div class="glass rounded-2xl text-center py-20">
+    <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gray-100 dark:bg-navy-700 flex items-center justify-center">
+      <svg class="w-10 h-10 text-gray-400 dark:text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v4"/>
+        <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+        <path d="m3 15 2 2 4-4"/>
+      </svg>
+    </div>
+    <p class="text-gray-600 dark:text-gray-300 text-lg font-medium">Aucun dataset trouvé</p>
+    <p class="text-sm text-gray-400 dark:text-gray-500 mt-2">Essayez de modifier vos filtres</p>
+  </div>
+<% } %>

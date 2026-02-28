@@ -1,0 +1,32 @@
+  <!-- Métadonnées -->
+  <div class="card p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Informations sur les données</h2>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <% if (dataset.row_count) { %>
+        <div class="text-center p-4 rounded-xl bg-gray-50 dark:bg-navy-700">
+          <p class="text-2xl font-bold text-gray-900 dark:text-white"><%= dataset.row_count.toLocaleString('fr-FR') %></p>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Lignes</p>
+        </div>
+      <% } %>
+
+      <% if (dataset.column_count) { %>
+        <div class="text-center p-4 rounded-xl bg-gray-50 dark:bg-navy-700">
+          <p class="text-2xl font-bold text-gray-900 dark:text-white"><%= dataset.column_count %></p>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Colonnes</p>
+        </div>
+      <% } %>
+
+      <% if (dataset.file_size_mb) { %>
+        <div class="text-center p-4 rounded-xl bg-gray-50 dark:bg-navy-700">
+          <p class="text-2xl font-bold text-gray-900 dark:text-white"><%= dataset.file_size_mb %></p>
+          <p class="text-sm text-gray-500 dark:text-gray-400">MB</p>
+        </div>
+      <% } %>
+
+      <div class="text-center p-4 rounded-xl bg-gray-50 dark:bg-navy-700">
+        <p class="text-2xl font-bold text-gray-900 dark:text-white"><%= dataset.review_count || 0 %></p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Avis</p>
+      </div>
+    </div>
+  </div>

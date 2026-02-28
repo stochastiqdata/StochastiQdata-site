@@ -213,6 +213,27 @@ app.get('/modelisation', (req, res) => {
   res.render('pages/modelisation', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
 });
 
+// Comparateur de datasets
+app.get('/compare', async (req, res) => {
+  const { a, b } = req.query;
+  let datasetA = null, datasetB = null, allDatasets = [];
+  try {
+    const listResponse = await axios.get(`${API_URL}/datasets?limit=50`);
+    allDatasets = listResponse.data.datasets || [];
+    if (a) {
+      const resA = await axios.get(`${API_URL}/datasets/${a}`);
+      datasetA = resA.data;
+    }
+    if (b) {
+      const resB = await axios.get(`${API_URL}/datasets/${b}`);
+      datasetB = resB.data;
+    }
+  } catch (e) {
+    logger.error('Compare fetch error', { error: e.message });
+  }
+  res.render('pages/compare', { datasetA, datasetB, allDatasets, TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
+});
+
 // Route de prévisualisation avec données mock (dev/test)
 app.get('/modeling/preview/:type', (req, res) => {
   const type = req.params.type;
@@ -244,6 +265,18 @@ app.get('/modeling/:id', async (req, res, next) => {
     });
     next(error);
   }
+});
+
+// Notebooks hub
+app.get('/notebooks', async (req, res) => {
+  let notebooks = [];
+  try {
+    const response = await axios.get(`${API_URL}/notebooks?limit=50`);
+    notebooks = response.data || [];
+  } catch (e) {
+    logger.error('Notebooks fetch error', { error: e.message });
+  }
+  res.render('pages/notebooks', { notebooks, TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
 });
 
 // Profile

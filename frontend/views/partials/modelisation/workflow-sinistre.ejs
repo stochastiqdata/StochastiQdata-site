@@ -1,0 +1,358 @@
+<!-- ================================================
+     PRÉDICTION DE SINISTRE — Modèle GLM Fréquence × Coût
+     ================================================ -->
+
+<!-- Titre de section -->
+<div class="mb-8">
+  <div class="flex items-center gap-3 mb-2">
+    <span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300">Cas pratique</span>
+    <span class="tag tag-glm text-xs">GLM</span>
+    <span class="tag tag-iard text-xs">IARD</span>
+  </div>
+  <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-1">Prédiction de Sinistre Auto</h2>
+  <p class="text-gray-500 dark:text-gray-400 text-sm">
+    Modèle actuariel complet sur <span class="font-medium text-primary-500">freMTPL2</span> (679 013 polices françaises) — GLM Poisson pour la fréquence, GLM Gamma pour le coût.
+  </p>
+</div>
+
+<!-- SIMULATEUR -->
+<div class="card p-6 mb-6">
+  <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
+    <svg class="w-5 h-5 text-primary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/>
+    </svg>
+    Simulateur de Prime Pure
+  </h3>
+  <p class="text-xs text-gray-400 dark:text-gray-500 mb-5">Estimez la prime pure d'un assuré selon son profil — basé sur les coefficients GLM freMTPL2</p>
+
+  <div class="grid md:grid-cols-2 gap-6">
+    <!-- Inputs -->
+    <div class="space-y-4">
+      <!-- Âge conducteur -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Âge du conducteur : <span id="label-age" class="text-primary-500 font-semibold">35 ans</span>
+        </label>
+        <input type="range" id="input-age" min="18" max="85" value="35" step="1"
+          class="w-full h-2 bg-gray-200 dark:bg-navy-700 rounded-lg appearance-none cursor-pointer accent-primary-500">
+        <div class="flex justify-between text-xs text-gray-400 mt-1"><span>18</span><span>85</span></div>
+      </div>
+
+      <!-- Puissance véhicule -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Puissance véhicule : <span id="label-power" class="text-primary-500 font-semibold">6</span>
+        </label>
+        <input type="range" id="input-power" min="4" max="15" value="6" step="1"
+          class="w-full h-2 bg-gray-200 dark:bg-navy-700 rounded-lg appearance-none cursor-pointer accent-primary-500">
+        <div class="flex justify-between text-xs text-gray-400 mt-1"><span>4</span><span>15</span></div>
+      </div>
+
+      <!-- Bonus/Malus -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Bonus/Malus : <span id="label-bm" class="text-primary-500 font-semibold">100</span>
+        </label>
+        <input type="range" id="input-bm" min="50" max="230" value="100" step="5"
+          class="w-full h-2 bg-gray-200 dark:bg-navy-700 rounded-lg appearance-none cursor-pointer accent-primary-500">
+        <div class="flex justify-between text-xs text-gray-400 mt-1"><span>50 (bonus max)</span><span>230 (malus max)</span></div>
+      </div>
+
+      <!-- Région -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Région</label>
+        <select id="input-region"
+          class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-navy-700 bg-white dark:bg-navy-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+          <option value="1.0">Île-de-France (×1.20)</option>
+          <option value="0.9" selected>Province standard (×0.95)</option>
+          <option value="0.85">Zone rurale (×0.85)</option>
+          <option value="1.1">Sud-Est (×1.10)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Résultats -->
+    <div class="flex flex-col justify-center">
+      <div class="bg-gray-50 dark:bg-navy-900 rounded-2xl p-6 space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-gray-200 dark:border-navy-700">
+          <span class="text-sm text-gray-500 dark:text-gray-400">Fréquence prédite</span>
+          <span id="result-freq" class="text-lg font-bold text-blue-500">—</span>
+        </div>
+        <div class="flex items-center justify-between pb-3 border-b border-gray-200 dark:border-navy-700">
+          <span class="text-sm text-gray-500 dark:text-gray-400">Coût moyen estimé</span>
+          <span id="result-cost" class="text-lg font-bold text-orange-500">—</span>
+        </div>
+        <div class="flex items-center justify-between pt-1">
+          <span class="text-sm font-semibold text-gray-700 dark:text-gray-200">Prime pure</span>
+          <span id="result-prime" class="text-2xl font-bold text-primary-500">—</span>
+        </div>
+        <p class="text-xs text-gray-400 dark:text-gray-500 pt-2">
+          Prime pure = Fréquence × Coût moyen<br>
+          Basé sur les coefficients GLM freMTPL2
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GRAPHIQUES -->
+<div class="grid md:grid-cols-2 gap-6 mb-6">
+
+  <!-- Graphique 1 : Distribution fréquence sinistres -->
+  <div class="card p-5">
+    <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">Distribution du nombre de sinistres</h3>
+    <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">Loi de Poisson — sur-dispersion typique en IARD</p>
+    <canvas id="chart-distribution" height="200"></canvas>
+  </div>
+
+  <!-- Graphique 2 : Fréquence par tranche d'âge -->
+  <div class="card p-5">
+    <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">Fréquence relative par âge conducteur</h3>
+    <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">Relativités tarifaires GLM Poisson (base = 1.0)</p>
+    <canvas id="chart-age" height="200"></canvas>
+  </div>
+
+</div>
+
+<div class="grid md:grid-cols-2 gap-6 mb-10">
+
+  <!-- Graphique 3 : Impact Bonus/Malus -->
+  <div class="card p-5">
+    <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">Impact du Bonus/Malus sur la prime</h3>
+    <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">Évolution de la prime pure selon le coefficient BM</p>
+    <canvas id="chart-bm" height="200"></canvas>
+  </div>
+
+  <!-- Graphique 4 : Décomposition prime pure -->
+  <div class="card p-5">
+    <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-1">Décomposition Fréquence × Coût</h3>
+    <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">Contribution de chaque composante à la prime pure</p>
+    <canvas id="chart-decomp" height="200"></canvas>
+  </div>
+
+</div>
+
+<!-- Source -->
+<div class="flex items-center justify-between flex-wrap gap-4 pb-2">
+  <p class="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1">
+    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Données : freMTPL2 via OpenML — Wüthrich & Buser (ETH Zurich)
+  </p>
+  <a href="https://www.openml.org/d/41214" target="_blank" rel="noopener noreferrer"
+     class="text-xs text-primary-500 hover:underline font-medium">Voir le dataset →</a>
+</div>
+
+<!-- ================================================
+     JAVASCRIPT — Simulateur + Charts
+     ================================================ -->
+<script>
+(function() {
+  // ---- Coefficients GLM simplifiés (freMTPL2) ----
+  const BASE_FREQ = 0.074;   // fréquence de base (~7.4%)
+  const BASE_COST = 1850;    // coût moyen de base (€)
+
+  function ageFactor(age) {
+    if (age < 22) return 1.85;
+    if (age < 26) return 1.45;
+    if (age < 30) return 1.20;
+    if (age < 40) return 1.00;
+    if (age < 55) return 0.90;
+    if (age < 65) return 0.88;
+    return 0.95;
+  }
+
+  function powerFactor(power) {
+    if (power <= 5)  return 0.85;
+    if (power <= 7)  return 1.00;
+    if (power <= 10) return 1.18;
+    if (power <= 12) return 1.35;
+    return 1.55;
+  }
+
+  function bmFactor(bm) {
+    return Math.pow(bm / 100, 1.4);
+  }
+
+  function computePrime() {
+    const age    = parseInt(document.getElementById('input-age').value);
+    const power  = parseInt(document.getElementById('input-power').value);
+    const bm     = parseInt(document.getElementById('input-bm').value);
+    const region = parseFloat(document.getElementById('input-region').value);
+
+    const freq  = BASE_FREQ * ageFactor(age) * powerFactor(power) * bmFactor(bm) * region;
+    const cost  = BASE_COST * (1 + (bm - 100) / 400) * (power > 9 ? 1.15 : 1.0);
+    const prime = freq * cost;
+
+    document.getElementById('label-age').textContent   = age + ' ans';
+    document.getElementById('label-power').textContent = power;
+    document.getElementById('label-bm').textContent    = bm;
+    document.getElementById('result-freq').textContent  = (freq * 100).toFixed(2) + '%';
+    document.getElementById('result-cost').textContent  = cost.toFixed(0) + ' €';
+    document.getElementById('result-prime').textContent = prime.toFixed(0) + ' €';
+
+    updateDecompChart(freq, cost);
+  }
+
+  // ---- Inputs → simulateur ----
+  ['input-age', 'input-power', 'input-bm', 'input-region'].forEach(function(id) {
+    document.getElementById(id).addEventListener('input', computePrime);
+  });
+  computePrime();
+
+  // ---- Couleurs adaptées dark/light ----
+  const isDark = document.documentElement.classList.contains('dark');
+  const gridColor   = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+  const labelColor  = isDark ? '#94a3b8' : '#64748b';
+  const chartDefaults = {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: gridColor }, ticks: { color: labelColor, font: { size: 11 } } },
+      y: { grid: { color: gridColor }, ticks: { color: labelColor, font: { size: 11 } } }
+    }
+  };
+
+  // ---- Chart 1 : Distribution Poisson ----
+  (function() {
+    const labels = ['0', '1', '2', '3', '4', '5+'];
+    const data   = [88.2, 8.9, 2.1, 0.5, 0.2, 0.1];
+    new Chart(document.getElementById('chart-distribution'), {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: '% des polices',
+          data: data,
+          backgroundColor: ['#3b82f6','#6366f1','#8b5cf6','#a855f7','#c026d3','#db2777'],
+          borderRadius: 6
+        }]
+      },
+      options: Object.assign({}, chartDefaults, {
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: function(c) { return c.raw + '%'; } } }
+        },
+        scales: Object.assign({}, chartDefaults.scales, {
+          y: Object.assign({}, chartDefaults.scales.y, {
+            ticks: Object.assign({}, chartDefaults.scales.y.ticks, {
+              callback: function(v) { return v + '%'; }
+            })
+          })
+        })
+      })
+    });
+  })();
+
+  // ---- Chart 2 : Relativités par âge ----
+  (function() {
+    const ages  = ['18-21','22-25','26-29','30-39','40-54','55-64','65+'];
+    const relat = [1.85, 1.45, 1.20, 1.00, 0.90, 0.88, 0.95];
+    const colors = relat.map(function(v) {
+      return v > 1.2 ? '#ef4444' : v > 1.0 ? '#f97316' : '#22c55e';
+    });
+    new Chart(document.getElementById('chart-age'), {
+      type: 'bar',
+      data: {
+        labels: ages,
+        datasets: [{
+          data: relat,
+          backgroundColor: colors,
+          borderRadius: 6
+        }]
+      },
+      options: Object.assign({}, chartDefaults, {
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: function(c) { return '×' + c.raw.toFixed(2); } } }
+        },
+        scales: Object.assign({}, chartDefaults.scales, {
+          y: Object.assign({}, chartDefaults.scales.y, {
+            min: 0.5, max: 2.1,
+            ticks: Object.assign({}, chartDefaults.scales.y.ticks, {
+              callback: function(v) { return '×' + v.toFixed(1); }
+            })
+          })
+        })
+      })
+    });
+  })();
+
+  // ---- Chart 3 : Impact BonusMalus ----
+  (function() {
+    const bmValues = [50, 60, 70, 80, 90, 100, 110, 120, 140, 160, 180, 200, 230];
+    const primes   = bmValues.map(function(bm) {
+      return (BASE_FREQ * bmFactor(bm) * BASE_COST * (1 + (bm - 100) / 400)).toFixed(0);
+    });
+    new Chart(document.getElementById('chart-bm'), {
+      type: 'line',
+      data: {
+        labels: bmValues,
+        datasets: [{
+          data: primes,
+          borderColor: '#f97316',
+          backgroundColor: 'rgba(249,115,22,0.1)',
+          borderWidth: 2.5,
+          pointRadius: 3,
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: Object.assign({}, chartDefaults, {
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: function(c) { return c.raw + ' €'; } } }
+        },
+        scales: Object.assign({}, chartDefaults.scales, {
+          y: Object.assign({}, chartDefaults.scales.y, {
+            ticks: Object.assign({}, chartDefaults.scales.y.ticks, {
+              callback: function(v) { return v + ' €'; }
+            })
+          })
+        })
+      })
+    });
+  })();
+
+  // ---- Chart 4 : Décomposition (donut dynamique) ----
+  var decompChart;
+  function updateDecompChart(freq, cost) {
+    const freqPct = (freq * 100).toFixed(1);
+    const costK   = (cost / 100).toFixed(1);
+    if (decompChart) {
+      decompChart.data.datasets[0].data = [parseFloat(freqPct), parseFloat(costK)];
+      decompChart.update();
+      return;
+    }
+    decompChart = new Chart(document.getElementById('chart-decomp'), {
+      type: 'doughnut',
+      data: {
+        labels: ['Fréquence (%×10)', 'Coût (÷100 €)'],
+        datasets: [{
+          data: [parseFloat(freqPct), parseFloat(costK)],
+          backgroundColor: ['#3b82f6', '#f97316'],
+          borderWidth: 0,
+          hoverOffset: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        cutout: '65%',
+        plugins: {
+          legend: {
+            display: true,
+            position: 'bottom',
+            labels: { color: labelColor, font: { size: 11 }, boxWidth: 12 }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(c) {
+                return c.label + ' : ' + c.raw;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+})();
+</script>

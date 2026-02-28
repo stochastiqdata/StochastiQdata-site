@@ -1,0 +1,111 @@
+  <!-- Parcours par Domaine -->
+  <div class="card p-8 mb-10">
+    <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-8 flex items-center gap-3">
+      <svg class="w-6 h-6 text-primary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 17l10 5 10-5"/>
+        <path d="M2 12l10 5 10-5"/>
+      </svg>
+      Parcours par Domaine
+    </h2>
+
+    <div class="grid gap-8 md:grid-cols-3">
+      <!-- IARD -->
+      <div class="border border-gray-200 dark:border-navy-700 rounded-xl p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </div>
+          <div>
+            <span class="tag tag-iard">IARD</span>
+            <h3 class="font-semibold text-gray-900 dark:text-white text-sm">Assurance Non-Vie</h3>
+          </div>
+        </div>
+        <ul class="space-y-3 mb-5 text-sm text-gray-600 dark:text-gray-300">
+          <li class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs">1</span>
+            Tarification Auto (GLM)
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-blue-400 text-white flex items-center justify-center text-xs">2</span>
+            Détection Fraude
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-blue-300 text-white flex items-center justify-center text-xs">3</span>
+            Provisionnement IBNR
+          </li>
+        </ul>
+        <a href="/?tags=iard" class="text-blue-600 dark:text-blue-400 text-sm font-medium hover:underline">
+          Explorer →
+        </a>
+      </div>
+
+      <!-- Santé -->
+      <div class="border border-gray-200 dark:border-navy-700 rounded-xl p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+            <svg class="w-5 h-5 text-green-600 dark:text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+            </svg>
+          </div>
+          <div>
+            <span class="tag tag-sante">Santé</span>
+            <h3 class="font-semibold text-gray-900 dark:text-white text-sm">Assurance Santé</h3>
+          </div>
+        </div>
+        <ul class="space-y-3 mb-5 text-sm text-gray-600 dark:text-gray-300">
+          <li class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-green-500 text-white flex items-center justify-center text-xs">1</span>
+            Prédiction Coûts
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-green-400 text-white flex items-center justify-center text-xs">2</span>
+            Segmentation Patients
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-green-300 text-white flex items-center justify-center text-xs">3</span>
+            Risque Hospitalisation
+          </li>
+        </ul>
+        <a href="/?tags=sante" class="text-green-600 dark:text-green-400 text-sm font-medium hover:underline">
+          Explorer →
+        </a>
+      </div>
+
+      <!-- Vie -->
+      <div class="border border-gray-200 dark:border-navy-700 rounded-xl p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+            <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+          </div>
+          <div>
+            <span class="tag tag-vie">Vie</span>
+            <h3 class="font-semibold text-gray-900 dark:text-white text-sm">Assurance Vie</h3>
+          </div>
+        </div>
+        <ul class="space-y-3 mb-5 text-sm text-gray-600 dark:text-gray-300">
+          <li class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-purple-500 text-white flex items-center justify-center text-xs">1</span>
+            Tables Mortalité
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-purple-400 text-white flex items-center justify-center text-xs">2</span>
+            Analyse Survie
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-purple-300 text-white flex items-center justify-center text-xs">3</span>
+            Prédiction Rachats
+          </li>
+        </ul>
+        <a href="/?tags=vie" class="text-purple-600 dark:text-purple-400 text-sm font-medium hover:underline">
+          Explorer →
+        </a>
+      </div>
+    </div>
+  </div>

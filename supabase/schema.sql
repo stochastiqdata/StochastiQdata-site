@@ -35,7 +35,8 @@ CREATE TYPE model_type AS ENUM (
     'neural_network',
     'lightgbm',
     'catboost',
-    'other'
+    'other',
+
 );
 
 -- Types de métriques de performance

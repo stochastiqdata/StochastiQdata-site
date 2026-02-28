@@ -67,3 +67,13 @@ temp/
 *.sqlite
 *.sqlite3
 *.db
+
+# Social media content (local only)
+social-media/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+*.egg-info/

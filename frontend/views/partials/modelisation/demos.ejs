@@ -1,0 +1,241 @@
+<!-- ============================
+     DÉMOS VISUELLES
+     ============================ -->
+<div class="mb-10">
+  <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-1">Démos visuelles</h2>
+  <p class="text-gray-500 dark:text-gray-400 text-sm mb-6">Visualisations graphiques illustrant le comportement de chaque modèle.</p>
+
+  <!-- GLM Poisson -->
+  <div id="demo-glm-poisson" class="card p-6 mb-6">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+        <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+      </div>
+      <div>
+        <h3 class="font-semibold text-gray-900 dark:text-white">GLM Poisson — Fréquence des sinistres</h3>
+        <p class="text-xs text-gray-400">Distribution de la variable cible + Courbe de Lorenz</p>
+      </div>
+    </div>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">Distribution du nombre de sinistres</p>
+        <div style="position:relative; height:220px;">
+          <canvas id="demo-poisson-dist"></canvas>
+        </div>
+      </div>
+      <div>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">Courbe de Lorenz — Pouvoir discriminant</p>
+        <div style="position:relative; height:220px;">
+          <canvas id="demo-poisson-lorenz"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chain Ladder -->
+  <div id="demo-chain-ladder" class="card p-6 mb-6">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-8 h-8 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center">
+        <svg class="w-4 h-4 text-teal-600 dark:text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 22 22 2 22"/></svg>
+      </div>
+      <div>
+        <h3 class="font-semibold text-gray-900 dark:text-white">Chain Ladder — Provisionnement IBNR</h3>
+        <p class="text-xs text-gray-400">Facteurs de développement + IBNR estimé par année</p>
+      </div>
+    </div>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">Facteurs de développement (LDF)</p>
+        <div style="position:relative; height:220px;">
+          <canvas id="demo-cl-ldf"></canvas>
+        </div>
+      </div>
+      <div>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">IBNR estimé par année de survenance</p>
+        <div style="position:relative; height:220px;">
+          <canvas id="demo-cl-ibnr"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kaplan-Meier -->
+  <div id="demo-kaplan-meier" class="card p-6 mb-6">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-8 h-8 rounded-lg bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center">
+        <svg class="w-4 h-4 text-pink-600 dark:text-pink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
+      <div>
+        <h3 class="font-semibold text-gray-900 dark:text-white">Kaplan-Meier — Courbe de survie</h3>
+        <p class="text-xs text-gray-400">Probabilité de survie S(t) avec comparaison H/F</p>
+      </div>
+    </div>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">Fonction de survie S(t)</p>
+        <div style="position:relative; height:220px;">
+          <canvas id="demo-km-survival"></canvas>
+        </div>
+      </div>
+      <div>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">Taux de mortalité qx par âge (log)</p>
+        <div style="position:relative; height:220px;">
+          <canvas id="demo-km-qx"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- XGBoost -->
+  <div id="demo-xgboost" class="card p-6 mb-6">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+        <svg class="w-4 h-4 text-green-600 dark:text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      </div>
+      <div>
+        <h3 class="font-semibold text-gray-900 dark:text-white">XGBoost — Détection de fraude</h3>
+        <p class="text-xs text-gray-400">Courbe ROC + Importance des features (SHAP)</p>
+      </div>
+    </div>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">Courbe ROC (AUC = 0.93)</p>
+        <div style="position:relative; height:220px;">
+          <canvas id="demo-xgb-roc"></canvas>
+        </div>
+      </div>
+      <div>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">Importance des features (SHAP)</p>
+        <div style="position:relative; height:220px;">
+          <canvas id="demo-xgb-shap"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var isDark = document.documentElement.classList.contains('dark');
+  var grid = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
+  var tick = isDark ? '#94a3b8' : '#64748b';
+
+  var base = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: grid }, ticks: { color: tick, font: { size: 10 } } },
+      y: { grid: { color: grid }, ticks: { color: tick, font: { size: 10 } } }
+    }
+  };
+
+  /* ---- GLM Poisson : distribution ---- */
+  new Chart(document.getElementById('demo-poisson-dist'), {
+    type: 'bar',
+    data: {
+      labels: ['0', '1', '2', '3', '4+'],
+      datasets: [{ data: [88.2, 8.9, 2.1, 0.5, 0.3],
+        backgroundColor: ['#3b82f6','#6366f1','#8b5cf6','#a855f7','#db2777'],
+        borderRadius: 5 }]
+    },
+    options: Object.assign({}, base, {
+      scales: { x: base.scales.x, y: Object.assign({}, base.scales.y, { ticks: { color: tick, font: { size: 10 }, callback: function(v){ return v + '%'; } } }) }
+    })
+  });
+
+  /* ---- GLM Poisson : Lorenz ---- */
+  new Chart(document.getElementById('demo-poisson-lorenz'), {
+    type: 'line',
+    data: {
+      labels: ['0%','20%','40%','60%','80%','100%'],
+      datasets: [
+        { label: 'Modèle GLM', data: [0,0.04,0.15,0.34,0.62,1.0], borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.08)', fill: true, tension: 0.4, pointRadius: 3 },
+        { label: 'Aléatoire',  data: [0,0.20,0.40,0.60,0.80,1.0], borderColor: '#94a3b8', borderDash: [5,5], pointRadius: 0 }
+      ]
+    },
+    options: Object.assign({}, base, { plugins: { legend: { display: true, labels: { color: tick, font: { size: 10 } } } } })
+  });
+
+  /* ---- Chain Ladder : LDF ---- */
+  new Chart(document.getElementById('demo-cl-ldf'), {
+    type: 'bar',
+    data: {
+      labels: ['12→24m','24→36m','36→48m','48→60m','60→72m','72→84m'],
+      datasets: [{ data: [2.41, 1.38, 1.17, 1.09, 1.05, 1.02],
+        backgroundColor: '#14b8a6', borderRadius: 5 }]
+    },
+    options: Object.assign({}, base, {
+      scales: { x: base.scales.x, y: Object.assign({}, base.scales.y, { min: 1.0, ticks: { color: tick, font: { size: 10 }, callback: function(v){ return '×' + v.toFixed(2); } } }) }
+    })
+  });
+
+  /* ---- Chain Ladder : IBNR ---- */
+  new Chart(document.getElementById('demo-cl-ibnr'), {
+    type: 'bar',
+    data: {
+      labels: ['2018','2019','2020','2021','2022','2023'],
+      datasets: [{ data: [85, 210, 480, 920, 1650, 3100],
+        backgroundColor: ['#22c55e','#84cc16','#eab308','#f97316','#ef4444','#dc2626'],
+        borderRadius: 5 }]
+    },
+    options: Object.assign({}, base, {
+      scales: { x: base.scales.x, y: Object.assign({}, base.scales.y, { ticks: { color: tick, font: { size: 10 }, callback: function(v){ return v + ' k€'; } } }) }
+    })
+  });
+
+  /* ---- Kaplan-Meier : S(t) ---- */
+  new Chart(document.getElementById('demo-km-survival'), {
+    type: 'line',
+    data: {
+      labels: ['0','10','20','30','40','50','60','70','80','90','100'],
+      datasets: [
+        { label: 'Hommes', data: [1,.995,.990,.980,.965,.940,.900,.830,.700,.490,.200], borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.07)', fill: true, tension: 0.4, pointRadius: 2 },
+        { label: 'Femmes', data: [1,.997,.993,.986,.975,.960,.934,.885,.780,.590,.280], borderColor: '#ec4899', backgroundColor: 'rgba(236,72,153,0.07)', fill: true, tension: 0.4, pointRadius: 2 }
+      ]
+    },
+    options: Object.assign({}, base, {
+      plugins: { legend: { display: true, labels: { color: tick, font: { size: 10 } } } },
+      scales: { x: base.scales.x, y: Object.assign({}, base.scales.y, { min: 0, max: 1, ticks: { color: tick, font: { size: 10 }, callback: function(v){ return (v * 100) + '%'; } } }) }
+    })
+  });
+
+  /* ---- Kaplan-Meier : qx ---- */
+  new Chart(document.getElementById('demo-km-qx'), {
+    type: 'line',
+    data: {
+      labels: ['20','30','40','50','60','70','80','90'],
+      datasets: [{ data: [0.0008,0.0012,0.0025,0.0060,0.0140,0.0310,0.0720,0.1800],
+        borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,0.08)', fill: true, tension: 0.4, pointRadius: 3 }]
+    },
+    options: Object.assign({}, base, {
+      scales: { x: base.scales.x, y: Object.assign({}, base.scales.y, { type: 'logarithmic', ticks: { color: tick, font: { size: 10 }, callback: function(v){ return v.toFixed(4); } } }) }
+    })
+  });
+
+  /* ---- XGBoost : ROC ---- */
+  new Chart(document.getElementById('demo-xgb-roc'), {
+    type: 'line',
+    data: {
+      labels: ['0','0.1','0.2','0.3','0.4','0.5','0.6','0.7','0.8','0.9','1.0'],
+      datasets: [
+        { label: 'XGBoost (AUC=0.93)', data: [0,0.48,0.68,0.78,0.85,0.89,0.92,0.95,0.97,0.99,1.0], borderColor: '#22c55e', tension: 0.3, pointRadius: 2, fill: false },
+        { label: 'Aléatoire',          data: [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0],          borderColor: '#94a3b8', borderDash: [5,5], pointRadius: 0, fill: false }
+      ]
+    },
+    options: Object.assign({}, base, { plugins: { legend: { display: true, labels: { color: tick, font: { size: 10 } } } } })
+  });
+
+  /* ---- XGBoost : SHAP ---- */
+  new Chart(document.getElementById('demo-xgb-shap'), {
+    type: 'bar',
+    data: {
+      labels: ['Montant sinistre','Historique','Type véhicule','Fréquence','Région','Âge'],
+      datasets: [{ data: [0.38, 0.22, 0.16, 0.12, 0.08, 0.04],
+        backgroundColor: '#22c55e', borderRadius: 5 }]
+    },
+    options: Object.assign({}, base, { indexAxis: 'y' })
+  });
+
+})();
+</script>

@@ -1,0 +1,28 @@
+  <!-- Modèles recommandés -->
+  <div class="card p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+      <svg class="w-5 h-5 text-violet-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+        <line x1="12" y1="19" x2="12" y2="22"/>
+      </svg>
+      Modèles recommandés (SOTA)
+    </h2>
+
+    <% if (dataset.best_fit_models && dataset.best_fit_models.length > 0) { %>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <% dataset.best_fit_models.forEach((model, index) => { %>
+          <div class="p-4 rounded-xl bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800 flex items-center gap-3">
+            <span class="w-8 h-8 rounded-lg bg-violet-500 text-white flex items-center justify-center font-bold text-sm">
+              <%= index + 1 %>
+            </span>
+            <span class="font-medium text-violet-700 dark:text-violet-300">
+              <%= MODEL_LABELS[model] || model %>
+            </span>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="text-gray-500 dark:text-gray-400">Aucun modèle recommandé pour le moment.</p>
+    <% } %>
+  </div>

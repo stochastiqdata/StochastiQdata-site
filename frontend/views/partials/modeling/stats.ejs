@@ -1,0 +1,94 @@
+<!-- ============================
+     STATS DESCRIPTIVES
+     ============================ -->
+<div class="card p-6 mb-6">
+  <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+    <svg class="w-5 h-5 text-violet-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="3" width="18" height="18" rx="2"/>
+      <path d="M3 9h18M9 21V9"/>
+    </svg>
+    Statistiques descriptives
+  </h2>
+
+  <!-- Bannière résumé -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+    <div class="rounded-xl bg-blue-50 dark:bg-blue-900/20 p-3 text-center">
+      <p class="text-xl font-bold text-blue-600 dark:text-blue-400"><%= dataset.row_count ? dataset.row_count.toLocaleString('fr-FR') : '—' %></p>
+      <p class="text-xs text-blue-500 dark:text-blue-300 mt-0.5">Observations</p>
+    </div>
+    <div class="rounded-xl bg-violet-50 dark:bg-violet-900/20 p-3 text-center">
+      <p class="text-xl font-bold text-violet-600 dark:text-violet-400"><%= dataset.column_count || '—' %></p>
+      <p class="text-xs text-violet-500 dark:text-violet-300 mt-0.5">Variables</p>
+    </div>
+    <div class="rounded-xl bg-green-50 dark:bg-green-900/20 p-3 text-center">
+      <p class="text-xl font-bold text-green-600 dark:text-green-400">
+        <% if (dataset.variable_dict && dataset.variable_dict.length > 0) {
+          var numCount = dataset.variable_dict.filter(function(v){ return v.type === 'numeric' || v.type === 'integer' || v.type === 'float'; }).length;
+        %><%= numCount %><% } else { %>—<% } %>
+      </p>
+      <p class="text-xs text-green-500 dark:text-green-300 mt-0.5">Numériques</p>
+    </div>
+    <div class="rounded-xl bg-orange-50 dark:bg-orange-900/20 p-3 text-center">
+      <p class="text-xl font-bold text-orange-600 dark:text-orange-400">
+        <% if (dataset.variable_dict && dataset.variable_dict.length > 0) {
+          var catCount = dataset.variable_dict.filter(function(v){ return v.type === 'categorical' || v.type === 'string'; }).length;
+        %><%= catCount %><% } else { %>—<% } %>
+      </p>
+      <p class="text-xs text-orange-500 dark:text-orange-300 mt-0.5">Catégorielles</p>
+    </div>
+  </div>
+
+  <!-- Table des variables avec stats -->
+  <% if (dataset.variable_dict && dataset.variable_dict.length > 0) { %>
+  <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-navy-700">
+    <table class="w-full text-sm text-left">
+      <thead class="bg-gray-50 dark:bg-navy-700 text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+        <tr>
+          <th class="px-4 py-3 font-semibold">Variable</th>
+          <th class="px-4 py-3 font-semibold">Type</th>
+          <th class="px-4 py-3 font-semibold">Description</th>
+          <th class="px-4 py-3 font-semibold text-right">Complétude</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100 dark:divide-navy-700">
+        <% dataset.variable_dict.forEach(function(v, i) { %>
+          <tr class="<%= i % 2 === 0 ? 'bg-white dark:bg-navy-800' : 'bg-gray-50 dark:bg-navy-800/50' %> hover:bg-violet-50 dark:hover:bg-navy-700/50 transition-colors">
+            <td class="px-4 py-3 font-mono text-xs font-semibold text-violet-700 dark:text-violet-300 whitespace-nowrap"><%= v.name %></td>
+            <td class="px-4 py-3">
+              <span class="px-2 py-0.5 rounded-md text-xs font-medium
+                <%= (v.type === 'numeric' || v.type === 'integer' || v.type === 'float') ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' :
+                    (v.type === 'categorical' || v.type === 'string') ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300' :
+                    (v.type === 'boolean') ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300' :
+                    (v.type === 'date' || v.type === 'datetime') ? 'bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300' :
+                    'bg-gray-100 dark:bg-navy-700 text-gray-600 dark:text-gray-400' %>">
+                <%= v.type || 'unknown' %>
+              </span>
+            </td>
+            <td class="px-4 py-3 text-gray-600 dark:text-gray-400 text-xs max-w-xs truncate"><%= v.description || '—' %></td>
+            <td class="px-4 py-3 text-right">
+              <% var missing = v.missing_pct !== undefined ? v.missing_pct : 0; %>
+              <div class="flex items-center justify-end gap-2">
+                <div class="w-16 h-1.5 bg-gray-200 dark:bg-navy-600 rounded-full overflow-hidden">
+                  <div class="h-full rounded-full <%= missing > 10 ? 'bg-red-500' : missing > 0 ? 'bg-amber-400' : 'bg-green-500' %>"
+                       style="width: <%= 100 - missing %>%"></div>
+                </div>
+                <span class="text-xs font-mono <%= missing > 10 ? 'text-red-500' : missing > 0 ? 'text-amber-500' : 'text-green-500' %>">
+                  <%= (100 - missing).toFixed(0) %>%
+                </span>
+              </div>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+  <% } else { %>
+  <div class="flex flex-col items-center justify-center py-8 text-center rounded-xl border border-dashed border-gray-200 dark:border-navy-700">
+    <svg class="w-8 h-8 text-gray-300 dark:text-gray-600 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+    </svg>
+    <p class="text-sm text-gray-400 dark:text-gray-500">Statistiques détaillées non disponibles pour ce dataset.</p>
+    <p class="text-xs text-gray-300 dark:text-gray-600 mt-1">Les contributeurs peuvent ajouter un dictionnaire de variables.</p>
+  </div>
+  <% } %>
+</div>

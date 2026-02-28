@@ -1,0 +1,67 @@
+  <!-- ============================
+       AVIS / REVIEWS
+       ============================ -->
+  <div class="card p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+      <svg class="w-5 h-5 text-yellow-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+      </svg>
+      Avis de la communauté
+    </h2>
+    <%
+      const reviews = locals.reviews || [];
+    %>
+    <% if (reviews.length > 0) { %>
+      <div class="space-y-4">
+        <% reviews.forEach(r => { %>
+          <div class="p-4 rounded-xl border border-gray-200 dark:border-navy-700 bg-gray-50 dark:bg-navy-800/50">
+            <div class="flex flex-wrap gap-3 mb-3">
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs text-gray-500 dark:text-gray-400">Utilité</span>
+                <div class="flex gap-0.5">
+                  <% for (let s = 1; s <= 5; s++) { %>
+                    <svg class="w-3.5 h-3.5 <%= s <= r.utility_score ? 'text-yellow-400' : 'text-gray-300 dark:text-navy-600' %>" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                  <% } %>
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs text-gray-500 dark:text-gray-400">Qualité</span>
+                <div class="flex gap-0.5">
+                  <% for (let s = 1; s <= 5; s++) { %>
+                    <svg class="w-3.5 h-3.5 <%= s <= r.cleanliness_score ? 'text-green-400' : 'text-gray-300 dark:text-navy-600' %>" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                  <% } %>
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs text-gray-500 dark:text-gray-400">Documentation</span>
+                <div class="flex gap-0.5">
+                  <% for (let s = 1; s <= 5; s++) { %>
+                    <svg class="w-3.5 h-3.5 <%= s <= r.documentation_score ? 'text-blue-400' : 'text-gray-300 dark:text-navy-600' %>" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+            <% if (r.comment) { %>
+              <p class="text-sm text-gray-700 dark:text-gray-300 italic">"<%= r.comment %>"</p>
+            <% } %>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="flex flex-col items-center justify-center py-10 text-center">
+        <div class="w-14 h-14 rounded-2xl bg-yellow-100 dark:bg-yellow-900/20 flex items-center justify-center mb-4">
+          <svg class="w-7 h-7 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </div>
+        <p class="text-gray-500 dark:text-gray-400 text-sm">Aucun avis pour ce dataset.</p>
+        <p class="text-gray-400 dark:text-gray-500 text-xs mt-1">Soyez le premier à donner votre avis !</p>
+      </div>
+    <% } %>
+  </div>

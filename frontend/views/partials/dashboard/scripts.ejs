@@ -1,0 +1,88 @@
+<script>
+  function openRatingModal(datasetId) {
+    document.getElementById('ratingModal').classList.remove('hidden');
+  }
+
+  function closeRatingModal() {
+    document.getElementById('ratingModal').classList.add('hidden');
+  }
+
+  // Custom Sort Dropdown
+  (function() {
+    const btn = document.getElementById('sortDropdownBtn');
+    const menu = document.getElementById('sortDropdownMenu');
+    const arrow = document.getElementById('sortDropdownArrow');
+    const input = document.getElementById('sortByInput');
+    const label = document.getElementById('sortDropdownLabel');
+    const options = document.querySelectorAll('.sort-option');
+
+    const labels = {
+      'created_at': 'Récents',
+      'global_score': 'Meilleurs scores',
+      'review_count': "Plus d'avis",
+      'name': 'A → Z'
+    };
+
+    function openMenu() {
+      menu.classList.remove('hidden');
+      setTimeout(() => {
+        menu.classList.remove('opacity-0', '-translate-y-2');
+        arrow.classList.add('rotate-180');
+      }, 10);
+    }
+
+    function closeMenu() {
+      menu.classList.add('opacity-0', '-translate-y-2');
+      arrow.classList.remove('rotate-180');
+      setTimeout(() => {
+        menu.classList.add('hidden');
+      }, 200);
+    }
+
+    btn?.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (menu.classList.contains('hidden')) {
+        openMenu();
+      } else {
+        closeMenu();
+      }
+    });
+
+    options.forEach(option => {
+      option.addEventListener('click', (e) => {
+        e.preventDefault();
+        const value = option.dataset.value;
+        input.value = value;
+        label.textContent = labels[value];
+
+        // Update active state
+        options.forEach(opt => {
+          opt.classList.remove('text-primary-600', 'dark:text-primary-400', 'bg-primary-50', 'dark:bg-primary-500/10');
+          opt.classList.add('text-gray-700', 'dark:text-gray-300');
+          const check = opt.querySelector('svg:last-child');
+          if (check && check.innerHTML.includes('polyline')) {
+            check.classList.add('hidden');
+          }
+        });
+        option.classList.remove('text-gray-700', 'dark:text-gray-300');
+        option.classList.add('text-primary-600', 'dark:text-primary-400', 'bg-primary-50', 'dark:bg-primary-500/10');
+
+        closeMenu();
+      });
+    });
+
+    // Close on click outside
+    document.addEventListener('click', (e) => {
+      if (!btn?.contains(e.target) && !menu?.contains(e.target)) {
+        closeMenu();
+      }
+    });
+
+    // Close on escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeMenu();
+      }
+    });
+  })();
+</script>

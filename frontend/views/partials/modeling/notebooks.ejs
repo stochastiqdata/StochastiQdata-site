@@ -1,0 +1,50 @@
+  <!-- ============================
+       NOTEBOOKS
+       ============================ -->
+  <div class="card p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+      <svg class="w-5 h-5 text-cyan-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+      </svg>
+      Notebooks
+    </h2>
+    <%
+      const notebooks = locals.notebooks || [];
+    %>
+    <% if (notebooks.length > 0) { %>
+      <div class="space-y-3">
+        <% notebooks.forEach(nb => { %>
+          <a href="<%= nb.url %>" target="_blank" rel="noopener noreferrer"
+             class="flex items-center gap-4 p-4 rounded-xl border border-gray-200 dark:border-navy-700 hover:border-cyan-400 dark:hover:border-cyan-600 hover:bg-cyan-50 dark:hover:bg-cyan-900/10 transition-all group">
+            <div class="w-10 h-10 rounded-xl bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5 text-cyan-600 dark:text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+              </svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="font-medium text-gray-900 dark:text-white group-hover:text-cyan-700 dark:group-hover:text-cyan-300 truncate"><%= nb.title %></p>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5"><%= nb.platform %> · <%= nb.author %></p>
+            </div>
+            <svg class="w-4 h-4 text-gray-400 group-hover:text-cyan-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+              <polyline points="15 3 21 3 21 9"/>
+              <line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+          </a>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="flex flex-col items-center justify-center py-10 text-center">
+        <div class="w-14 h-14 rounded-2xl bg-cyan-100 dark:bg-cyan-900/20 flex items-center justify-center mb-4">
+          <svg class="w-7 h-7 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+          </svg>
+        </div>
+        <p class="text-gray-500 dark:text-gray-400 text-sm">Aucun notebook disponible pour ce dataset.</p>
+        <p class="text-gray-400 dark:text-gray-500 text-xs mt-1">Partagez votre analyse et contribuez à la communauté !</p>
+      </div>
+    <% } %>
+  </div>

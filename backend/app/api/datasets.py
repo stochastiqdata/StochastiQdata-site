@@ -2,9 +2,11 @@
 Dataset API endpoints
 """
 from typing import Optional, List
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File
 from app.core.database import get_supabase_client
 from app.middleware.supabase_auth import SupabaseUser, get_current_user, require_auth
+import uuid
+import os
 from app.schemas import (
     DatasetCreate,
     DatasetResponse,
@@ -135,3 +137,51 @@ async def delete_dataset(
         raise HTTPException(status_code=403, detail="Not authorized to delete this dataset")
 
     supabase.table("datasets").delete().eq("id", dataset_id).execute()
+
+
+@router.post("/upload")
+async def upload_dataset_file(
+    file: UploadFile = File(...),
+    current_user: SupabaseUser = Depends(require_auth),
+):
+    """
+    Upload a dataset file (CSV, Parquet, Excel) to Supabase Storage.
+    Returns the public URL of the uploaded file.
+    """
+    ALLOWED_TYPES = [
+        "text/csv",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/octet-stream",
+    ]
+    MAX_SIZE_MB = 50
+
+    # Validate extension
+    ext = os.path.splitext(file.filename or "")[1].lower()
+    if ext not in [".csv", ".parquet", ".xlsx", ".xls"]:
+        raise HTTPException(status_code=400, detail="Format non supporté. Utilisez CSV, Parquet ou Excel.")
+
+    content = await file.read()
+
+    if len(content) > MAX_SIZE_MB * 1024 * 1024:
+        raise HTTPException(status_code=400, detail=f"Fichier trop volumineux (max {MAX_SIZE_MB} MB).")
+
+    supabase = get_supabase_client()
+
+    # Unique filename to avoid collisions
+    unique_name = f"{current_user.user_id}/{uuid.uuid4()}{ext}"
+
+    try:
+        supabase.storage.from_("datasets").upload(
+            unique_name,
+            content,
+            {"content-type": file.content_type or "application/octet-stream"},
+        )
+        public_url = supabase.storage.from_("datasets").get_public_url(unique_name)
+        return {
+            "url": public_url,
+            "filename": file.filename,
+            "size_mb": round(len(content) / (1024 * 1024), 2),
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur upload : {str(e)}")
