@@ -14,6 +14,8 @@ class Settings(BaseSettings):
 
     # CORS
     frontend_url: str = "http://localhost:3000"
+    frontend_url_www: str = ""
+    frontend_url_vercel: str = ""
 
     # App
     app_name: str = "StochastiQdata API"
