@@ -51,10 +51,12 @@
         IARD
       </span>
     <% } %>
+    <% if (dataset.file_url) { %>
     <span class="badge badge-opendata">
-      <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-      OpenData
+      <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Disponible
     </span>
+    <% } %>
   </div>
 
   <!-- Tags métier -->
@@ -141,26 +143,28 @@
     <span class="text-gray-600 dark:text-gray-300">Recommandé : <strong class="text-primary-500"><%= recommendedModel %></strong></span>
   </div>
 
-  <!-- Bouton principal: Accéder aux données -->
-  <% if (dataset.source_url) { %>
-  <a href="<%= dataset.source_url %>"
-     target="_blank"
-     rel="noopener noreferrer"
+  <!-- Bouton principal: Télécharger ou Voir la fiche -->
+  <% if (dataset.file_url) { %>
+  <a href="<%= dataset.file_url %>" download
      class="flex items-center justify-center gap-2 w-full mt-4 py-3 px-4 bg-gradient-to-r from-primary-500 to-teal-500 hover:from-primary-600 hover:to-teal-600 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-[1.02]"
      onclick="event.stopPropagation()">
     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-      <polyline points="15 3 21 3 21 9"/>
-      <line x1="10" y1="14" x2="21" y2="3"/>
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="7 10 12 15 17 10"/>
+      <line x1="12" y1="15" x2="12" y2="3"/>
     </svg>
-    Accéder aux données
-    <% if (dataset.source === 'kaggle') { %>
-      <span class="text-xs opacity-75">· Kaggle</span>
-    <% } else if (dataset.source === 'insee') { %>
-      <span class="text-xs opacity-75">· INSEE</span>
-    <% } else if (dataset.source === 'opendata') { %>
-      <span class="text-xs opacity-75">· OpenData</span>
-    <% } %>
+    Télécharger
+    <span class="text-xs opacity-75"><%= dataset.file_size_mb ? '· ' + dataset.file_size_mb + ' MB' : '' %></span>
+  </a>
+  <% } else { %>
+  <a href="/modeling/<%= dataset.id %>"
+     class="flex items-center justify-center gap-2 w-full mt-4 py-3 px-4 bg-gray-100 dark:bg-navy-700 hover:bg-gray-200 dark:hover:bg-navy-600 text-gray-700 dark:text-gray-200 font-semibold rounded-xl transition-all duration-300"
+     onclick="event.stopPropagation()">
+    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
+    </svg>
+    Voir la fiche
   </a>
   <% } %>
 
