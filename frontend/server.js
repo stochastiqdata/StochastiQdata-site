@@ -370,6 +370,18 @@ app.get('/api/search', limiter, async (req, res) => {
   }
 });
 
+// Stats dataset (profil + statistiques par colonne)
+app.get('/api/datasets/:id/stats', async (req, res) => {
+  try {
+    const response = await axios.get(`${API_URL}/datasets/${req.params.id}/stats`);
+    res.json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json({
+      detail: error.response?.data?.detail || 'Erreur lors du calcul des statistiques'
+    });
+  }
+});
+
 // Preview dataset (10 premières lignes)
 app.get('/api/datasets/:id/preview', async (req, res) => {
   try {

@@ -221,3 +221,105 @@ async def preview_dataset(dataset_id: str):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur lecture fichier : {str(e)}")
+
+
+@router.get("/{dataset_id}/stats")
+async def stats_dataset(dataset_id: str):
+    """
+    Calcule les statistiques complètes du dataset (profil global + stats par colonne).
+    """
+    import pandas as pd
+    import io
+    import httpx
+    import math
+
+    supabase = get_supabase_client()
+    result = supabase.table("datasets").select("file_url").eq("id", dataset_id).single().execute()
+
+    if not result.data or not result.data.get("file_url"):
+        raise HTTPException(status_code=404, detail="Aucun fichier disponible pour ce dataset.")
+
+    file_url = result.data["file_url"]
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(file_url, timeout=60)
+            response.raise_for_status()
+
+        ext = os.path.splitext(file_url.split("?")[0])[1].lower()
+        content = response.content
+
+        if ext == ".csv":
+            df = pd.read_csv(io.BytesIO(content))
+        elif ext == ".parquet":
+            df = pd.read_parquet(io.BytesIO(content))
+        elif ext in (".xlsx", ".xls"):
+            df = pd.read_excel(io.BytesIO(content))
+        else:
+            df = pd.read_csv(io.BytesIO(content))
+
+        total_rows, total_cols = df.shape
+        total_cells = total_rows * total_cols
+        total_nulls = int(df.isnull().sum().sum())
+        overall_null_pct = round(total_nulls / total_cells * 100, 1) if total_cells > 0 else 0
+
+        numeric_cols = df.select_dtypes(include=["number"]).columns.tolist()
+        categorical_cols = df.select_dtypes(exclude=["number"]).columns.tolist()
+
+        # Statistiques par colonne
+        columns_stats = []
+        for col in df.columns:
+            null_count = int(df[col].isnull().sum())
+            null_pct = round(null_count / total_rows * 100, 1) if total_rows > 0 else 0
+            unique = int(df[col].nunique())
+            is_numeric = col in numeric_cols
+
+            stat = {
+                "name": col,
+                "dtype": str(df[col].dtype),
+                "is_numeric": is_numeric,
+                "null_count": null_count,
+                "null_pct": null_pct,
+                "unique": unique,
+            }
+
+            if is_numeric:
+                s = df[col].dropna()
+                def safe(v):
+                    return None if (v is None or (isinstance(v, float) and math.isnan(v))) else round(float(v), 4)
+                stat.update({
+                    "mean": safe(s.mean()),
+                    "std": safe(s.std()),
+                    "min": safe(s.min()),
+                    "p25": safe(s.quantile(0.25)),
+                    "p50": safe(s.quantile(0.50)),
+                    "p75": safe(s.quantile(0.75)),
+                    "max": safe(s.max()),
+                })
+            else:
+                top = df[col].value_counts().head(5)
+                stat["top_values"] = [{"value": str(k), "count": int(v)} for k, v in top.items()]
+
+            columns_stats.append(stat)
+
+        # Profil global — détection variable cible
+        suggested_target = None
+        for candidate in ["ClaimNb", "claim_nb", "target", "label", "y", "income", "churn", "default"]:
+            if candidate in df.columns:
+                suggested_target = candidate
+                break
+
+        return {
+            "profile": {
+                "total_rows": total_rows,
+                "total_cols": total_cols,
+                "overall_null_pct": overall_null_pct,
+                "numeric_count": len(numeric_cols),
+                "categorical_count": len(categorical_cols),
+                "suggested_target": suggested_target,
+            },
+            "columns": columns_stats,
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur calcul stats : {str(e)}")
