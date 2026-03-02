@@ -10,7 +10,7 @@
   const isFraude    = tags.includes('fraude');
   const isPricing   = tags.includes('pricing');
   const isReserving = tags.includes('reserving');
-  const vars = { score, circumference, strokeDashoffset, modelingType, tags, isIARD, isSante, isVie, isFraude, isPricing, isReserving };
+  const vars = { score, circumference, strokeDashoffset, modelingType, tags, isIARD, isSante, isVie, isFraude, isPricing, isReserving, TAG_LABELS };
 %>
 
 <div class="max-w-5xl mx-auto">
@@ -30,4 +30,5 @@
   <%- include('../partials/modeling/notebooks', vars) %>
   <%- include('../partials/modeling/reviews', vars) %>
   <%- include('../partials/modeling/questions', vars) %>
+  <%- include('../partials/modeling/similar', vars) %>
 </div>

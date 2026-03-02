@@ -34,6 +34,17 @@ class ModelingType(str, Enum):
     OTHER = "other"
 
 
+class DatasetLicense(str, Enum):
+    CC0 = "cc0"
+    CC_BY = "cc-by"
+    CC_BY_SA = "cc-by-sa"
+    CC_BY_NC = "cc-by-nc"
+    MIT = "mit"
+    APACHE = "apache-2.0"
+    PROPRIETARY = "proprietary"
+    OTHER = "other"
+
+
 class PivotVariable(str, Enum):
     OCCURRENCE_DATE = "occurrence_date"
     CLAIM_AMOUNT = "claim_amount"
@@ -84,6 +95,11 @@ class DatasetBase(BaseModel):
     data_updated_at: Optional[datetime] = Field(None, description="Date de dernière mise à jour des données source")
     data_dictionary_url: Optional[str] = Field(None, description="URL vers le dictionnaire des variables")
     file_url: Optional[str] = Field(None, description="URL du fichier hébergé sur Supabase Storage")
+    license: Optional[DatasetLicense] = Field(None, description="Licence du dataset")
+    date_from: Optional[datetime] = Field(None, description="Début de la période couverte")
+    date_to: Optional[datetime] = Field(None, description="Fin de la période couverte")
+    target_variable: Optional[str] = Field(None, description="Variable cible pour la modélisation")
+    exposure_variable: Optional[str] = Field(None, description="Variable d'exposition (actuariat)")
     modeling_types: List[ModelingType] = Field(default=[], description="Types de modélisation supportés")
     pivot_variables: List[PivotVariable] = Field(default=[], description="Variables pivots disponibles")
     best_fit_models: List[ModelType] = Field(default=[], description="Modèles suggérés pour ce dataset")

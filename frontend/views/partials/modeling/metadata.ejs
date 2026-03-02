@@ -2,31 +2,92 @@
   <div class="card p-6 mb-6">
     <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Informations sur les données</h2>
 
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <!-- Chiffres clés -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
       <% if (dataset.row_count) { %>
         <div class="text-center p-4 rounded-xl bg-gray-50 dark:bg-navy-700">
           <p class="text-2xl font-bold text-gray-900 dark:text-white"><%= dataset.row_count.toLocaleString('fr-FR') %></p>
           <p class="text-sm text-gray-500 dark:text-gray-400">Lignes</p>
         </div>
       <% } %>
-
       <% if (dataset.column_count) { %>
         <div class="text-center p-4 rounded-xl bg-gray-50 dark:bg-navy-700">
           <p class="text-2xl font-bold text-gray-900 dark:text-white"><%= dataset.column_count %></p>
           <p class="text-sm text-gray-500 dark:text-gray-400">Colonnes</p>
         </div>
       <% } %>
-
       <% if (dataset.file_size_mb) { %>
         <div class="text-center p-4 rounded-xl bg-gray-50 dark:bg-navy-700">
           <p class="text-2xl font-bold text-gray-900 dark:text-white"><%= dataset.file_size_mb %></p>
           <p class="text-sm text-gray-500 dark:text-gray-400">MB</p>
         </div>
       <% } %>
-
       <div class="text-center p-4 rounded-xl bg-gray-50 dark:bg-navy-700">
         <p class="text-2xl font-bold text-gray-900 dark:text-white"><%= dataset.review_count || 0 %></p>
         <p class="text-sm text-gray-500 dark:text-gray-400">Avis</p>
       </div>
     </div>
+
+    <!-- Infos complémentaires -->
+    <%
+      const hasExtra = dataset.license || dataset.date_from || dataset.date_to || dataset.target_variable || dataset.exposure_variable;
+      const LICENSE_LABELS = { 'cc0': 'CC0 1.0 (domaine public)', 'cc-by': 'CC BY 4.0', 'cc-by-sa': 'CC BY-SA 4.0', 'cc-by-nc': 'CC BY-NC 4.0', 'mit': 'MIT', 'apache-2.0': 'Apache 2.0', 'proprietary': 'Propriétaire', 'other': 'Autre' };
+    %>
+    <% if (hasExtra) { %>
+    <div class="flex flex-wrap gap-3 pt-4 border-t border-gray-100 dark:border-navy-700">
+
+      <% if (dataset.target_variable) { %>
+      <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800">
+        <svg class="w-4 h-4 text-primary-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/>
+        </svg>
+        <div>
+          <p class="text-xs text-primary-400 dark:text-primary-500">Variable cible</p>
+          <p class="text-sm font-semibold font-mono text-primary-700 dark:text-primary-300"><%= dataset.target_variable %></p>
+        </div>
+      </div>
+      <% } %>
+
+      <% if (dataset.exposure_variable) { %>
+      <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-teal-50 dark:bg-teal-900/20 border border-teal-200 dark:border-teal-800">
+        <svg class="w-4 h-4 text-teal-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="4"/>
+        </svg>
+        <div>
+          <p class="text-xs text-teal-500 dark:text-teal-500">Exposition</p>
+          <p class="text-sm font-semibold font-mono text-teal-700 dark:text-teal-300"><%= dataset.exposure_variable %></p>
+        </div>
+      </div>
+      <% } %>
+
+      <% if (dataset.date_from || dataset.date_to) { %>
+      <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-50 dark:bg-navy-700 border border-gray-200 dark:border-navy-600">
+        <svg class="w-4 h-4 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <div>
+          <p class="text-xs text-gray-400">Période couverte</p>
+          <p class="text-sm font-medium text-gray-700 dark:text-gray-200">
+            <%= dataset.date_from ? new Date(dataset.date_from).getFullYear() : '?' %>
+            –
+            <%= dataset.date_to ? new Date(dataset.date_to).getFullYear() : '?' %>
+          </p>
+        </div>
+      </div>
+      <% } %>
+
+      <% if (dataset.license) { %>
+      <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-50 dark:bg-navy-700 border border-gray-200 dark:border-navy-600">
+        <svg class="w-4 h-4 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <div>
+          <p class="text-xs text-gray-400">Licence</p>
+          <p class="text-sm font-medium text-gray-700 dark:text-gray-200"><%= LICENSE_LABELS[dataset.license] || dataset.license %></p>
+        </div>
+      </div>
+      <% } %>
+
+    </div>
+    <% } %>
   </div>

@@ -48,6 +48,57 @@
           placeholder="Lien vers le dictionnaire des variables, README, etc.">
       </div>
 
+      <!-- Licence + Période -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        <div>
+          <label for="license" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Licence</label>
+          <select id="license" name="license"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all">
+            <option value="">— Sélectionner —</option>
+            <option value="cc0">CC0 1.0 (domaine public)</option>
+            <option value="cc-by">CC BY 4.0</option>
+            <option value="cc-by-sa">CC BY-SA 4.0</option>
+            <option value="cc-by-nc">CC BY-NC 4.0</option>
+            <option value="mit">MIT</option>
+            <option value="apache-2.0">Apache 2.0</option>
+            <option value="proprietary">Propriétaire</option>
+            <option value="other">Autre</option>
+          </select>
+        </div>
+        <div>
+          <label for="date_from" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Période — début</label>
+          <input type="date" id="date_from" name="date_from"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all">
+        </div>
+        <div>
+          <label for="date_to" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Période — fin</label>
+          <input type="date" id="date_to" name="date_to"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all">
+        </div>
+      </div>
+
+      <!-- Variable cible + Exposition -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <div>
+          <label for="target_variable" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Variable cible
+            <span class="ml-1 text-xs text-gray-400 font-normal">(colonne à prédire)</span>
+          </label>
+          <input type="text" id="target_variable" name="target_variable"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all font-mono"
+            placeholder="Ex: ClaimNb, churn, default">
+        </div>
+        <div>
+          <label for="exposure_variable" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Variable d'exposition
+            <span class="ml-1 text-xs text-gray-400 font-normal">(actuariat)</span>
+          </label>
+          <input type="text" id="exposure_variable" name="exposure_variable"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 outline-none transition-all font-mono"
+            placeholder="Ex: Exposure, duration">
+        </div>
+      </div>
+
       <!-- Upload fichier -->
       <div class="mt-4">
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

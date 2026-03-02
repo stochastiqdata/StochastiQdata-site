@@ -1,0 +1,83 @@
+<!-- ============================
+     DATASETS SIMILAIRES
+     ============================ -->
+<div class="card p-6 mb-6">
+  <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+    <svg class="w-5 h-5 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+    </svg>
+    Vous aimerez aussi
+  </h2>
+
+  <div id="similarSkeleton" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <% for(let i = 0; i < 2; i++) { %>
+      <div class="h-24 bg-gray-100 dark:bg-navy-700 rounded-xl animate-pulse"></div>
+    <% } %>
+  </div>
+
+  <div id="similarGrid" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+  <div id="similarEmpty" class="hidden text-sm text-gray-400 dark:text-gray-500 text-center py-4">Aucun dataset similaire trouvé.</div>
+</div>
+
+<script>
+(function() {
+  const datasetId = '<%= dataset.id %>';
+  const TAG_LABELS = <%- JSON.stringify(TAG_LABELS) %>;
+
+  const scoreColor = s => s >= 70 ? '#14B8A6' : s >= 50 ? '#3B82F6' : s >= 30 ? '#EAB308' : '#EF4444';
+
+  fetch(`/api/datasets/${datasetId}/similar`)
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('similarSkeleton').classList.add('hidden');
+
+      const datasets = data.datasets || [];
+      const sourceTags = data.source_tags || [];
+
+      if (!datasets.length) {
+        document.getElementById('similarEmpty').classList.remove('hidden');
+        return;
+      }
+
+      const grid = document.getElementById('similarGrid');
+
+      grid.innerHTML = datasets.map(d => {
+        const score   = d.global_score || 0;
+        const color   = scoreColor(score);
+        const dTags   = d.tags || [];
+        const common  = dTags.filter(t => sourceTags.includes(t));
+        const other   = dTags.filter(t => !sourceTags.includes(t));
+        const allTags = [...common.map(t => ({ t, shared: true })), ...other.map(t => ({ t, shared: false }))].slice(0, 4);
+
+        const tagHtml = allTags.map(({ t, shared }) =>
+          `<span class="px-2 py-0.5 text-xs rounded-full ${shared ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 font-medium' : 'bg-gray-100 dark:bg-navy-700 text-gray-500 dark:text-gray-400'}">${TAG_LABELS[t] || t}</span>`
+        ).join('');
+
+        const dlBadge = d.download_count > 0
+          ? `<span class="text-xs text-gray-400">${d.download_count.toLocaleString('fr-FR')} DL</span>`
+          : '';
+
+        return `<a href="/modeling/${d.id}"
+            class="flex items-center gap-4 p-4 rounded-xl border border-gray-200 dark:border-navy-700 bg-white dark:bg-navy-800 hover:border-indigo-300 dark:hover:border-indigo-700 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-all group">
+          <!-- Score -->
+          <div class="shrink-0 w-12 h-12 rounded-full border-2 flex items-center justify-center text-sm font-bold" style="border-color:${color};color:${color}">${score}</div>
+          <!-- Info -->
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 truncate">${d.name}</p>
+            <div class="flex flex-wrap gap-1 mt-1.5">${tagHtml}</div>
+            <div class="flex items-center gap-2 mt-1">${dlBadge}</div>
+          </div>
+          <!-- Arrow -->
+          <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-indigo-400 shrink-0 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+        </a>`;
+      }).join('');
+
+      grid.classList.remove('hidden');
+    })
+    .catch(() => {
+      document.getElementById('similarSkeleton').classList.add('hidden');
+      document.getElementById('similarEmpty').classList.remove('hidden');
+    });
+})();
+</script>

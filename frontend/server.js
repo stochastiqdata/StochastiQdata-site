@@ -370,6 +370,18 @@ app.get('/api/search', limiter, async (req, res) => {
   }
 });
 
+// Datasets similaires
+app.get('/api/datasets/:id/similar', async (req, res) => {
+  try {
+    const response = await axios.get(`${API_URL}/datasets/${req.params.id}/similar`);
+    res.json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json({
+      detail: error.response?.data?.detail || 'Erreur lors de la recherche de datasets similaires'
+    });
+  }
+});
+
 // Matrice de corrélation
 app.get('/api/datasets/:id/correlations', async (req, res) => {
   try {

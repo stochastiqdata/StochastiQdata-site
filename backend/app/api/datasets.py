@@ -180,6 +180,41 @@ async def upload_dataset_file(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur upload : {str(e)}")
 
+@router.get("/{dataset_id}/similar")
+async def similar_datasets(dataset_id: str):
+    """
+    Retourne jusqu'à 4 datasets ayant des tags en commun avec le dataset donné.
+    Triés par nombre de tags en commun décroissant.
+    """
+    supabase = get_supabase_client()
+
+    result = supabase.table("datasets").select("tags").eq("id", dataset_id).single().execute()
+
+    if not result.data:
+        raise HTTPException(status_code=404, detail="Dataset non trouvé.")
+
+    tags = result.data.get("tags") or []
+
+    if not tags:
+        return {"datasets": [], "source_tags": []}
+
+    similar = (
+        supabase.table("datasets")
+        .select("id, name, global_score, tags, modeling_types, file_url, download_count, review_count, file_size_mb")
+        .neq("id", dataset_id)
+        .overlaps("tags", tags)
+        .limit(20)
+        .execute()
+    )
+
+    def common_count(d):
+        return len(set(tags) & set(d.get("tags") or []))
+
+    sorted_datasets = sorted(similar.data or [], key=common_count, reverse=True)[:4]
+
+    return {"datasets": sorted_datasets, "source_tags": tags}
+
+
 @router.post("/{dataset_id}/download")
 async def download_dataset(dataset_id: str):
     """
