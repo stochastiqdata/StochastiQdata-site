@@ -3,7 +3,7 @@ Dataset API endpoints
 """
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File
-from app.core.database import get_supabase_client
+from app.core.database import get_supabase_client, get_supabase_admin_client
 from app.middleware.supabase_auth import SupabaseUser, get_current_user, require_auth
 import uuid
 import os
@@ -139,26 +139,21 @@ async def delete_dataset(
     supabase.table("datasets").delete().eq("id", dataset_id).execute()
 
 
-@router.post("/upload")
+@router.post("/{dataset_id}/upload-file")
 async def upload_dataset_file(
+    dataset_id: str,
     file: UploadFile = File(...),
-    current_user: SupabaseUser = Depends(require_auth),
+    current_user: SupabaseUser = Depends(get_current_user),  # Optionnel en mode démo
 ):
     """
     Upload a dataset file (CSV, Parquet, Excel) to Supabase Storage.
-    Returns the public URL of the uploaded file.
+    Updates the dataset record with the public URL.
     """
-    ALLOWED_TYPES = [
-        "text/csv",
-        "application/vnd.ms-excel",
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "application/octet-stream",
-    ]
+    ALLOWED_EXTENSIONS = [".csv", ".parquet", ".xlsx", ".xls"]
     MAX_SIZE_MB = 50
 
-    # Validate extension
     ext = os.path.splitext(file.filename or "")[1].lower()
-    if ext not in [".csv", ".parquet", ".xlsx", ".xls"]:
+    if ext not in ALLOWED_EXTENSIONS:
         raise HTTPException(status_code=400, detail="Format non supporté. Utilisez CSV, Parquet ou Excel.")
 
     content = await file.read()
@@ -166,20 +161,19 @@ async def upload_dataset_file(
     if len(content) > MAX_SIZE_MB * 1024 * 1024:
         raise HTTPException(status_code=400, detail=f"Fichier trop volumineux (max {MAX_SIZE_MB} MB).")
 
-    supabase = get_supabase_client()
-
-    # Unique filename to avoid collisions
-    unique_name = f"{current_user.user_id}/{uuid.uuid4()}{ext}"
+    supabase_admin = get_supabase_admin_client()
+    file_path = f"{dataset_id}/{uuid.uuid4()}{ext}"
 
     try:
-        supabase.storage.from_("datasets").upload(
-            unique_name,
+        supabase_admin.storage.from_("datasets-files").upload(
+            file_path,
             content,
             {"content-type": file.content_type or "application/octet-stream"},
         )
-        public_url = supabase.storage.from_("datasets").get_public_url(unique_name)
+        public_url = supabase_admin.storage.from_("datasets-files").get_public_url(file_path)
+        supabase_admin.table("datasets").update({"file_url": public_url}).eq("id", dataset_id).execute()
         return {
-            "url": public_url,
+            "file_url": public_url,
             "filename": file.filename,
             "size_mb": round(len(content) / (1024 * 1024), 2),
         }

@@ -1,15 +1,39 @@
 <script>
+// Preview du fichier sélectionné
+document.getElementById('dataset_file')?.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  const placeholder = document.getElementById('uploadPlaceholder');
+  const selected = document.getElementById('uploadSelected');
+  const fileName = document.getElementById('uploadFileName');
+  const uploadError = document.getElementById('uploadError');
+
+  if (file) {
+    const sizeMb = file.size / (1024 * 1024);
+    if (sizeMb > 50) {
+      uploadError.textContent = 'Fichier trop volumineux (max 50 MB).';
+      uploadError.classList.remove('hidden');
+      e.target.value = '';
+      return;
+    }
+    uploadError.classList.add('hidden');
+    placeholder.classList.add('hidden');
+    selected.classList.remove('hidden');
+    fileName.textContent = `${file.name} (${sizeMb.toFixed(1)} MB)`;
+  } else {
+    placeholder.classList.remove('hidden');
+    selected.classList.add('hidden');
+  }
+});
+
 document.getElementById('addDatasetForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const submitBtn = document.getElementById('submitBtn');
   const formMessage = document.getElementById('formMessage');
 
-  // Disable button
   submitBtn.disabled = true;
   submitBtn.innerHTML = '<svg class="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg> Envoi en cours...';
 
-  // Collect form data
   const formData = {
     name: document.getElementById('name').value,
     description: document.getElementById('description').value || null,
@@ -26,37 +50,58 @@ document.getElementById('addDatasetForm').addEventListener('submit', async (e) =
   };
 
   try {
-    // Get Supabase token if user is signed in
     let token = null;
     if (typeof getAccessToken === 'function') {
       token = await getAccessToken();
     }
 
-    const headers = {
-      'Content-Type': 'application/json'
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
 
+    // Étape 1 : créer le dataset
     const response = await fetch('/api/datasets', {
       method: 'POST',
-      headers: headers,
+      headers,
       body: JSON.stringify(formData)
     });
 
-    if (response.ok) {
-      formMessage.className = 'p-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300';
-      formMessage.innerHTML = '<div class="flex items-center gap-2"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Dataset ajouté avec succès ! Redirection...</div>';
-      formMessage.classList.remove('hidden');
-
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 1500);
-    } else {
+    if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.detail || 'Erreur lors de l\'ajout');
+      throw new Error(error.detail || "Erreur lors de l'ajout");
     }
+
+    const dataset = await response.json();
+
+    // Étape 2 : uploader le fichier si sélectionné
+    const fileInput = document.getElementById('dataset_file');
+    if (fileInput?.files?.length > 0) {
+      submitBtn.innerHTML = '<svg class="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg> Upload du fichier...';
+
+      const fileForm = new FormData();
+      fileForm.append('file', fileInput.files[0]);
+
+      const uploadHeaders = {};
+      if (token) uploadHeaders['Authorization'] = `Bearer ${token}`;
+
+      const uploadRes = await fetch(`/api/datasets/${dataset.id}/upload-file`, {
+        method: 'POST',
+        headers: uploadHeaders,
+        body: fileForm
+      });
+
+      if (!uploadRes.ok) {
+        // Dataset créé mais upload échoué — on continue vers la page
+        console.warn('Upload fichier échoué, dataset créé sans fichier.');
+      }
+    }
+
+    formMessage.className = 'p-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300';
+    formMessage.innerHTML = '<div class="flex items-center gap-2"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Dataset ajouté avec succès ! Redirection...</div>';
+    formMessage.classList.remove('hidden');
+
+    setTimeout(() => {
+      window.location.href = `/modeling/${dataset.id}`;
+    }, 1500);
   } catch (error) {
     formMessage.className = 'p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300';
     formMessage.innerHTML = `<div class="flex items-center gap-2"><svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> ${error.message}</div>`;

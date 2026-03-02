@@ -6,6 +6,8 @@ const expressLayouts = require('express-ejs-layouts');
 const compression = require('compression');
 const winston = require('winston');
 const validator = require('validator');
+const multer = require('multer');
+const FormData = require('form-data');
 
 // Import security configuration
 const { limiter, helmetConfig } = require('./config/security');
@@ -369,6 +371,40 @@ app.get('/api/search', limiter, async (req, res) => {
 });
 
 // Create dataset
+// Upload fichier dataset → proxy vers FastAPI (multipart)
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 52 * 1024 * 1024 } });
+
+app.post('/api/datasets/:id/upload-file', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ detail: 'Aucun fichier fourni.' });
+    }
+
+    const form = new FormData();
+    form.append('file', req.file.buffer, {
+      filename: req.file.originalname,
+      contentType: req.file.mimetype,
+    });
+
+    const headers = { ...form.getHeaders() };
+    if (req.headers.authorization) {
+      headers['Authorization'] = req.headers.authorization;
+    }
+
+    const response = await axios.post(
+      `${API_URL}/datasets/${req.params.id}/upload-file`,
+      form,
+      { headers, maxBodyLength: Infinity }
+    );
+    res.json(response.data);
+  } catch (error) {
+    logger.error('Dataset file upload error', { error: error.response?.data || error.message });
+    res.status(error.response?.status || 500).json({
+      detail: error.response?.data?.detail || "Erreur lors de l'upload du fichier"
+    });
+  }
+});
+
 app.post('/api/datasets', limiter, async (req, res) => {
   try {
     const headers = {

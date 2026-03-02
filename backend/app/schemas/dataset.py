@@ -83,6 +83,7 @@ class DatasetBase(BaseModel):
     file_size_mb: Optional[float] = None
     data_updated_at: Optional[datetime] = Field(None, description="Date de dernière mise à jour des données source")
     data_dictionary_url: Optional[str] = Field(None, description="URL vers le dictionnaire des variables")
+    file_url: Optional[str] = Field(None, description="URL du fichier hébergé sur Supabase Storage")
     modeling_types: List[ModelingType] = Field(default=[], description="Types de modélisation supportés")
     pivot_variables: List[PivotVariable] = Field(default=[], description="Variables pivots disponibles")
     best_fit_models: List[ModelType] = Field(default=[], description="Modèles suggérés pour ce dataset")
