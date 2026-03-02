@@ -15,7 +15,6 @@ yarn.lock
 # Build outputs
 dist/
 build/
-frontend/public/css/output.css
 *.tsbuildinfo
 
 # Logs
