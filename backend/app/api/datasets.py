@@ -245,6 +245,64 @@ async def preview_dataset(dataset_id: str):
         raise HTTPException(status_code=500, detail=f"Erreur lecture fichier : {str(e)}")
 
 
+@router.get("/{dataset_id}/correlations")
+async def correlations_dataset(dataset_id: str):
+    """
+    Retourne la matrice de corrélation entre les colonnes numériques.
+    """
+    import pandas as pd
+    import io
+    import httpx
+    import math
+
+    supabase = get_supabase_client()
+    result = supabase.table("datasets").select("file_url").eq("id", dataset_id).single().execute()
+
+    if not result.data or not result.data.get("file_url"):
+        raise HTTPException(status_code=404, detail="Aucun fichier disponible pour ce dataset.")
+
+    file_url = result.data["file_url"]
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(file_url, timeout=60)
+            response.raise_for_status()
+
+        ext = os.path.splitext(file_url.split("?")[0])[1].lower()
+        content = response.content
+
+        if ext == ".csv":
+            df = pd.read_csv(io.BytesIO(content))
+        elif ext == ".parquet":
+            df = pd.read_parquet(io.BytesIO(content))
+        elif ext in (".xlsx", ".xls"):
+            df = pd.read_excel(io.BytesIO(content))
+        else:
+            df = pd.read_csv(io.BytesIO(content))
+
+        numeric_df = df.select_dtypes(include=["number"])
+
+        if numeric_df.shape[1] < 2:
+            raise HTTPException(status_code=422, detail="Pas assez de colonnes numériques pour calculer les corrélations.")
+
+        corr = numeric_df.corr()
+
+        def safe_corr(v):
+            if v is None or (isinstance(v, float) and math.isnan(v)):
+                return None
+            return round(float(v), 3)
+
+        columns = corr.columns.tolist()
+        matrix = [[safe_corr(corr.loc[r, c]) for c in columns] for r in columns]
+
+        return {"columns": columns, "matrix": matrix}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur calcul corrélations : {str(e)}")
+
+
 @router.get("/{dataset_id}/stats")
 async def stats_dataset(dataset_id: str):
     """
@@ -254,6 +312,7 @@ async def stats_dataset(dataset_id: str):
     import io
     import httpx
     import math
+    import numpy as np
 
     supabase = get_supabase_client()
     result = supabase.table("datasets").select("file_url").eq("id", dataset_id).single().execute()
@@ -318,8 +377,15 @@ async def stats_dataset(dataset_id: str):
                     "p75": safe(s.quantile(0.75)),
                     "max": safe(s.max()),
                 })
+                if len(s) > 1:
+                    n_bins = min(30, max(5, unique))
+                    counts, edges = np.histogram(s, bins=n_bins)
+                    stat["histogram"] = {
+                        "counts": counts.tolist(),
+                        "edges": [round(float(e), 4) for e in edges.tolist()],
+                    }
             else:
-                top = df[col].value_counts().head(5)
+                top = df[col].value_counts().head(10)
                 stat["top_values"] = [{"value": str(k), "count": int(v)} for k, v in top.items()]
 
             columns_stats.append(stat)

@@ -165,6 +165,10 @@
       const tableEl = document.getElementById('statsTable');
       tableEl.innerHTML = html;
       tableEl.classList.remove('hidden');
+
+      // Partage des données avec les autres sections (distributions)
+      window._statsData = data;
+      document.dispatchEvent(new CustomEvent('statsLoaded', { detail: data }));
     })
     .catch(() => {
       document.getElementById('statsProfileSkeleton').classList.add('hidden');

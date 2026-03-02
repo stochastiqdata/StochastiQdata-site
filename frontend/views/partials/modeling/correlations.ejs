@@ -1,0 +1,91 @@
+<% if (dataset.file_url) { %>
+<!-- ============================
+     MATRICE DE CORRÉLATION
+     ============================ -->
+<div class="card p-6 mb-6">
+  <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+    <svg class="w-5 h-5 text-rose-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="3" width="18" height="18" rx="2"/>
+      <path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>
+    </svg>
+    Matrice de corrélation
+    <span class="text-sm font-normal text-gray-400 dark:text-gray-500">(variables numériques)</span>
+  </h2>
+
+  <!-- Légende -->
+  <div class="flex items-center gap-3 mb-4 text-xs text-gray-500">
+    <div class="flex items-center gap-1.5">
+      <div class="w-12 h-3 rounded" style="background: linear-gradient(to right, rgba(239,68,68,0.85), rgba(239,68,68,0.1), rgba(59,130,246,0.1), rgba(59,130,246,0.85))"></div>
+    </div>
+    <span>−1 (corrélation négative) → +1 (corrélation positive)</span>
+  </div>
+
+  <div id="corrSkeleton" class="h-48 bg-gray-100 dark:bg-navy-700 rounded-xl animate-pulse"></div>
+  <div id="corrMatrix" class="hidden overflow-x-auto"></div>
+  <div id="corrError" class="hidden p-4 text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/10 rounded-xl"></div>
+</div>
+
+<script>
+(function() {
+  const datasetId = '<%= dataset.id %>';
+
+  function cellColor(v) {
+    if (v === null) return 'rgba(0,0,0,0)';
+    const opacity = Math.min(0.88, Math.abs(v) * 0.9 + 0.05);
+    return v >= 0
+      ? `rgba(59,130,246,${opacity})`
+      : `rgba(239,68,68,${opacity})`;
+  }
+
+  fetch(`/api/datasets/${datasetId}/correlations`)
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('corrSkeleton').classList.add('hidden');
+
+      if (data.detail) {
+        const err = document.getElementById('corrError');
+        err.textContent = data.detail;
+        err.classList.remove('hidden');
+        return;
+      }
+
+      const { columns, matrix } = data;
+
+      let html = `<table class="text-xs border-collapse" style="min-width:max-content">
+        <thead><tr>
+          <th class="px-2 py-2 text-gray-400 font-normal text-right min-w-[80px]"></th>`;
+
+      columns.forEach(col => {
+        html += `<th class="font-mono font-semibold text-gray-500 dark:text-gray-400 px-1" style="writing-mode:vertical-rl;transform:rotate(180deg);height:80px;vertical-align:bottom;padding-bottom:6px;white-space:nowrap;max-width:24px" title="${col}">${col}</th>`;
+      });
+      html += '</tr></thead><tbody>';
+
+      matrix.forEach((row, i) => {
+        html += `<tr><td class="font-mono font-semibold text-gray-500 dark:text-gray-400 text-right pr-3 py-0.5 whitespace-nowrap">${columns[i]}</td>`;
+        row.forEach((v, j) => {
+          const bg    = cellColor(v);
+          const abs   = v !== null ? Math.abs(v) : 0;
+          const color = abs > 0.45 ? '#fff' : (document.documentElement.classList.contains('dark') ? '#9CA3AF' : '#374151');
+          const val   = i === j ? '1.00' : (v !== null ? (v >= 0 ? '+' : '') + v.toFixed(2) : '—');
+          html += `<td style="width:40px;height:38px;padding:0">
+            <div style="width:40px;height:38px;background:${bg};display:flex;align-items:center;justify-content:center;color:${color};font-family:monospace;font-size:10px;font-weight:${abs>0.45?'600':'400'}">${val}</div>
+          </td>`;
+        });
+        html += '</tr>';
+      });
+
+      html += '</tbody></table>';
+
+      const el = document.getElementById('corrMatrix');
+      el.innerHTML = html;
+      el.classList.remove('hidden');
+    })
+    .catch(() => {
+      document.getElementById('corrSkeleton').classList.add('hidden');
+      const err = document.getElementById('corrError');
+      err.textContent = 'Impossible de calculer la matrice de corrélation.';
+      err.classList.remove('hidden');
+    });
+})();
+</script>
+<% } %>

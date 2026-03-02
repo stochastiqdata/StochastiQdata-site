@@ -370,6 +370,18 @@ app.get('/api/search', limiter, async (req, res) => {
   }
 });
 
+// Matrice de corrélation
+app.get('/api/datasets/:id/correlations', async (req, res) => {
+  try {
+    const response = await axios.get(`${API_URL}/datasets/${req.params.id}/correlations`);
+    res.json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json({
+      detail: error.response?.data?.detail || 'Erreur lors du calcul des corrélations'
+    });
+  }
+});
+
 // Track download + retourne file_url
 app.post('/api/datasets/:id/download', async (req, res) => {
   try {

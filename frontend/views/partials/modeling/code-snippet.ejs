@@ -1,0 +1,95 @@
+<% if (dataset.file_url) { %>
+<!-- ============================
+     CODE D'ACCÈS AU DATASET
+     ============================ -->
+<div class="card p-6 mb-6">
+  <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+    <svg class="w-5 h-5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+    </svg>
+    Accès au dataset
+  </h2>
+
+  <!-- Tabs -->
+  <div class="flex gap-1 mb-4 border-b border-gray-200 dark:border-navy-700">
+    <button onclick="switchSnippetTab('python')" id="snippetTab-python"
+      class="snippet-tab px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 border-primary-500 text-primary-600 dark:text-primary-400 -mb-px bg-white dark:bg-navy-800">
+      Python
+    </button>
+    <button onclick="switchSnippetTab('r')" id="snippetTab-r"
+      class="snippet-tab px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 -mb-px">
+      R
+    </button>
+    <button onclick="switchSnippetTab('curl')" id="snippetTab-curl"
+      class="snippet-tab px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 -mb-px">
+      curl
+    </button>
+  </div>
+
+  <!-- Python snippet -->
+  <div id="snippet-python" class="snippet-content relative">
+    <pre class="bg-gray-950 text-gray-100 rounded-xl p-4 text-sm overflow-x-auto leading-relaxed font-mono"><span class="text-blue-400">import</span> pandas <span class="text-blue-400">as</span> pd
+
+<span class="text-gray-500"># Chargement direct depuis StochastiQdata</span>
+url = <span class="text-green-400">"<%= dataset.file_url %>"</span>
+df  = pd.read_csv(url)
+
+<span class="text-gray-500"># Aperçu</span>
+<span class="text-yellow-300">print</span>(df.shape)   <span class="text-gray-600"># (<%= dataset.row_count ? dataset.row_count.toLocaleString('fr-FR') : 'n' %> lignes, <%= dataset.column_count || 'p' %> colonnes)</span>
+<span class="text-yellow-300">print</span>(df.head())</pre>
+    <button onclick="copySnippet('python')" class="absolute top-3 right-3 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-md transition-colors" title="Copier">
+      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+    </button>
+  </div>
+
+  <!-- R snippet -->
+  <div id="snippet-r" class="snippet-content hidden relative">
+    <pre class="bg-gray-950 text-gray-100 rounded-xl p-4 text-sm overflow-x-auto leading-relaxed font-mono"><span class="text-blue-400">library</span>(readr)
+
+<span class="text-gray-500"># Chargement direct depuis StochastiQdata</span>
+url <span class="text-gray-400">&lt;-</span> <span class="text-green-400">"<%= dataset.file_url %>"</span>
+df  <span class="text-gray-400">&lt;-</span> read_csv(url)
+
+<span class="text-gray-500"># Aperçu</span>
+<span class="text-yellow-300">dim</span>(df)
+<span class="text-yellow-300">head</span>(df)</pre>
+    <button onclick="copySnippet('r')" class="absolute top-3 right-3 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-md transition-colors" title="Copier">
+      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+    </button>
+  </div>
+
+  <!-- curl snippet -->
+  <div id="snippet-curl" class="snippet-content hidden relative">
+    <pre class="bg-gray-950 text-gray-100 rounded-xl p-4 text-sm overflow-x-auto leading-relaxed font-mono"><span class="text-yellow-300">curl</span> -L -o <span class="text-green-400">"<%= dataset.name.toLowerCase().replace(/\s+/g, '_') %>.csv"</span> \
+  <span class="text-green-400">"<%= dataset.file_url %>"</span></pre>
+    <button onclick="copySnippet('curl')" class="absolute top-3 right-3 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-md transition-colors" title="Copier">
+      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+function switchSnippetTab(tab) {
+  document.querySelectorAll('.snippet-content').forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll('.snippet-tab').forEach(btn => {
+    btn.classList.remove('border-primary-500', 'text-primary-600', 'dark:text-primary-400', 'bg-white', 'dark:bg-navy-800');
+    btn.classList.add('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+  });
+  document.getElementById('snippet-' + tab).classList.remove('hidden');
+  const activeTab = document.getElementById('snippetTab-' + tab);
+  activeTab.classList.add('border-primary-500', 'text-primary-600', 'dark:text-primary-400', 'bg-white', 'dark:bg-navy-800');
+  activeTab.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+}
+
+async function copySnippet(tab) {
+  const pre = document.querySelector('#snippet-' + tab + ' pre');
+  try {
+    await navigator.clipboard.writeText(pre.innerText);
+    const btn = document.querySelector('#snippet-' + tab + ' button');
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<svg class="w-3.5 h-3.5 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+    setTimeout(() => { btn.innerHTML = originalHTML; }, 1500);
+  } catch {}
+}
+</script>
+<% } %>

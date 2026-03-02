@@ -1,0 +1,117 @@
+<% if (dataset.file_url) { %>
+<!-- ============================
+     DISTRIBUTIONS DES VARIABLES
+     ============================ -->
+<div class="card p-6 mb-6">
+  <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+    <svg class="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="3" width="4" height="18" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="5" width="4" height="16" rx="1"/>
+    </svg>
+    Distributions des variables
+  </h2>
+
+  <!-- Skeleton -->
+  <div id="distSkeleton" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+    <% for(let i = 0; i < 6; i++) { %>
+      <div class="h-36 bg-gray-100 dark:bg-navy-700 rounded-xl animate-pulse"></div>
+    <% } %>
+  </div>
+
+  <div id="distGrid" class="hidden grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+  <div id="distError" class="hidden p-4 text-sm text-red-500 bg-red-50 dark:bg-red-900/10 rounded-xl"></div>
+</div>
+
+<script>
+(function() {
+  function corrColor(v) {
+    if (v === null) return 'rgba(0,0,0,0)';
+    const opacity = Math.min(0.85, Math.abs(v) * 0.9);
+    return v >= 0
+      ? `rgba(59,130,246,${opacity})`   // blue
+      : `rgba(239,68,68,${opacity})`;   // red
+  }
+
+  function renderNumericCard(col) {
+    if (!col.histogram) return '';
+    const counts = col.histogram.counts;
+    const edges  = col.histogram.edges;
+    const maxC   = Math.max(...counts, 1);
+    const W = 220, H = 56;
+    const barW = W / counts.length;
+
+    const bars = counts.map((c, i) => {
+      const h = (c / maxC) * H;
+      const x = i * barW;
+      const y = H - h;
+      return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${Math.max(barW - 1, 1).toFixed(1)}" height="${Math.max(h, 0).toFixed(1)}" fill="#3B82F6" opacity="0.75" rx="1"/>`;
+    }).join('');
+
+    const fmt = v => Math.abs(v) >= 1000
+      ? (v / 1000).toFixed(1) + 'k'
+      : parseFloat(v.toFixed(2)).toString();
+
+    return `<div class="rounded-xl border border-gray-200 dark:border-navy-700 p-3 bg-white dark:bg-navy-800">
+      <div class="flex items-center justify-between mb-2 gap-1">
+        <span class="font-mono text-xs font-semibold text-blue-700 dark:text-blue-300 truncate" title="${col.name}">${col.name}</span>
+        <span class="shrink-0 px-1.5 py-0.5 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 rounded">${col.dtype}</span>
+      </div>
+      <svg viewBox="0 0 ${W} ${H}" class="w-full" style="height:56px" preserveAspectRatio="none">${bars}</svg>
+      <div class="flex justify-between text-xs text-gray-400 font-mono mt-1">
+        <span>${fmt(edges[0])}</span>
+        <span class="text-gray-300 dark:text-gray-600">·</span>
+        <span>${fmt(edges[edges.length - 1])}</span>
+      </div>
+    </div>`;
+  }
+
+  function renderCategoricalCard(col) {
+    const values = (col.top_values || []).slice(0, 6);
+    if (!values.length) return '';
+    const maxC = values[0]?.count || 1;
+
+    const bars = values.map(v => {
+      const pct = Math.round((v.count / maxC) * 100);
+      return `<div class="flex items-center gap-2">
+        <span class="text-xs font-mono text-gray-500 dark:text-gray-400 w-16 truncate shrink-0" title="${v.value}">${v.value}</span>
+        <div class="flex-1 h-2.5 bg-gray-100 dark:bg-navy-700 rounded-full overflow-hidden">
+          <div class="h-full bg-violet-400 dark:bg-violet-500 rounded-full" style="width:${pct}%"></div>
+        </div>
+        <span class="text-xs text-gray-400 font-mono shrink-0 w-10 text-right">${v.count.toLocaleString('fr-FR')}</span>
+      </div>`;
+    }).join('');
+
+    return `<div class="rounded-xl border border-gray-200 dark:border-navy-700 p-3 bg-white dark:bg-navy-800">
+      <div class="flex items-center justify-between mb-2 gap-1">
+        <span class="font-mono text-xs font-semibold text-violet-700 dark:text-violet-300 truncate" title="${col.name}">${col.name}</span>
+        <span class="shrink-0 px-1.5 py-0.5 text-xs bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-300 rounded">${col.dtype}</span>
+      </div>
+      <div class="space-y-1.5">${bars}</div>
+    </div>`;
+  }
+
+  function renderDistributions(data) {
+    document.getElementById('distSkeleton').classList.add('hidden');
+
+    if (data.detail || !data.columns || !data.columns.length) {
+      const err = document.getElementById('distError');
+      err.textContent = data.detail || 'Aucune donnée disponible.';
+      err.classList.remove('hidden');
+      return;
+    }
+
+    const grid = document.getElementById('distGrid');
+    grid.innerHTML = data.columns
+      .map(col => col.is_numeric ? renderNumericCard(col) : renderCategoricalCard(col))
+      .filter(Boolean)
+      .join('');
+    grid.classList.remove('hidden');
+  }
+
+  if (window._statsData) {
+    renderDistributions(window._statsData);
+  } else {
+    document.addEventListener('statsLoaded', e => renderDistributions(e.detail), { once: true });
+  }
+})();
+</script>
+<% } %>
