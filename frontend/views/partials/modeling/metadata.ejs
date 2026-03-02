@@ -88,6 +88,22 @@
       </div>
       <% } %>
 
+      <% if (dataset.file_hash) { %>
+      <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-50 dark:bg-navy-700 border border-gray-200 dark:border-navy-600 w-full mt-1">
+        <svg class="w-4 h-4 text-gray-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+        </svg>
+        <div class="flex-1 min-w-0">
+          <p class="text-xs text-gray-400">Intégrité SHA256</p>
+          <p class="text-xs font-mono text-gray-600 dark:text-gray-300 truncate" title="<%= dataset.file_hash %>"><%= dataset.file_hash %></p>
+        </div>
+        <button onclick="navigator.clipboard.writeText('<%= dataset.file_hash %>').then(() => { this.innerHTML='✓'; setTimeout(()=>{ this.innerHTML='<svg class=\\'w-3.5 h-3.5\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'2\\'><rect x=\\'9\\' y=\\'9\\' width=\\'13\\' height=\\'13\\' rx=\\'2\\'/><path d=\\'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1\\'/></svg>'; }, 1500) })"
+           class="shrink-0 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" title="Copier le hash">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
+      <% } %>
+
     </div>
     <% } %>
   </div>

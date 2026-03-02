@@ -161,8 +161,15 @@ async def upload_dataset_file(
     if len(content) > MAX_SIZE_MB * 1024 * 1024:
         raise HTTPException(status_code=400, detail=f"Fichier trop volumineux (max {MAX_SIZE_MB} MB).")
 
+    import hashlib
+    from datetime import datetime, timezone
+
     supabase_admin = get_supabase_admin_client()
     file_path = f"{dataset_id}/{uuid.uuid4()}{ext}"
+
+    # Calcul SHA256
+    sha256 = hashlib.sha256(content).hexdigest()
+    size_mb = round(len(content) / (1024 * 1024), 2)
 
     try:
         supabase_admin.storage.from_("datasets-files").upload(
@@ -171,11 +178,32 @@ async def upload_dataset_file(
             {"content-type": file.content_type or "application/octet-stream"},
         )
         public_url = supabase_admin.storage.from_("datasets-files").get_public_url(file_path)
-        supabase_admin.table("datasets").update({"file_url": public_url}).eq("id", dataset_id).execute()
+
+        # Récupérer le changelog existant
+        existing = supabase_admin.table("datasets").select("changelog").eq("id", dataset_id).single().execute()
+        current_changelog = (existing.data or {}).get("changelog") or []
+        version_num = len(current_changelog) + 1
+        new_entry = {
+            "version": f"v{version_num}.0",
+            "date": datetime.now(timezone.utc).isoformat(),
+            "description": f"Upload : {file.filename}",
+            "file_url": public_url,
+            "hash": sha256,
+            "size_mb": size_mb,
+        }
+        current_changelog.append(new_entry)
+
+        supabase_admin.table("datasets").update({
+            "file_url": public_url,
+            "file_hash": sha256,
+            "changelog": current_changelog,
+        }).eq("id", dataset_id).execute()
+
         return {
             "file_url": public_url,
             "filename": file.filename,
-            "size_mb": round(len(content) / (1024 * 1024), 2),
+            "size_mb": size_mb,
+            "sha256": sha256,
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur upload : {str(e)}")

@@ -1,7 +1,7 @@
 """
 Pydantic schemas for Dataset
 """
-from typing import Optional, List
+from typing import Optional, List, Any
 from enum import Enum
 from datetime import datetime
 from pydantic import BaseModel, Field
@@ -95,6 +95,8 @@ class DatasetBase(BaseModel):
     data_updated_at: Optional[datetime] = Field(None, description="Date de dernière mise à jour des données source")
     data_dictionary_url: Optional[str] = Field(None, description="URL vers le dictionnaire des variables")
     file_url: Optional[str] = Field(None, description="URL du fichier hébergé sur Supabase Storage")
+    file_hash: Optional[str] = Field(None, description="Hash SHA256 du fichier")
+    changelog: List[Any] = Field(default_factory=list, description="Historique des versions")
     license: Optional[DatasetLicense] = Field(None, description="Licence du dataset")
     date_from: Optional[datetime] = Field(None, description="Début de la période couverte")
     date_to: Optional[datetime] = Field(None, description="Fin de la période couverte")

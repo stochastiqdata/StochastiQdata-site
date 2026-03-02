@@ -1,0 +1,87 @@
+<!-- ============================
+     CITATION
+     ============================ -->
+<div class="card p-6 mb-6">
+  <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+    <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/>
+      <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/>
+    </svg>
+    Citer ce dataset
+  </h2>
+
+  <!-- Tabs -->
+  <div class="flex gap-1 mb-4 border-b border-gray-200 dark:border-navy-700">
+    <button onclick="switchCiteTab('bibtex')" id="citeTab-bibtex"
+      class="cite-tab px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 border-primary-500 text-primary-600 dark:text-primary-400 -mb-px bg-white dark:bg-navy-800">
+      BibTeX
+    </button>
+    <button onclick="switchCiteTab('apa')" id="citeTab-apa"
+      class="cite-tab px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 -mb-px">
+      APA
+    </button>
+  </div>
+
+  <!-- BibTeX -->
+  <div id="cite-bibtex" class="cite-content relative">
+    <pre id="bibtexBlock" class="bg-gray-950 text-gray-100 rounded-xl p-4 text-sm overflow-x-auto leading-relaxed font-mono whitespace-pre"></pre>
+    <button onclick="copyCitation('bibtex')" class="absolute top-3 right-3 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-md transition-colors" title="Copier">
+      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+    </button>
+  </div>
+
+  <!-- APA -->
+  <div id="cite-apa" class="cite-content hidden relative">
+    <div id="apaBlock" class="bg-gray-950 text-gray-100 rounded-xl p-4 text-sm font-mono leading-relaxed"></div>
+    <button onclick="copyCitation('apa')" class="absolute top-3 right-3 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-md transition-colors" title="Copier">
+      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+(function() {
+  const name    = <%= JSON.stringify(dataset.name) %>;
+  const id      = '<%= dataset.id %>';
+  const year    = new Date(<%= JSON.stringify(dataset.created_at) %>).getFullYear();
+  const url     = window.location.origin + '/modeling/' + id;
+  const slug    = name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+
+  const bibtex = `@misc{${slug}_${year},
+  title     = {${name}},
+  author    = {{StochastiQdata}},
+  year      = {${year}},
+  url       = {${url}},
+  note      = {Dataset pour la modélisation actuarielle},
+  howpublished = {\\url{${url}}}
+}`;
+
+  const apa = `StochastiQdata. (${year}). <em>${name}</em> [Dataset]. StochastiQdata. ${url}`;
+
+  document.getElementById('bibtexBlock').textContent = bibtex;
+  document.getElementById('apaBlock').innerHTML = apa;
+})();
+
+function switchCiteTab(tab) {
+  document.querySelectorAll('.cite-content').forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll('.cite-tab').forEach(btn => {
+    btn.classList.remove('border-primary-500', 'text-primary-600', 'dark:text-primary-400', 'bg-white', 'dark:bg-navy-800');
+    btn.classList.add('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+  });
+  document.getElementById('cite-' + tab).classList.remove('hidden');
+  const activeTab = document.getElementById('citeTab-' + tab);
+  activeTab.classList.add('border-primary-500', 'text-primary-600', 'dark:text-primary-400', 'bg-white', 'dark:bg-navy-800');
+  activeTab.classList.remove('border-transparent', 'text-gray-500', 'dark:text-gray-400');
+}
+
+async function copyCitation(tab) {
+  const el = document.getElementById(tab === 'bibtex' ? 'bibtexBlock' : 'apaBlock');
+  try {
+    await navigator.clipboard.writeText(el.innerText);
+    const btn = document.querySelector('#cite-' + tab + ' button');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<svg class="w-3.5 h-3.5 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+    setTimeout(() => { btn.innerHTML = orig; }, 1500);
+  } catch {}
+}
+</script>
