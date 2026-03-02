@@ -179,3 +179,45 @@ async def upload_dataset_file(
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur upload : {str(e)}")
+
+@router.get("/{dataset_id}/preview")
+async def preview_dataset(dataset_id: str):
+    """
+    Retourne les 10 premières lignes du fichier CSV hébergé sur Supabase.
+    """
+    import pandas as pd
+    import io
+    import httpx
+
+    supabase = get_supabase_client()
+    result = supabase.table("datasets").select("file_url").eq("id", dataset_id).single().execute()
+
+    if not result.data or not result.data.get("file_url"):
+        raise HTTPException(status_code=404, detail="Aucun fichier disponible pour ce dataset.")
+
+    file_url = result.data["file_url"]
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(file_url, timeout=30)
+            response.raise_for_status()
+
+        ext = os.path.splitext(file_url.split("?")[0])[1].lower()
+        content = response.content
+
+        if ext == ".csv":
+            df = pd.read_csv(io.BytesIO(content), nrows=10)
+        elif ext == ".parquet":
+            df = pd.read_parquet(io.BytesIO(content)).head(10)
+        elif ext in (".xlsx", ".xls"):
+            df = pd.read_excel(io.BytesIO(content), nrows=10)
+        else:
+            df = pd.read_csv(io.BytesIO(content), nrows=10)
+
+        columns = [{"name": col, "type": str(df[col].dtype)} for col in df.columns]
+        rows = df.fillna("").astype(str).values.tolist()
+
+        return {"columns": columns, "rows": rows, "total_rows": len(rows)}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur lecture fichier : {str(e)}")

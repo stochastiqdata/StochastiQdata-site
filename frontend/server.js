@@ -370,6 +370,18 @@ app.get('/api/search', limiter, async (req, res) => {
   }
 });
 
+// Preview dataset (10 premières lignes)
+app.get('/api/datasets/:id/preview', async (req, res) => {
+  try {
+    const response = await axios.get(`${API_URL}/datasets/${req.params.id}/preview`);
+    res.json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json({
+      detail: error.response?.data?.detail || 'Erreur lors du chargement du preview'
+    });
+  }
+});
+
 // Create dataset
 // Upload fichier dataset → proxy vers FastAPI (multipart)
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 52 * 1024 * 1024 } });
