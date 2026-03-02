@@ -370,6 +370,18 @@ app.get('/api/search', limiter, async (req, res) => {
   }
 });
 
+// Track download + retourne file_url
+app.post('/api/datasets/:id/download', async (req, res) => {
+  try {
+    const response = await axios.post(`${API_URL}/datasets/${req.params.id}/download`);
+    res.json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json({
+      detail: error.response?.data?.detail || 'Erreur lors du téléchargement'
+    });
+  }
+});
+
 // Stats dataset (profil + statistiques par colonne)
 app.get('/api/datasets/:id/stats', async (req, res) => {
   try {

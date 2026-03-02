@@ -180,6 +180,28 @@ async def upload_dataset_file(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur upload : {str(e)}")
 
+@router.post("/{dataset_id}/download")
+async def download_dataset(dataset_id: str):
+    """
+    Incrémente le compteur de téléchargements et retourne l'URL du fichier.
+    """
+    supabase = get_supabase_client()
+    supabase_admin = get_supabase_admin_client()
+
+    result = supabase.table("datasets").select("file_url, download_count").eq("id", dataset_id).single().execute()
+
+    if not result.data:
+        raise HTTPException(status_code=404, detail="Dataset non trouvé.")
+
+    if not result.data.get("file_url"):
+        raise HTTPException(status_code=404, detail="Aucun fichier disponible pour ce dataset.")
+
+    new_count = (result.data.get("download_count") or 0) + 1
+    supabase_admin.table("datasets").update({"download_count": new_count}).eq("id", dataset_id).execute()
+
+    return {"file_url": result.data["file_url"], "download_count": new_count}
+
+
 @router.get("/{dataset_id}/preview")
 async def preview_dataset(dataset_id: str):
     """

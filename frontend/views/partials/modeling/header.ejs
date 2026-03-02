@@ -42,7 +42,7 @@
           </a>
 
           <% if (dataset.file_url) { %>
-            <a href="<%= dataset.file_url %>" download
+            <button onclick="trackAndDownload('<%= dataset.id %>', '<%= dataset.file_url %>')"
                class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-500 to-teal-500 hover:from-primary-600 hover:to-teal-600 text-white font-semibold text-sm rounded-xl transition-all shadow-md hover:scale-[1.02]">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -50,7 +50,8 @@
                 <line x1="12" y1="15" x2="12" y2="3"/>
               </svg>
               Télécharger
-            </a>
+              <span id="dlCountBadge" class="text-xs opacity-75"><% if (dataset.download_count > 0) { %>· <%= dataset.download_count.toLocaleString('fr-FR') %><% } %></span>
+            </button>
           <% } %>
 
           <% if (dataset.source_url) { %>
@@ -136,6 +137,26 @@
   </div>
 
 <script>
+async function trackAndDownload(datasetId, fallbackUrl) {
+  try {
+    const res = await fetch(`/api/datasets/${datasetId}/download`, { method: 'POST' });
+    const data = await res.json();
+    const url = data.file_url || fallbackUrl;
+    const badge = document.getElementById('dlCountBadge');
+    if (badge && data.download_count) {
+      badge.textContent = '· ' + data.download_count.toLocaleString('fr-FR');
+    }
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = '';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } catch {
+    window.location.href = fallbackUrl;
+  }
+}
+
 async function uploadDatasetFile(datasetId) {
   const input = document.getElementById('datasetFileInput');
   const btn = document.getElementById('uploadFileBtn');

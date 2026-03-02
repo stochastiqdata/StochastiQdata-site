@@ -100,6 +100,7 @@ class DatasetResponse(DatasetBase):
     avg_documentation_score: float = 0
     global_score: float = 0
     review_count: int = 0
+    download_count: int = 0
     created_by: Optional[str] = None
     created_at: datetime
     updated_at: datetime
