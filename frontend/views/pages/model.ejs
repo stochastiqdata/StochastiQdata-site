@@ -42,16 +42,29 @@
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white"><%= model.name %></h1>
             <p class="text-sm text-violet-500 dark:text-violet-400 font-medium mt-0.5"><%= typeLabel %></p>
           </div>
-          <% if (model.notebook_url) { %>
-            <a href="<%= model.notebook_url %>" target="_blank" rel="noopener noreferrer"
-               class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm transition-all shadow-md hover:scale-[1.02] shrink-0">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-              </svg>
-              Open Notebook
-            </a>
-          <% } %>
+          <div class="flex items-center gap-2 shrink-0">
+            <% if (model.model_file_url) { %>
+              <a href="<%= model.model_file_url %>" target="_blank" rel="noopener noreferrer"
+                 class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-green-500 hover:bg-green-600 text-white font-semibold text-sm transition-all shadow-md hover:scale-[1.02]">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Télécharger
+              </a>
+            <% } %>
+            <% if (model.notebook_url) { %>
+              <a href="<%= model.notebook_url %>" target="_blank" rel="noopener noreferrer"
+                 class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm transition-all shadow-md hover:scale-[1.02]">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                </svg>
+                Open Notebook
+              </a>
+            <% } %>
+          </div>
         </div>
 
         <% if (model.description) { %>

@@ -2,15 +2,24 @@
      MODÈLES
      ============================ -->
 <div class="card p-6 mb-6" id="modelsSection">
-  <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-    <svg class="w-5 h-5 text-violet-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
-      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-      <line x1="12" y1="19" x2="12" y2="22"/>
-    </svg>
-    Modèles
-    <span id="modelsCountBadge" class="hidden ml-auto text-sm font-normal text-gray-400 dark:text-gray-500"></span>
-  </h2>
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+      <svg class="w-5 h-5 text-violet-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+        <line x1="12" y1="19" x2="12" y2="22"/>
+      </svg>
+      Modèles
+      <span id="modelsCountBadge" class="hidden ml-1 text-sm font-normal text-gray-400 dark:text-gray-500"></span>
+    </h2>
+    <button onclick="openModelModal()"
+      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg bg-violet-500 hover:bg-violet-600 text-white transition-colors">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Soumettre un modèle
+    </button>
+  </div>
 
   <!-- Loading state -->
   <div id="modelsLoading" class="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500">
@@ -31,7 +40,212 @@
       <line x1="12" y1="19" x2="12" y2="22"/>
     </svg>
     <p class="text-sm text-gray-500 dark:text-gray-400">Aucun modèle affilié pour le moment.</p>
-    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Les modèles entraînés sur ce dataset apparaîtront ici.</p>
+    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Soyez le premier à partager un modèle entraîné sur ce dataset.</p>
+    <button onclick="openModelModal()" class="mt-4 inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg border border-violet-400 text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-colors">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Soumettre un modèle
+    </button>
+  </div>
+</div>
+
+<!-- ============================
+     MODAL SOUMISSION MODÈLE
+     ============================ -->
+<div id="modelModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+  <!-- Overlay -->
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeModelModal()"></div>
+
+  <!-- Panel -->
+  <div class="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-navy-800 rounded-2xl shadow-2xl">
+    <!-- Header -->
+    <div class="flex items-center justify-between p-6 border-b border-gray-100 dark:border-navy-700">
+      <div>
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Soumettre un modèle</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Lié au dataset : <span class="font-medium text-violet-600 dark:text-violet-400"><%= dataset.name %></span></p>
+      </div>
+      <button onclick="closeModelModal()" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors">
+        <svg class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <!-- Form -->
+    <form id="modelForm" class="p-6 space-y-5" onsubmit="submitModel(event)">
+
+      <!-- Étape 1 : Identité -->
+      <fieldset>
+        <legend class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+          <span class="w-5 h-5 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-xs flex items-center justify-center font-bold">1</span>
+          Identité du modèle
+        </legend>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Nom du modèle <span class="text-red-500">*</span></label>
+            <input type="text" id="mName" required placeholder="ex: GLM Poisson fréquence sinistres"
+              class="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 focus:border-transparent outline-none transition"/>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Type de modèle <span class="text-red-500">*</span></label>
+            <select id="mType" required
+              class="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none transition">
+              <option value="">— Choisir —</option>
+              <option value="glm">GLM</option>
+              <option value="xgboost">XGBoost</option>
+              <option value="lightgbm">LightGBM</option>
+              <option value="random_forest">Random Forest</option>
+              <option value="catboost">CatBoost</option>
+              <option value="neural_network">Réseau de neurones</option>
+              <option value="chain_ladder">Chain Ladder</option>
+              <option value="bornhuetter_ferguson">Bornhuetter-Ferguson</option>
+              <option value="cox">Modèle de Cox</option>
+              <option value="kaplan_meier">Kaplan-Meier</option>
+              <option value="other">Autre</option>
+            </select>
+          </div>
+          <div id="glmFields" class="hidden">
+            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Famille GLM</label>
+            <select id="mFamily"
+              class="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none transition">
+              <option value="">— Optionnel —</option>
+              <option value="poisson">Poisson</option>
+              <option value="gamma">Gamma</option>
+              <option value="gaussian">Gaussian</option>
+              <option value="binomial">Binomial</option>
+              <option value="tweedie">Tweedie</option>
+              <option value="negative_binomial">Negative Binomial</option>
+            </select>
+          </div>
+          <div id="linkFields" class="hidden">
+            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Lien GLM</label>
+            <select id="mLink"
+              class="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none transition">
+              <option value="">— Optionnel —</option>
+              <option value="log">log</option>
+              <option value="identity">identity</option>
+              <option value="logit">logit</option>
+              <option value="sqrt">sqrt</option>
+              <option value="inverse">inverse</option>
+            </select>
+          </div>
+        </div>
+        <div class="mt-4">
+          <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Description</label>
+          <textarea id="mDesc" rows="2" placeholder="Décrivez brièvement le modèle, ses variables d'entrée, sa cible…"
+            class="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none transition resize-none"></textarea>
+        </div>
+      </fieldset>
+
+      <!-- Étape 2 : Métriques -->
+      <fieldset>
+        <legend class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+          <span class="w-5 h-5 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-xs flex items-center justify-center font-bold">2</span>
+          Métriques d'évaluation
+        </legend>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3" id="metricsInputs">
+          <div>
+            <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Gini</label>
+            <input type="number" step="0.0001" min="0" max="1" id="m_gini" placeholder="0.00–1.00"
+              class="w-full px-2 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none"/>
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">AUC</label>
+            <input type="number" step="0.0001" min="0" max="1" id="m_auc" placeholder="0.00–1.00"
+              class="w-full px-2 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none"/>
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">RMSE</label>
+            <input type="number" step="0.0001" min="0" id="m_rmse" placeholder="ex: 0.1234"
+              class="w-full px-2 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none"/>
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">AIC</label>
+            <input type="number" step="1" id="m_aic" placeholder="ex: 42150"
+              class="w-full px-2 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none"/>
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">R²</label>
+            <input type="number" step="0.0001" min="-10" max="1" id="m_r2" placeholder="0.00–1.00"
+              class="w-full px-2 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none"/>
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">MAE</label>
+            <input type="number" step="0.0001" min="0" id="m_mae" placeholder="ex: 0.0823"
+              class="w-full px-2 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none"/>
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Log Loss</label>
+            <input type="number" step="0.0001" min="0" id="m_log_loss" placeholder="ex: 0.3215"
+              class="w-full px-2 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none"/>
+          </div>
+          <div>
+            <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">F1</label>
+            <input type="number" step="0.0001" min="0" max="1" id="m_f1_score" placeholder="0.00–1.00"
+              class="w-full px-2 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none"/>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Étape 3 : Code & notebook -->
+      <fieldset>
+        <legend class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+          <span class="w-5 h-5 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-xs flex items-center justify-center font-bold">3</span>
+          Code & notebook
+        </legend>
+        <div class="mb-3">
+          <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Extrait de code Python/R</label>
+          <textarea id="mCode" rows="4" placeholder="# Exemple&#10;import statsmodels.api as sm&#10;model = sm.GLM(y, X, family=sm.families.Poisson()).fit()"
+            class="w-full px-3 py-2 text-sm font-mono rounded-lg border border-gray-200 dark:border-navy-600 bg-gray-50 dark:bg-navy-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-violet-500 outline-none transition resize-none"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">URL du notebook</label>
+          <input type="url" id="mNotebook" placeholder="https://colab.research.google.com/..."
+            class="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-violet-500 outline-none transition"/>
+        </div>
+      </fieldset>
+
+      <!-- Étape 4 : Fichier modèle (optionnel) -->
+      <fieldset>
+        <legend class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 flex items-center gap-2">
+          <span class="w-5 h-5 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 text-xs flex items-center justify-center font-bold">4</span>
+          Fichier modèle
+          <span class="text-xs font-normal text-gray-400 dark:text-gray-500">(optionnel — max 200 MB)</span>
+        </legend>
+        <label id="modelFileDropzone"
+          class="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-dashed border-gray-200 dark:border-navy-600 hover:border-violet-400 dark:hover:border-violet-500 transition-colors cursor-pointer group">
+          <svg class="w-8 h-8 text-gray-300 dark:text-gray-600 group-hover:text-violet-400 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          <p class="text-sm text-gray-500 dark:text-gray-400 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+            Glisser-déposer ou <span class="font-medium underline">parcourir</span>
+          </p>
+          <p class="text-xs text-gray-400 dark:text-gray-500">.pkl • .joblib • .rds • .h5 • .pt • .onnx • .zip</p>
+          <input type="file" id="mFile" class="hidden" accept=".pkl,.joblib,.rds,.h5,.pt,.onnx,.zip"
+            onchange="handleModelFileSelect(this)"/>
+        </label>
+        <div id="modelFileInfo" class="hidden mt-2 flex items-center gap-2 p-2 rounded-lg bg-violet-50 dark:bg-violet-900/20 text-sm text-violet-700 dark:text-violet-300">
+          <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span id="modelFileName" class="truncate"></span>
+          <button type="button" onclick="clearModelFile()" class="ml-auto shrink-0 text-violet-400 hover:text-red-500 transition-colors">✕</button>
+        </div>
+      </fieldset>
+
+      <!-- Error -->
+      <div id="modelFormError" class="hidden p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-sm text-red-700 dark:text-red-300"></div>
+
+      <!-- Actions -->
+      <div class="flex items-center justify-end gap-3 pt-2 border-t border-gray-100 dark:border-navy-700">
+        <button type="button" onclick="closeModelModal()"
+          class="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+          Annuler
+        </button>
+        <button type="submit" id="modelSubmitBtn"
+          class="inline-flex items-center gap-2 px-5 py-2 text-sm font-semibold rounded-xl bg-violet-500 hover:bg-violet-600 text-white transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          Soumettre
+        </button>
+      </div>
+    </form>
   </div>
 </div>
 
@@ -75,8 +289,13 @@
     const linkBadge = model.link_function
       ? `<span class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-navy-600 text-gray-600 dark:text-gray-300 font-mono">link=${model.link_function}</span>`
       : '';
+    const fileBadge = model.model_file_url
+      ? `<span class="px-2 py-0.5 text-xs rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 flex items-center gap-1">
+           <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+           Téléchargeable
+         </span>`
+      : '';
 
-    // Top 3 metrics
     const metricsHtml = Object.entries(model.metrics || {}).slice(0, 3).map(([k, v]) => `
       <div class="text-center">
         <p class="text-xs text-gray-400 dark:text-gray-500">${METRIC_LABELS[k] || k}</p>
@@ -91,6 +310,16 @@
            Notebook
          </a>`
       : '';
+
+    const downloadBtn = model.model_file_url
+      ? `<a href="${model.model_file_url}" target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-1 text-xs text-green-600 dark:text-green-400 hover:text-green-700 font-medium">
+           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+           Télécharger
+         </a>`
+      : '';
+
+    const footerBtns = [notebookBtn, downloadBtn].filter(Boolean).join('<span class="text-gray-200 dark:text-navy-600">•</span>');
 
     return `
       <a href="/models/${model.id}"
@@ -109,7 +338,7 @@
         ${model.description ? `<p class="text-sm text-gray-500 dark:text-gray-400 mb-3 line-clamp-2">${model.description}</p>` : ''}
 
         <div class="flex flex-wrap gap-1.5 mb-3">
-          ${familyBadge}${linkBadge}
+          ${familyBadge}${linkBadge}${fileBadge}
         </div>
 
         ${metricsHtml ? `
@@ -117,30 +346,136 @@
           ${metricsHtml}
         </div>` : ''}
 
-        ${notebookBtn ? `<div class="mt-3 pt-3 border-t border-gray-100 dark:border-navy-700">${notebookBtn}</div>` : ''}
+        ${footerBtns ? `<div class="mt-3 pt-3 border-t border-gray-100 dark:border-navy-700 flex items-center gap-3">${footerBtns}</div>` : ''}
       </a>
     `;
   }
 
-  fetch(`/api/models?dataset_id=${datasetId}`)
-    .then(r => r.json())
-    .then(models => {
-      document.getElementById('modelsLoading').classList.add('hidden');
-      if (!models.length) {
+  function loadModels() {
+    fetch(`/api/models?dataset_id=${datasetId}`)
+      .then(r => r.json())
+      .then(models => {
+        document.getElementById('modelsLoading').classList.add('hidden');
+        if (!models.length) {
+          document.getElementById('modelsEmpty').classList.remove('hidden');
+          return;
+        }
+        const badge = document.getElementById('modelsCountBadge');
+        badge.textContent = models.length + ' modèle' + (models.length > 1 ? 's' : '');
+        badge.classList.remove('hidden');
+        const grid = document.getElementById('modelsGrid');
+        grid.innerHTML = models.map(renderModelCard).join('');
+        grid.classList.remove('hidden');
+        document.getElementById('modelsEmpty').classList.add('hidden');
+      })
+      .catch(() => {
+        document.getElementById('modelsLoading').classList.add('hidden');
         document.getElementById('modelsEmpty').classList.remove('hidden');
-        return;
-      }
-      const badge = document.getElementById('modelsCountBadge');
-      badge.textContent = models.length + ' modèle' + (models.length > 1 ? 's' : '');
-      badge.classList.remove('hidden');
+      });
+  }
 
-      const grid = document.getElementById('modelsGrid');
-      grid.innerHTML = models.map(renderModelCard).join('');
-      grid.classList.remove('hidden');
-    })
-    .catch(() => {
-      document.getElementById('modelsLoading').classList.add('hidden');
-      document.getElementById('modelsEmpty').classList.remove('hidden');
-    });
+  loadModels();
+  window._reloadModels = loadModels;
 })();
+
+// ---- Modal logic (global scope for onclick handlers) ----
+
+function openModelModal() {
+  const modal = document.getElementById('modelModal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModelModal() {
+  const modal = document.getElementById('modelModal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+  document.body.style.overflow = '';
+  document.getElementById('modelFormError').classList.add('hidden');
+}
+
+function handleModelFileSelect(input) {
+  const file = input.files[0];
+  if (!file) return;
+  document.getElementById('modelFileName').textContent = file.name + ' (' + (file.size / 1024 / 1024).toFixed(1) + ' MB)';
+  document.getElementById('modelFileInfo').classList.remove('hidden');
+}
+
+function clearModelFile() {
+  document.getElementById('mFile').value = '';
+  document.getElementById('modelFileInfo').classList.add('hidden');
+}
+
+// Show/hide GLM fields
+document.getElementById('mType').addEventListener('change', function() {
+  const isGlm = this.value === 'glm';
+  document.getElementById('glmFields').classList.toggle('hidden', !isGlm);
+  document.getElementById('linkFields').classList.toggle('hidden', !isGlm);
+});
+
+async function submitModel(e) {
+  e.preventDefault();
+  const btn = document.getElementById('modelSubmitBtn');
+  const errDiv = document.getElementById('modelFormError');
+  errDiv.classList.add('hidden');
+  btn.disabled = true;
+  btn.innerHTML = '<svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Envoi…';
+
+  // Build metrics object
+  const metricFields = { gini: 'm_gini', auc: 'm_auc', rmse: 'm_rmse', aic: 'm_aic', r2: 'm_r2', mae: 'm_mae', log_loss: 'm_log_loss', f1_score: 'm_f1_score' };
+  const metrics = {};
+  for (const [k, id] of Object.entries(metricFields)) {
+    const val = document.getElementById(id).value;
+    if (val !== '') metrics[k] = parseFloat(val);
+  }
+
+  const body = {
+    dataset_id: '<%= dataset.id %>',
+    name: document.getElementById('mName').value.trim(),
+    model_type: document.getElementById('mType').value,
+    description: document.getElementById('mDesc').value.trim() || null,
+    family: document.getElementById('mFamily').value || null,
+    link_function: document.getElementById('mLink').value || null,
+    metrics,
+    parameters: {},
+    code_snippet: document.getElementById('mCode').value.trim() || null,
+    notebook_url: document.getElementById('mNotebook').value.trim() || null,
+    tags: [],
+  };
+
+  try {
+    const token = window.__clerkToken || null;
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+
+    const res = await fetch('/api/models', { method: 'POST', headers, body: JSON.stringify(body) });
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.detail || 'Erreur lors de la création');
+    }
+    const created = await res.json();
+
+    // Upload file if provided
+    const fileInput = document.getElementById('mFile');
+    if (fileInput.files[0]) {
+      const form = new FormData();
+      form.append('file', fileInput.files[0]);
+      const uploadHeaders = {};
+      if (token) uploadHeaders['Authorization'] = 'Bearer ' + token;
+      await fetch('/api/models/' + created.id + '/upload-file', { method: 'POST', headers: uploadHeaders, body: form });
+    }
+
+    closeModelModal();
+    document.getElementById('modelForm').reset();
+    clearModelFile();
+    if (window._reloadModels) window._reloadModels();
+  } catch (err) {
+    errDiv.textContent = err.message;
+    errDiv.classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg> Soumettre';
+  }
+}
 </script>

@@ -503,6 +503,39 @@ app.post('/api/models', limiter, async (req, res) => {
   }
 });
 
+app.delete('/api/models/:id', async (req, res) => {
+  try {
+    const headers = {};
+    if (req.headers.authorization) headers['Authorization'] = req.headers.authorization;
+    await axios.delete(`${API_URL}/models/${req.params.id}`, { headers });
+    res.status(204).send();
+  } catch (error) {
+    res.status(error.response?.status || 500).json({
+      detail: error.response?.data?.detail || 'Erreur lors de la suppression du modèle'
+    });
+  }
+});
+
+// Upload fichier modèle → proxy vers FastAPI (multipart)
+const uploadModel = multer({ storage: multer.memoryStorage(), limits: { fileSize: 210 * 1024 * 1024 } });
+
+app.post('/api/models/:id/upload-file', uploadModel.single('file'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ detail: 'Aucun fichier fourni.' });
+    const form = new FormData();
+    form.append('file', new Blob([req.file.buffer], { type: req.file.mimetype }), req.file.originalname);
+    const headers = { ...form.headers };
+    if (req.headers.authorization) headers['Authorization'] = req.headers.authorization;
+    const response = await axios.post(`${API_URL}/models/${req.params.id}/upload-file`, form, { headers });
+    res.json(response.data);
+  } catch (error) {
+    logger.error('Model file upload error', { error: error.response?.data || error.message });
+    res.status(error.response?.status || 500).json({
+      detail: error.response?.data?.detail || 'Erreur upload fichier modèle'
+    });
+  }
+});
+
 // Create dataset
 // Upload fichier dataset → proxy vers FastAPI (multipart)
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 52 * 1024 * 1024 } });

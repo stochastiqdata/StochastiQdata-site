@@ -17,6 +17,7 @@ class ModelCreate(BaseModel):
     metrics: Dict[str, Any] = Field(default_factory=dict, description="Métriques d'évaluation")
     code_snippet: Optional[str] = Field(None, description="Extrait de code Python/R")
     notebook_url: Optional[str] = Field(None, description="URL vers le notebook complet")
+    model_file_url: Optional[str] = Field(None, description="URL du fichier modèle (.pkl, .joblib, .rds)")
     tags: List[str] = Field(default_factory=list)
 
 

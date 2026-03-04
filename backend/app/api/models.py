@@ -1,8 +1,10 @@
 """
 Model API endpoints
 """
+import os
+import uuid
 from typing import Optional, List
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, HTTPException, Depends, Query, UploadFile, File
 from app.core.database import get_supabase_client, get_supabase_admin_client
 from app.middleware.supabase_auth import get_current_user, SupabaseUser
 from app.schemas.model import ModelCreate, ModelResponse
@@ -59,6 +61,63 @@ async def create_model(
         raise HTTPException(status_code=500, detail="Erreur lors de la création du modèle.")
 
     return ModelResponse(**response.data[0])
+
+
+@router.post("/{model_id}/upload-file")
+async def upload_model_file(
+    model_id: str,
+    file: UploadFile = File(...),
+    current_user: SupabaseUser = Depends(get_current_user),
+):
+    """
+    Upload a model file (.pkl, .joblib, .rds, .h5) to Supabase Storage.
+    Updates the model record with the public URL.
+    """
+    ALLOWED_EXTENSIONS = [".pkl", ".joblib", ".rds", ".h5", ".pt", ".onnx", ".zip"]
+    MAX_SIZE_MB = 200
+
+    ext = os.path.splitext(file.filename or "")[1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Format non supporté. Formats acceptés : {', '.join(ALLOWED_EXTENSIONS)}"
+        )
+
+    content = await file.read()
+    if len(content) > MAX_SIZE_MB * 1024 * 1024:
+        raise HTTPException(status_code=400, detail=f"Fichier trop volumineux (max {MAX_SIZE_MB} MB).")
+
+    supabase = get_supabase_client()
+    supabase_admin = get_supabase_admin_client()
+
+    # Verify model exists and belongs to current user
+    existing = supabase.table("models").select("id, created_by").eq("id", model_id).single().execute()
+    if not existing.data:
+        raise HTTPException(status_code=404, detail="Modèle non trouvé.")
+    if existing.data["created_by"] != (current_user.user_id if current_user else None):
+        raise HTTPException(status_code=403, detail="Non autorisé.")
+
+    file_path = f"{model_id}/{uuid.uuid4()}{ext}"
+
+    try:
+        supabase_admin.storage.from_("models-files").upload(
+            file_path,
+            content,
+            {"content-type": file.content_type or "application/octet-stream"},
+        )
+        public_url = supabase_admin.storage.from_("models-files").get_public_url(file_path)
+
+        supabase_admin.table("models").update({
+            "model_file_url": public_url,
+        }).eq("id", model_id).execute()
+
+        return {
+            "model_file_url": public_url,
+            "filename": file.filename,
+            "size_mb": round(len(content) / (1024 * 1024), 2),
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erreur upload : {str(e)}")
 
 
 @router.delete("/{model_id}", status_code=204)
