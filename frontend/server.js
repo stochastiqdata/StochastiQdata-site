@@ -269,6 +269,20 @@ app.get('/modeling/:id', async (req, res, next) => {
   }
 });
 
+// Dataset documentation page
+app.get('/modeling/:id/docs', async (req, res, next) => {
+  try {
+    const response = await axios.get(`${API_URL}/datasets/${req.params.id}`);
+    res.render('pages/dataset-docs', {
+      dataset: response.data,
+      TAG_LABELS,
+      SOURCE_LABELS
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // Model detail page
 app.get('/models/:id', async (req, res, next) => {
   try {

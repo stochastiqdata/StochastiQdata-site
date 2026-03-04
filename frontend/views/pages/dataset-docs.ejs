@@ -1,0 +1,327 @@
+<%
+  const tags = dataset.tags || [];
+  const TAG_LABELS_LOCAL = TAG_LABELS || {};
+  const SOURCE_LABELS_LOCAL = SOURCE_LABELS || {};
+%>
+
+<div class="max-w-5xl mx-auto">
+
+  <!-- Breadcrumb -->
+  <nav class="mb-6">
+    <div class="flex items-center gap-2 text-sm">
+      <a href="/" class="text-gray-500 hover:text-primary-500 transition-colors">Dashboard</a>
+      <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+      <a href="/modeling/<%= dataset.id %>" class="text-gray-500 hover:text-primary-500 transition-colors truncate max-w-[200px]"><%= dataset.name %></a>
+      <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+      <span class="text-gray-900 dark:text-white font-medium">Documentation</span>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <div class="card p-6 mb-6">
+    <div class="flex items-start justify-between gap-4">
+      <div class="flex-1">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-teal-600 dark:text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-xl font-bold text-gray-900 dark:text-white">Documentation — <%= dataset.name %></h1>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Référence complète pour utiliser ce dataset</p>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-2 mt-3">
+          <% tags.forEach(tag => { %>
+            <span class="tag tag-<%= tag %>"><%= TAG_LABELS_LOCAL[tag] || tag %></span>
+          <% }); %>
+        </div>
+      </div>
+      <a href="/modeling/<%= dataset.id %>" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-navy-700 hover:bg-gray-200 dark:hover:bg-navy-600 text-gray-700 dark:text-gray-300 font-medium text-sm rounded-xl transition-all shrink-0">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+        Retour au dataset
+      </a>
+    </div>
+  </div>
+
+  <!-- Sommaire -->
+  <div class="card p-5 mb-6">
+    <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-3">Sommaire</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+      <% const sections = [
+        { id: 'description',  label: 'Description',         icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z' },
+        { id: 'variables',    label: 'Variables',            icon: 'M3 10h18M3 14h18M10 3v18M14 3v18' },
+        { id: 'utilisation',  label: 'Utilisation',          icon: 'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4' },
+        { id: 'citation',     label: 'Citation & Licence',   icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z' },
+      ] %>
+      <% sections.forEach(s => { %>
+        <a href="#<%= s.id %>" class="flex items-center gap-2 p-2.5 rounded-lg bg-gray-50 dark:bg-navy-700/50 hover:bg-teal-50 dark:hover:bg-teal-900/20 text-gray-700 dark:text-gray-300 hover:text-teal-700 dark:hover:text-teal-300 transition-colors text-sm font-medium">
+          <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="<%= s.icon %>"/></svg>
+          <%= s.label %>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+
+  <!-- Section 1 : Description -->
+  <div id="description" class="card p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+      <svg class="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/>
+      </svg>
+      Description
+    </h2>
+
+    <% if (dataset.description) { %>
+      <p class="text-gray-600 dark:text-gray-400 mb-5 leading-relaxed"><%= dataset.description %></p>
+    <% } %>
+
+    <!-- Fiche technique -->
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <% const meta = [
+        { label: 'Source',         value: SOURCE_LABELS_LOCAL[dataset.source] || dataset.source || '—' },
+        { label: 'Lignes',         value: dataset.row_count ? dataset.row_count.toLocaleString('fr-FR') : '—' },
+        { label: 'Colonnes',       value: dataset.column_count || '—' },
+        { label: 'Taille',         value: dataset.file_size ? (dataset.file_size / 1024 / 1024).toFixed(1) + ' Mo' : '—' },
+        { label: 'Licence',        value: dataset.license || '—' },
+        { label: 'Variable cible', value: dataset.target_variable || '—' },
+        { label: 'Date création',  value: dataset.created_at ? new Date(dataset.created_at).toLocaleDateString('fr-FR') : '—' },
+        { label: 'Format',         value: dataset.file_url ? dataset.file_url.split('.').pop().toUpperCase() : '—' },
+        { label: 'Domaines',       value: tags.map(t => TAG_LABELS_LOCAL[t] || t).join(', ') || '—' },
+      ] %>
+      <% meta.forEach(m => { %>
+        <div class="p-3 rounded-xl bg-gray-50 dark:bg-navy-700/50 border border-gray-200 dark:border-navy-600">
+          <p class="text-xs text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wide mb-1"><%= m.label %></p>
+          <p class="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate" title="<%= m.value %>"><%= m.value %></p>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+
+  <!-- Section 2 : Dictionnaire des variables -->
+  <div id="variables" class="card p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+      <svg class="w-5 h-5 text-violet-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 10h18M3 14h18M10 3v18M14 3v18"/>
+      </svg>
+      Dictionnaire des variables
+    </h2>
+
+    <% if (dataset.variable_dict && dataset.variable_dict.length > 0) { %>
+      <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-navy-700">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-gray-50 dark:bg-navy-700 text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+            <tr>
+              <th class="px-4 py-3 font-semibold">Variable</th>
+              <th class="px-4 py-3 font-semibold">Type</th>
+              <th class="px-4 py-3 font-semibold">Description</th>
+              <th class="px-4 py-3 font-semibold">Rôle</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100 dark:divide-navy-700">
+            <% dataset.variable_dict.forEach((v, i) => {
+              const isTarget = v.name === dataset.target_variable;
+            %>
+              <tr class="row-<%= i % 2 === 0 ? 'even' : 'odd' %> <%= isTarget ? 'ring-1 ring-inset ring-teal-400/30' : '' %>">
+                <td class="px-4 py-3 font-mono text-xs font-semibold text-violet-700 dark:text-violet-300 whitespace-nowrap">
+                  <%= v.name %>
+                  <% if (isTarget) { %><span class="ml-1 px-1.5 py-0.5 text-xs bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 rounded font-semibold">cible</span><% } %>
+                </td>
+                <td class="px-4 py-3">
+                  <span class="px-2 py-0.5 rounded-md text-xs font-medium
+                    <%= (v.type === 'numeric' || v.type === 'integer' || v.type === 'float') ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' :
+                        (v.type === 'categorical' || v.type === 'string') ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300' :
+                        (v.type === 'boolean') ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300' :
+                        'bg-gray-100 dark:bg-navy-700 text-gray-600 dark:text-gray-400' %>">
+                    <%= v.type || '—' %>
+                  </span>
+                </td>
+                <td class="px-4 py-3 text-gray-600 dark:text-gray-400"><%= v.description || '—' %></td>
+                <td class="px-4 py-3">
+                  <% if (isTarget) { %>
+                    <span class="px-2 py-0.5 text-xs bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 rounded font-medium">Variable cible</span>
+                  <% } else if (v.role) { %>
+                    <span class="text-xs text-gray-500 dark:text-gray-400"><%= v.role %></span>
+                  <% } else { %>
+                    <span class="text-xs text-gray-400">Feature</span>
+                  <% } %>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div class="p-6 text-center rounded-xl bg-gray-50 dark:bg-navy-700/30 border border-dashed border-gray-300 dark:border-navy-600">
+        <p class="text-sm text-gray-500 dark:text-gray-400">Le dictionnaire des variables n'est pas encore renseigné pour ce dataset.</p>
+        <p class="text-xs text-gray-400 mt-1">Les statistiques automatiques sont disponibles dans l'onglet <a href="/modeling/<%= dataset.id %>#stats" class="text-teal-500 hover:underline">Statistiques & Profil</a>.</p>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Section 3 : Utilisation -->
+  <div id="utilisation" class="card p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+      <svg class="w-5 h-5 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+      </svg>
+      Comment utiliser ce dataset
+    </h2>
+
+    <!-- Tabs -->
+    <div class="flex gap-1 mb-4 border-b border-gray-200 dark:border-navy-700">
+      <% ['Python', 'R', 'curl'].forEach((lang, idx) => { %>
+        <button onclick="switchDocsTab('<%= lang.toLowerCase() %>')"
+          id="docs-tab-<%= lang.toLowerCase() %>"
+          class="px-4 py-2 text-sm font-medium rounded-t-lg transition-colors
+            <%= idx === 0 ? 'text-teal-600 dark:text-teal-400 border-b-2 border-teal-500 bg-teal-50 dark:bg-teal-900/20' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300' %>">
+          <%= lang %>
+        </button>
+      <% }); %>
+    </div>
+
+    <% const fileUrl = dataset.file_url || 'URL_DU_FICHIER'; %>
+
+    <!-- Python -->
+    <div id="docs-python" class="relative">
+      <button onclick="copyDocsCode('docs-python-code')" class="absolute top-3 right-3 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded transition-colors">Copier</button>
+      <pre id="docs-python-code" class="bg-gray-900 dark:bg-navy-900 text-gray-100 rounded-xl p-4 text-xs overflow-x-auto leading-relaxed"><span class="text-blue-400">import</span> pandas <span class="text-blue-400">as</span> pd
+
+<span class="text-gray-400"># Charger le dataset</span>
+df = pd.read_csv(<span class="text-green-300">"<%= fileUrl %>"</span>)
+
+<span class="text-gray-400"># Aperçu rapide</span>
+<span class="text-blue-400">print</span>(df.shape)        <span class="text-gray-400"># (<%= dataset.row_count || 'n' %>, <%= dataset.column_count || 'p' %>)</span>
+<span class="text-blue-400">print</span>(df.dtypes)
+<span class="text-blue-400">print</span>(df.describe())
+df.head(<span class="text-orange-300">10</span>)
+
+<% if (dataset.target_variable) { %><span class="text-gray-400"># Variable cible</span>
+X = df.drop(columns=[<span class="text-green-300">"<%= dataset.target_variable %>"</span>])
+y = df[<span class="text-green-300">"<%= dataset.target_variable %>"</span>]
+<% } %></pre>
+    </div>
+
+    <!-- R -->
+    <div id="docs-r" class="relative hidden">
+      <button onclick="copyDocsCode('docs-r-code')" class="absolute top-3 right-3 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded transition-colors">Copier</button>
+      <pre id="docs-r-code" class="bg-gray-900 dark:bg-navy-900 text-gray-100 rounded-xl p-4 text-xs overflow-x-auto leading-relaxed"><span class="text-gray-400"># Charger le dataset</span>
+df &lt;- read.csv(<span class="text-green-300">"<%= fileUrl %>"</span>, stringsAsFactors = <span class="text-orange-300">FALSE</span>)
+
+<span class="text-gray-400"># Aperçu rapide</span>
+dim(df)          <span class="text-gray-400"># <%= dataset.row_count || 'n' %> x <%= dataset.column_count || 'p' %></span>
+str(df)
+summary(df)
+head(df, <span class="text-orange-300">10</span>)
+
+<% if (dataset.target_variable) { %><span class="text-gray-400"># Variable cible</span>
+y &lt;- df$<span class="text-green-300"><%= dataset.target_variable %></span>
+X &lt;- df[, !names(df) %in% c(<span class="text-green-300">"<%= dataset.target_variable %>"</span>)]
+<% } %></pre>
+    </div>
+
+    <!-- curl -->
+    <div id="docs-curl" class="relative hidden">
+      <button onclick="copyDocsCode('docs-curl-code')" class="absolute top-3 right-3 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded transition-colors">Copier</button>
+      <pre id="docs-curl-code" class="bg-gray-900 dark:bg-navy-900 text-gray-100 rounded-xl p-4 text-xs overflow-x-auto leading-relaxed"><span class="text-gray-400"># Télécharger le dataset</span>
+curl -L -o <span class="text-green-300">"<%= dataset.name.replace(/\s+/g, '_').toLowerCase() %>.csv"</span> \
+  <span class="text-blue-300">"<%= fileUrl %>"</span>
+
+<span class="text-gray-400"># Vérification (nombre de lignes)</span>
+wc -l <span class="text-green-300">"<%= dataset.name.replace(/\s+/g, '_').toLowerCase() %>.csv"</span></pre>
+    </div>
+
+    <% if (dataset.colab_url) { %>
+      <div class="mt-4 p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 flex items-center gap-3">
+        <svg class="w-5 h-5 text-amber-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+        </svg>
+        <div class="flex-1">
+          <p class="text-sm font-medium text-amber-800 dark:text-amber-300">Notebook Colab disponible</p>
+          <p class="text-xs text-amber-600 dark:text-amber-400">Exemple d'utilisation interactif prêt à l'emploi</p>
+        </div>
+        <a href="<%= dataset.colab_url %>" target="_blank" rel="noopener noreferrer"
+           class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold rounded-lg transition-colors">
+          Ouvrir
+        </a>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Section 4 : Citation & Licence -->
+  <div id="citation" class="card p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+      <svg class="w-5 h-5 text-orange-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/>
+      </svg>
+      Citation & Licence
+    </h2>
+
+    <% if (dataset.license) { %>
+      <div class="mb-5 p-3 rounded-xl bg-gray-50 dark:bg-navy-700/50 border border-gray-200 dark:border-navy-600 flex items-center gap-3">
+        <svg class="w-5 h-5 text-gray-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <div>
+          <p class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wide">Licence</p>
+          <p class="text-sm font-semibold text-gray-800 dark:text-gray-200"><%= dataset.license %></p>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- BibTeX -->
+    <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wide mb-2">Format BibTeX</p>
+    <div class="relative mb-4">
+      <button onclick="copyDocsCode('docs-bibtex')" class="absolute top-3 right-3 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded transition-colors">Copier</button>
+      <%
+        const slug = (dataset.name || 'dataset').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+        const year = dataset.created_at ? new Date(dataset.created_at).getFullYear() : new Date().getFullYear();
+      %>
+      <pre id="docs-bibtex" class="bg-gray-900 dark:bg-navy-900 text-gray-100 rounded-xl p-4 text-xs overflow-x-auto leading-relaxed">@dataset{<span class="text-green-300"><%= slug %>_<%= year %></span>,
+  title  = {<span class="text-blue-300"><%= dataset.name %></span>},
+  author = {StochastiQdata},
+  year   = {<span class="text-orange-300"><%= year %></span>},
+  url    = {<span class="text-blue-300">https://stochastiqdata.com/modeling/<%= dataset.id %></span>},
+  note   = {Dataset pour actuaires}
+}</pre>
+    </div>
+
+    <!-- APA -->
+    <p class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wide mb-2">Format APA</p>
+    <div class="relative">
+      <button onclick="copyDocsCode('docs-apa')" class="absolute top-3 right-3 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded transition-colors">Copier</button>
+      <pre id="docs-apa" class="bg-gray-900 dark:bg-navy-900 text-gray-100 rounded-xl p-4 text-xs overflow-x-auto leading-relaxed">StochastiQdata. (<span class="text-orange-300"><%= year %></span>). <span class="text-blue-300"><em><%= dataset.name %></em></span> [Dataset].
+  https://stochastiqdata.com/modeling/<%= dataset.id %></pre>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function switchDocsTab(lang) {
+  ['python', 'r', 'curl'].forEach(l => {
+    document.getElementById('docs-' + l).classList.toggle('hidden', l !== lang);
+    const tab = document.getElementById('docs-tab-' + l);
+    if (l === lang) {
+      tab.classList.add('text-teal-600', 'dark:text-teal-400', 'border-b-2', 'border-teal-500', 'bg-teal-50', 'dark:bg-teal-900/20');
+      tab.classList.remove('text-gray-500', 'dark:text-gray-400');
+    } else {
+      tab.classList.remove('text-teal-600', 'dark:text-teal-400', 'border-b-2', 'border-teal-500', 'bg-teal-50', 'dark:bg-teal-900/20');
+      tab.classList.add('text-gray-500', 'dark:text-gray-400');
+    }
+  });
+}
+
+function copyDocsCode(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  navigator.clipboard.writeText(el.innerText).then(() => {
+    const btn = el.parentElement.querySelector('button');
+    if (btn) { btn.textContent = 'Copié !'; setTimeout(() => btn.textContent = 'Copier', 2000); }
+  });
+}
+</script>
