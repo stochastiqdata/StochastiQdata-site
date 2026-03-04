@@ -1,34 +1,21 @@
 <div class="max-w-5xl mx-auto px-4 py-8">
 
   <!-- Header -->
-  <div class="flex items-start justify-between gap-4 mb-8">
+  <div class="flex items-center justify-between gap-4 mb-6">
     <div>
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Modèles</h1>
-      <p class="text-gray-500 dark:text-gray-400">Modèles actuariels soumis par la communauté, liés aux datasets de la plateforme.</p>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Modèles actuariels</h1>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+        <span id="statTotal" class="font-medium text-gray-700 dark:text-gray-300">—</span> modèles ·
+        <span id="statDatasets" class="font-medium text-gray-700 dark:text-gray-300">—</span> datasets
+      </p>
     </div>
     <a href="/"
-       class="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-violet-500 hover:bg-violet-600 text-white font-semibold text-sm transition-all shadow hover:scale-[1.02]">
+       class="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-violet-500 hover:bg-violet-600 text-white font-semibold text-sm transition-all shadow">
       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
       </svg>
-      Soumettre un modèle
+      Soumettre
     </a>
-  </div>
-
-  <!-- Stats bar -->
-  <div id="modelsStats" class="hidden grid grid-cols-3 gap-4 mb-8">
-    <div class="card p-4 text-center">
-      <p id="statTotal" class="text-2xl font-bold text-gray-900 dark:text-white">—</p>
-      <p class="text-xs text-gray-400 mt-0.5">Modèles soumis</p>
-    </div>
-    <div class="card p-4 text-center">
-      <p id="statDatasets" class="text-2xl font-bold text-gray-900 dark:text-white">—</p>
-      <p class="text-xs text-gray-400 mt-0.5">Datasets couverts</p>
-    </div>
-    <div class="card p-4 text-center">
-      <p id="statDownloadable" class="text-2xl font-bold text-gray-900 dark:text-white">—</p>
-      <p class="text-xs text-gray-400 mt-0.5">Téléchargeables</p>
-    </div>
   </div>
 
   <!-- Filtres par type -->
@@ -75,14 +62,6 @@
     </a>
   </div>
 
-  <!-- Séparateur -->
-  <div class="border-t border-gray-100 dark:border-navy-700 pt-10 mb-8">
-    <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">Modèles de référence</h2>
-    <p class="text-sm text-gray-400 dark:text-gray-500">Les grands classiques de l'actuariat — avec démos visuelles.</p>
-  </div>
-
-  <%- include('../partials/modelisation/models-hub') %>
-  <%- include('../partials/modelisation/demos') %>
 
 </div>
 
@@ -248,13 +227,9 @@
       document.getElementById('communityLoading').classList.add('hidden');
       allModels = models;
 
-      // Stats
-      const uniqueDatasets = new Set(models.map(m => m.dataset_id)).size;
-      const downloadable = models.filter(m => m.model_file_url).length;
+      // Stats inline
       document.getElementById('statTotal').textContent = models.length;
-      document.getElementById('statDatasets').textContent = uniqueDatasets;
-      document.getElementById('statDownloadable').textContent = downloadable;
-      if (models.length > 0) document.getElementById('modelsStats').classList.remove('hidden');
+      document.getElementById('statDatasets').textContent = new Set(models.map(m => m.dataset_id)).size;
 
       renderGrid(models);
     })
