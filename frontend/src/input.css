@@ -204,32 +204,25 @@
   }
 
   /* Table row striping — fiable en dark mode */
-  .tr-even {
-    @apply bg-white;
-    border-left: 2px solid transparent;
-    transition: background-color 0.15s ease, border-color 0.15s ease;
-  }
-  .tr-odd {
-    @apply bg-gray-50;
-    border-left: 2px solid transparent;
-    transition: background-color 0.15s ease, border-color 0.15s ease;
-  }
-  .tr-even:hover,
-  .tr-odd:hover {
-    @apply bg-primary-50;
-    border-left-color: #14b8a6; /* primary-500 */
-  }
-  html.dark .tr-even {
-    background-color: #1e293b;
-  }
-  html.dark .tr-odd {
-    background-color: #263349;
-  }
-  html.dark .tr-even:hover,
-  html.dark .tr-odd:hover {
-    background-color: #2f3f58;
-    border-left-color: #14b8a6;
-  }
+  /* Fond des lignes paires/impaires */
+  .tr-even td { background-color: #ffffff; transition: background-color 0.15s ease, box-shadow 0.15s ease; }
+  .tr-odd  td { background-color: #f8fafc; transition: background-color 0.15s ease, box-shadow 0.15s ease; }
+
+  /* Hover light mode : teinte teal douce + barre gauche */
+  .tr-even:hover td,
+  .tr-odd:hover  td { background-color: rgba(20, 184, 166, 0.07); }
+  .tr-even:hover td:first-child,
+  .tr-odd:hover  td:first-child { box-shadow: inset 3px 0 0 #14b8a6; }
+
+  /* Dark mode — fond des lignes */
+  html.dark .tr-even td { background-color: #1e293b; }
+  html.dark .tr-odd  td { background-color: #263349; }
+
+  /* Hover dark mode */
+  html.dark .tr-even:hover td,
+  html.dark .tr-odd:hover  td { background-color: #2f3f58; }
+  html.dark .tr-even:hover td:first-child,
+  html.dark .tr-odd:hover  td:first-child { box-shadow: inset 3px 0 0 #14b8a6; }
 
   /* Navigation sidebar */
   .nav-item {
