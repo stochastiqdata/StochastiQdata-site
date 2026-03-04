@@ -14,23 +14,32 @@
 %>
 
 <div class="max-w-5xl mx-auto">
+  <%/* ── Bloc 1 : Identification rapide ──────────────────────────── */%>
   <%- include('../partials/modeling/header', vars) %>
-  <%- include('../partials/modeling/skills', vars) %>
-  <%- include('../partials/modeling/workflow', vars) %>
-  <%- include('../partials/modeling/models', vars) %>
   <%- include('../partials/modeling/metadata', vars) %>
+  <%- include('../partials/modeling/skills', vars) %>
+
+  <%/* ── Bloc 2 : Exploration des données ────────────────────────── */%>
   <%- include('../partials/modeling/preview', vars) %>
-  <%- include('../partials/modeling/code-snippet', vars) %>
   <%- include('../partials/modeling/stats', vars) %>
+  <%- include('../partials/modeling/variable-dict', vars) %>
   <%- include('../partials/modeling/distributions', vars) %>
   <%- include('../partials/modeling/correlations', vars) %>
-  <%- include('../partials/modeling/variable-dict', vars) %>
   <%- include('../partials/modeling/visualizations', vars) %>
+
+  <%/* ── Bloc 3 : Mise en pratique ───────────────────────────────── */%>
+  <%- include('../partials/modeling/workflow', vars) %>
+  <%- include('../partials/modeling/code-snippet', vars) %>
   <%- include('../partials/modeling/benchmarks', vars) %>
-  <%- include('../partials/modeling/changelog', vars) %>
-  <%- include('../partials/modeling/citation', vars) %>
+  <%- include('../partials/modeling/models', vars) %>
   <%- include('../partials/modeling/notebooks', vars) %>
+
+  <%/* ── Bloc 4 : Communauté ─────────────────────────────────────── */%>
   <%- include('../partials/modeling/reviews', vars) %>
   <%- include('../partials/modeling/questions', vars) %>
   <%- include('../partials/modeling/similar', vars) %>
+
+  <%/* ── Bloc 5 : Documentation ──────────────────────────────────── */%>
+  <%- include('../partials/modeling/citation', vars) %>
+  <%- include('../partials/modeling/changelog', vars) %>
 </div>
