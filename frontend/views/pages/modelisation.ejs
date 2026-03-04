@@ -18,21 +18,43 @@
     </a>
   </div>
 
-  <!-- Filtres par type -->
-  <div class="flex flex-wrap gap-2 mb-6">
-    <button onclick="filterModels('all')" data-filter="all"
-      class="filter-btn active px-3 py-1.5 text-sm rounded-lg border font-medium transition-colors
-             border-violet-500 bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300">
-      Tous
-    </button>
-    <% [['glm','GLM'],['xgboost','XGBoost'],['lightgbm','LightGBM'],['catboost','CatBoost'],
-        ['neural_network','Neural Network'],['other','Autre']].forEach(([val,label]) => { %>
-    <button onclick="filterModels('<%= val %>')" data-filter="<%= val %>"
-      class="filter-btn px-3 py-1.5 text-sm rounded-lg border font-medium transition-colors
-             border-gray-200 dark:border-navy-600 text-gray-600 dark:text-gray-400 hover:border-violet-400 dark:hover:border-violet-500">
-      <%= label %>
-    </button>
-    <% }); %>
+  <!-- Onglets niveau + filtres type -->
+  <div class="flex flex-col gap-3 mb-6">
+    <!-- Onglets difficulté -->
+    <div class="flex gap-1 p-1 bg-gray-100 dark:bg-navy-800 rounded-xl w-fit">
+      <button onclick="setTab('all')" data-tab="all"
+        class="tab-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors bg-white dark:bg-navy-600 text-gray-900 dark:text-white shadow-sm">
+        Tous
+      </button>
+      <button onclick="setTab('niveau-1')" data-tab="niveau-1"
+        class="tab-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-700">
+        Débutant
+      </button>
+      <button onclick="setTab('niveau-2')" data-tab="niveau-2"
+        class="tab-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-700">
+        Intermédiaire
+      </button>
+      <button onclick="setTab('niveau-3')" data-tab="niveau-3"
+        class="tab-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-700">
+        Avancé
+      </button>
+    </div>
+    <!-- Filtres type -->
+    <div class="flex flex-wrap gap-2">
+      <button onclick="filterModels('all')" data-filter="all"
+        class="filter-btn px-3 py-1 text-xs rounded-lg border font-medium transition-colors
+               border-violet-500 bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300">
+        Tous types
+      </button>
+      <% [['glm','GLM'],['xgboost','XGBoost'],['lightgbm','LightGBM'],['catboost','CatBoost'],
+          ['neural_network','Neural Network'],['other','Autre']].forEach(([val,label]) => { %>
+      <button onclick="filterModels('<%= val %>')" data-filter="<%= val %>"
+        class="filter-btn px-3 py-1 text-xs rounded-lg border font-medium transition-colors
+               border-gray-200 dark:border-navy-600 text-gray-500 dark:text-gray-400 hover:border-violet-400">
+        <%= label %>
+      </button>
+      <% }); %>
+    </div>
   </div>
 
   <!-- Loading -->
@@ -85,17 +107,12 @@
 
   let allModels = [];
   let currentFilter = 'all';
-
-  const DIFF_SECTIONS = [
-    { key: 'niveau-1', label: 'Débutant',      color: 'text-emerald-600 dark:text-emerald-400', border: 'border-emerald-200 dark:border-emerald-800' },
-    { key: 'niveau-2', label: 'Intermédiaire', color: 'text-amber-600 dark:text-amber-400',     border: 'border-amber-200 dark:border-amber-800' },
-    { key: 'niveau-3', label: 'Avancé',        color: 'text-rose-600 dark:text-rose-400',       border: 'border-rose-200 dark:border-rose-800' },
-  ];
+  let currentTab = 'all';
 
   const DIFF_BADGE = {
-    'niveau-1': 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400',
-    'niveau-2': 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400',
-    'niveau-3': 'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400',
+    'niveau-1': { label: 'Débutant',      cls: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' },
+    'niveau-2': { label: 'Intermédiaire', cls: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' },
+    'niveau-3': { label: 'Avancé',        cls: 'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400' },
   };
 
   function getDifficulty(model) {
@@ -114,17 +131,27 @@
     return String(v);
   }
 
+  function getDifficulty(model) {
+    const tags = model.tags || [];
+    for (const k of ['niveau-1','niveau-2','niveau-3']) {
+      if (tags.includes(k)) return k;
+    }
+    return null;
+  }
+
   function renderCard(model) {
     const icon = TYPE_ICONS[model.model_type] || '🔬';
     const typeLabel = TYPE_LABELS[model.model_type] || model.model_type;
     const desc = (model.description || '').replace(/^(Débutant|Intermédiaire|Avancé)\s*·\s*/i, '');
-
-    const metrics = Object.entries(model.metrics || {}).slice(0, 2);
+    const diff = getDifficulty(model);
+    const diffBadge = diff
+      ? `<span class="px-2 py-0.5 text-xs rounded-full font-medium ${DIFF_BADGE[diff].cls}">${DIFF_BADGE[diff].label}</span>`
+      : '';
+    const metrics = Object.entries(model.metrics || {}).slice(0, 2)
+      .map(([k,v]) => `<span class="text-xs text-gray-400">${METRIC_LABELS[k]||k}: <strong class="text-gray-700 dark:text-gray-200">${formatMetricValue(k,v)}</strong></span>`)
+      .join('<span class="mx-1 text-gray-300 dark:text-navy-600">·</span>');
     const familyBadge = model.family
       ? `<span class="px-2 py-0.5 text-xs rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300">${model.family}</span>`
-      : '';
-    const fileBadge = model.model_file_url
-      ? `<span class="px-2 py-0.5 text-xs rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">↓ fichier</span>`
       : '';
 
     return `
@@ -138,20 +165,15 @@
           </div>
           <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-violet-400 shrink-0 mt-1 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
         </div>
-        ${desc ? `<p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">${desc}</p>` : ''}
-        <div class="flex items-center justify-between gap-2">
-          <div class="flex flex-wrap gap-1.5">${familyBadge}${fileBadge}
-            ${metrics.map(([k,v]) =>
-              `<span class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-navy-700 text-gray-600 dark:text-gray-300">
-                ${METRIC_LABELS[k]||k}: <strong>${formatMetricValue(k,v)}</strong>
-              </span>`
-            ).join('')}
+        ${desc ? `<p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mb-2">${desc}</p>` : ''}
+        <div class="flex items-center justify-between gap-2 flex-wrap">
+          <div class="flex flex-wrap items-center gap-1.5">
+            ${diffBadge}${familyBadge}
+            ${metrics ? `<span class="text-xs text-gray-400">${metrics}</span>` : ''}
           </div>
           ${model.notebook_url
             ? `<a href="${model.notebook_url}" target="_blank" rel="noopener" onclick="event.stopPropagation()"
-                 class="shrink-0 text-xs text-violet-500 hover:text-violet-600 dark:hover:text-violet-300 font-medium whitespace-nowrap">
-                 Source →
-               </a>`
+                 class="text-xs text-violet-500 hover:text-violet-600 font-medium shrink-0">Source →</a>`
             : ''}
         </div>
       </a>
@@ -161,48 +183,33 @@
   function renderGrid(models) {
     const grid = document.getElementById('communityGrid');
     const empty = document.getElementById('communityEmpty');
-
     if (!models.length) {
       grid.classList.add('hidden');
       empty.classList.remove('hidden');
       return;
     }
-
     empty.classList.add('hidden');
-
-    // Groupe par niveau
-    let html = '';
-    for (const section of DIFF_SECTIONS) {
-      const group = models.filter(m => (m.tags || []).includes(section.key));
-      if (!group.length) continue;
-      html += `
-        <div class="mb-8">
-          <div class="flex items-center gap-3 mb-4">
-            <h3 class="text-sm font-bold uppercase tracking-widest ${section.color}">${section.label}</h3>
-            <span class="text-xs text-gray-400">${group.length} modèle${group.length > 1 ? 's' : ''}</span>
-            <div class="flex-1 h-px border-t ${section.border}"></div>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            ${group.map(renderCard).join('')}
-          </div>
-        </div>
-      `;
-    }
-    // Modèles sans niveau défini
-    const ungrouped = models.filter(m => !getDifficulty(m));
-    if (ungrouped.length) {
-      html += `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${ungrouped.map(renderCard).join('')}</div>`;
-    }
-
-    grid.innerHTML = html;
+    grid.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">${models.map(renderCard).join('')}</div>`;
     grid.classList.remove('hidden');
   }
 
   function applyFilters() {
     let filtered = allModels;
+    if (currentTab !== 'all') filtered = filtered.filter(m => (m.tags || []).includes(currentTab));
     if (currentFilter !== 'all') filtered = filtered.filter(m => m.model_type === currentFilter);
     renderGrid(filtered);
   }
+
+  window.setTab = function(tab) {
+    currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      const active = btn.dataset.tab === tab;
+      btn.className = active
+        ? 'tab-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors bg-white dark:bg-navy-600 text-gray-900 dark:text-white shadow-sm'
+        : 'tab-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-700';
+    });
+    applyFilters();
+  };
 
   window.filterModels = function(filter) {
     currentFilter = filter;
@@ -215,7 +222,7 @@
       btn.classList.toggle('dark:text-violet-300', active);
       btn.classList.toggle('border-gray-200', !active);
       btn.classList.toggle('dark:border-navy-600', !active);
-      btn.classList.toggle('text-gray-600', !active);
+      btn.classList.toggle('text-gray-500', !active);
       btn.classList.toggle('dark:text-gray-400', !active);
     });
     applyFilters();
