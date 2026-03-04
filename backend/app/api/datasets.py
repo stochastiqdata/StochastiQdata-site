@@ -197,6 +197,7 @@ async def upload_dataset_file(
             "file_url": public_url,
             "file_hash": sha256,
             "changelog": current_changelog,
+            "computed_cache": {},  # Invalider le cache stats/correlations
         }).eq("id", dataset_id).execute()
 
         return {
@@ -283,21 +284,29 @@ async def preview_dataset(dataset_id: str):
     file_url = result.data["file_url"]
 
     try:
-        async with httpx.AsyncClient() as client:
-            response = await client.get(file_url, timeout=30)
-            response.raise_for_status()
-
         ext = os.path.splitext(file_url.split("?")[0])[1].lower()
+
+        # Pour les CSV, télécharger seulement les 512 premiers KB (largement suffisant pour 10 lignes)
+        async with httpx.AsyncClient() as client:
+            if ext in (".csv", ""):
+                response = await client.get(
+                    file_url,
+                    headers={"Range": "bytes=0-524287"},
+                    timeout=20,
+                )
+            else:
+                response = await client.get(file_url, timeout=30)
+
         content = response.content
 
-        if ext == ".csv":
-            df = pd.read_csv(io.BytesIO(content), nrows=10)
+        if ext == ".csv" or ext == "":
+            df = pd.read_csv(io.BytesIO(content), nrows=10, on_bad_lines="skip")
         elif ext == ".parquet":
             df = pd.read_parquet(io.BytesIO(content)).head(10)
         elif ext in (".xlsx", ".xls"):
             df = pd.read_excel(io.BytesIO(content), nrows=10)
         else:
-            df = pd.read_csv(io.BytesIO(content), nrows=10)
+            df = pd.read_csv(io.BytesIO(content), nrows=10, on_bad_lines="skip")
 
         columns = [{"name": col, "type": str(df[col].dtype)} for col in df.columns]
         rows = df.fillna("").astype(str).values.tolist()
@@ -319,16 +328,21 @@ async def correlations_dataset(dataset_id: str):
     import math
 
     supabase = get_supabase_client()
-    result = supabase.table("datasets").select("file_url").eq("id", dataset_id).single().execute()
+    result = supabase.table("datasets").select("file_url, computed_cache").eq("id", dataset_id).single().execute()
 
     if not result.data or not result.data.get("file_url"):
         raise HTTPException(status_code=404, detail="Aucun fichier disponible pour ce dataset.")
+
+    # Retourner le cache si disponible
+    cached = (result.data.get("computed_cache") or {}).get("correlations")
+    if cached:
+        return cached
 
     file_url = result.data["file_url"]
 
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.get(file_url, timeout=60)
+            response = await client.get(file_url, timeout=90)
             response.raise_for_status()
 
         ext = os.path.splitext(file_url.split("?")[0])[1].lower()
@@ -357,8 +371,14 @@ async def correlations_dataset(dataset_id: str):
 
         columns = corr.columns.tolist()
         matrix = [[safe_corr(corr.loc[r, c]) for c in columns] for r in columns]
+        payload = {"columns": columns, "matrix": matrix}
 
-        return {"columns": columns, "matrix": matrix}
+        # Stocker en cache
+        existing_cache = result.data.get("computed_cache") or {}
+        existing_cache["correlations"] = payload
+        get_supabase_admin_client().table("datasets").update({"computed_cache": existing_cache}).eq("id", dataset_id).execute()
+
+        return payload
 
     except HTTPException:
         raise
@@ -378,16 +398,21 @@ async def stats_dataset(dataset_id: str):
     import numpy as np
 
     supabase = get_supabase_client()
-    result = supabase.table("datasets").select("file_url").eq("id", dataset_id).single().execute()
+    result = supabase.table("datasets").select("file_url, computed_cache").eq("id", dataset_id).single().execute()
 
     if not result.data or not result.data.get("file_url"):
         raise HTTPException(status_code=404, detail="Aucun fichier disponible pour ce dataset.")
+
+    # Retourner le cache si disponible
+    cached = (result.data.get("computed_cache") or {}).get("stats")
+    if cached:
+        return cached
 
     file_url = result.data["file_url"]
 
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.get(file_url, timeout=60)
+            response = await client.get(file_url, timeout=90)
             response.raise_for_status()
 
         ext = os.path.splitext(file_url.split("?")[0])[1].lower()
@@ -460,7 +485,7 @@ async def stats_dataset(dataset_id: str):
                 suggested_target = candidate
                 break
 
-        return {
+        payload = {
             "profile": {
                 "total_rows": total_rows,
                 "total_cols": total_cols,
@@ -471,6 +496,13 @@ async def stats_dataset(dataset_id: str):
             },
             "columns": columns_stats,
         }
+
+        # Stocker en cache
+        existing_cache = result.data.get("computed_cache") or {}
+        existing_cache["stats"] = payload
+        get_supabase_admin_client().table("datasets").update({"computed_cache": existing_cache}).eq("id", dataset_id).execute()
+
+        return payload
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur calcul stats : {str(e)}")

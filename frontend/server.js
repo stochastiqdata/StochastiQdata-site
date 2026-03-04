@@ -382,10 +382,10 @@ app.get('/api/datasets/:id/similar', async (req, res) => {
   }
 });
 
-// Matrice de corrélation
+// Matrice de corrélation (timeout long — calcul sur fichier complet + cache)
 app.get('/api/datasets/:id/correlations', async (req, res) => {
   try {
-    const response = await axios.get(`${API_URL}/datasets/${req.params.id}/correlations`);
+    const response = await axios.get(`${API_URL}/datasets/${req.params.id}/correlations`, { timeout: 90000 });
     res.json(response.data);
   } catch (error) {
     res.status(error.response?.status || 500).json({
@@ -406,10 +406,10 @@ app.post('/api/datasets/:id/download', async (req, res) => {
   }
 });
 
-// Stats dataset (profil + statistiques par colonne)
+// Stats dataset (timeout long — calcul sur fichier complet + cache)
 app.get('/api/datasets/:id/stats', async (req, res) => {
   try {
-    const response = await axios.get(`${API_URL}/datasets/${req.params.id}/stats`);
+    const response = await axios.get(`${API_URL}/datasets/${req.params.id}/stats`, { timeout: 90000 });
     res.json(response.data);
   } catch (error) {
     res.status(error.response?.status || 500).json({
@@ -418,10 +418,10 @@ app.get('/api/datasets/:id/stats', async (req, res) => {
   }
 });
 
-// Preview dataset (10 premières lignes)
+// Preview dataset (Range request — rapide)
 app.get('/api/datasets/:id/preview', async (req, res) => {
   try {
-    const response = await axios.get(`${API_URL}/datasets/${req.params.id}/preview`);
+    const response = await axios.get(`${API_URL}/datasets/${req.params.id}/preview`, { timeout: 30000 });
     res.json(response.data);
   } catch (error) {
     res.status(error.response?.status || 500).json({
