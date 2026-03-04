@@ -296,9 +296,32 @@ app.get('/models/:id', async (req, res, next) => {
       dataset = dsRes.data;
     } catch {}
 
-    res.render('pages/model', { model, dataset, TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
+    // Fetch author profile
+    let author = null;
+    if (model.created_by && model.created_by !== 'anonymous') {
+      try {
+        const profileRes = await axios.get(`${API_URL}/profiles/${model.created_by}`);
+        author = profileRes.data;
+      } catch {}
+    }
+
+    res.render('pages/model', { model, dataset, author, TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
   } catch (error) {
     logger.error('Model fetch error', { modelId: req.params.id, error: error.message });
+    next(error);
+  }
+});
+
+// Public user profile page
+app.get('/users/:id', async (req, res, next) => {
+  try {
+    const profileRes = await axios.get(`${API_URL}/profiles/${req.params.id}`);
+    const profile = profileRes.data;
+    res.render('pages/user-profile', { profile, TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
+  } catch (error) {
+    if (error.response?.status === 404) {
+      return res.status(404).render('pages/404', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
+    }
     next(error);
   }
 });
@@ -532,6 +555,40 @@ app.post('/api/models/:id/upload-file', uploadModel.single('file'), async (req, 
     logger.error('Model file upload error', { error: error.response?.data || error.message });
     res.status(error.response?.status || 500).json({
       detail: error.response?.data?.detail || 'Erreur upload fichier modèle'
+    });
+  }
+});
+
+// Profiles API proxies
+app.get('/api/profiles/:id', async (req, res) => {
+  try {
+    const response = await axios.get(`${API_URL}/profiles/${req.params.id}`);
+    res.json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json({
+      detail: error.response?.data?.detail || 'Profil non trouvé'
+    });
+  }
+});
+
+app.get('/api/profiles/:id/models', async (req, res) => {
+  try {
+    const response = await axios.get(`${API_URL}/profiles/${req.params.id}/models`);
+    res.json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json([]);
+  }
+});
+
+app.put('/api/profiles/me', async (req, res) => {
+  try {
+    const headers = { 'Content-Type': 'application/json' };
+    if (req.headers.authorization) headers['Authorization'] = req.headers.authorization;
+    const response = await axios.put(`${API_URL}/profiles/me`, req.body, { headers });
+    res.json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json({
+      detail: error.response?.data?.detail || 'Erreur mise à jour profil'
     });
   }
 });

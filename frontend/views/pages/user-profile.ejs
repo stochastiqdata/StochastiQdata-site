@@ -1,0 +1,146 @@
+<div class="max-w-4xl mx-auto px-4 py-8">
+
+  <!-- Breadcrumb -->
+  <nav class="mb-6">
+    <div class="flex items-center gap-2 text-sm">
+      <a href="/" class="text-gray-500 hover:text-primary-500 transition-colors">Dashboard</a>
+      <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+      <span class="text-gray-900 dark:text-white font-medium"><%= profile.display_name || 'Profil' %></span>
+    </div>
+  </nav>
+
+  <!-- Header profil -->
+  <div class="card p-6 mb-6">
+    <div class="flex items-start gap-5">
+      <!-- Avatar -->
+      <% if (profile.avatar_url) { %>
+        <img src="<%= profile.avatar_url %>" alt="<%= profile.display_name || 'Avatar' %>"
+             class="w-20 h-20 rounded-2xl object-cover border-2 border-gray-100 dark:border-navy-600 shrink-0"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="hidden w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-500 to-primary-500 items-center justify-center shrink-0">
+          <span class="text-white font-bold text-3xl"><%= (profile.display_name || '?')[0].toUpperCase() %></span>
+        </div>
+      <% } else { %>
+        <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-500 to-primary-500 flex items-center justify-center shrink-0">
+          <span class="text-white font-bold text-3xl"><%= (profile.display_name || '?')[0].toUpperCase() %></span>
+        </div>
+      <% } %>
+
+      <!-- Infos -->
+      <div class="flex-1 min-w-0">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-0.5">
+          <%= profile.display_name || 'Auteur' %>
+        </h1>
+        <% if (profile.title || profile.organization) { %>
+          <p class="text-sm text-violet-600 dark:text-violet-400 font-medium mb-2">
+            <%= [profile.title, profile.organization].filter(Boolean).join(' · ') %>
+          </p>
+        <% } %>
+        <% if (profile.bio) { %>
+          <p class="text-gray-500 dark:text-gray-400 text-sm"><%= profile.bio %></p>
+        <% } %>
+      </div>
+
+      <!-- Stats dynamiques -->
+      <div class="hidden sm:flex flex-col items-center gap-1 shrink-0 text-center">
+        <p id="statModels" class="text-2xl font-bold text-gray-900 dark:text-white">—</p>
+        <p class="text-xs text-gray-400">modèles</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modèles soumis -->
+  <div class="mb-4 flex items-center justify-between">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Modèles soumis</h2>
+    <span id="modelsCountLabel" class="text-sm text-gray-400"></span>
+  </div>
+
+  <!-- Loading -->
+  <div id="userModelsLoading" class="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 mb-6">
+    <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+    </svg>
+    Chargement…
+  </div>
+
+  <div id="userModelsGrid" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 mb-8"></div>
+
+  <div id="userModelsEmpty" class="hidden text-center py-10">
+    <p class="text-gray-400 dark:text-gray-500 text-sm">Aucun modèle soumis pour le moment.</p>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  const userId = '<%= profile.id %>';
+
+  const TYPE_ICONS = {
+    glm: '📐', xgboost: '⚡', random_forest: '🌲', neural_network: '🧠',
+    lightgbm: '💡', catboost: '🐱', chain_ladder: '📊', cox: '📈',
+    kaplan_meier: '📉', bornhuetter_ferguson: '📋', other: '🔬'
+  };
+  const TYPE_LABELS = {
+    glm: 'GLM', xgboost: 'XGBoost', random_forest: 'Random Forest',
+    neural_network: 'Réseau de neurones', lightgbm: 'LightGBM', catboost: 'CatBoost',
+    chain_ladder: 'Chain Ladder', bornhuetter_ferguson: 'Bornhuetter-Ferguson',
+    cox: 'Cox', kaplan_meier: 'Kaplan-Meier', other: 'Autre'
+  };
+  const METRIC_LABELS = {
+    gini: 'Gini', rmse: 'RMSE', mae: 'MAE', aic: 'AIC', r2: 'R²',
+    auc: 'AUC', accuracy: 'Accuracy', f1_score: 'F1', log_loss: 'Log Loss'
+  };
+
+  function formatMetric(k, v) {
+    if (typeof v !== 'number') return String(v);
+    return ['gini', 'r2', 'auc', 'accuracy', 'f1_score'].includes(k)
+      ? (v * 100).toFixed(1) + '%' : v.toFixed(4);
+  }
+
+  function renderCard(model) {
+    const icon = TYPE_ICONS[model.model_type] || '🔬';
+    const type = TYPE_LABELS[model.model_type] || model.model_type;
+    const metrics = Object.entries(model.metrics || {}).slice(0, 2)
+      .map(([k, v]) => `<span class="text-xs text-gray-400">${METRIC_LABELS[k] || k}: <strong class="text-gray-700 dark:text-gray-200">${formatMetric(k, v)}</strong></span>`)
+      .join('<span class="text-gray-200 dark:text-navy-600 mx-1">•</span>');
+    const fileBadge = model.model_file_url
+      ? '<span class="px-1.5 py-0.5 text-xs rounded bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">↓ fichier</span>' : '';
+
+    return `
+      <a href="/models/${model.id}"
+         class="block card p-4 hover:border-violet-400 dark:hover:border-violet-600 hover:shadow-md transition-all group border border-transparent">
+        <div class="flex items-start gap-3 mb-2">
+          <span class="text-xl shrink-0">${icon}</span>
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors truncate">${model.name}</p>
+            <p class="text-xs text-gray-400">${type}${model.family ? ' · ' + model.family : ''}</p>
+          </div>
+          <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-violet-400 shrink-0 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+        </div>
+        ${model.description ? `<p class="text-xs text-gray-500 dark:text-gray-400 mb-2 line-clamp-2">${model.description}</p>` : ''}
+        ${fileBadge ? `<div class="mb-2">${fileBadge}</div>` : ''}
+        ${metrics ? `<div class="pt-2 border-t border-gray-100 dark:border-navy-700 flex flex-wrap gap-2">${metrics}</div>` : ''}
+      </a>
+    `;
+  }
+
+  fetch('/api/profiles/' + userId + '/models')
+    .then(r => r.json())
+    .then(models => {
+      document.getElementById('userModelsLoading').classList.add('hidden');
+      document.getElementById('statModels').textContent = models.length;
+      document.getElementById('modelsCountLabel').textContent = models.length + ' modèle' + (models.length > 1 ? 's' : '');
+      if (!models.length) {
+        document.getElementById('userModelsEmpty').classList.remove('hidden');
+        return;
+      }
+      const grid = document.getElementById('userModelsGrid');
+      grid.innerHTML = models.map(renderCard).join('');
+      grid.classList.remove('hidden');
+    })
+    .catch(() => {
+      document.getElementById('userModelsLoading').classList.add('hidden');
+      document.getElementById('userModelsEmpty').classList.remove('hidden');
+    });
+})();
+</script>

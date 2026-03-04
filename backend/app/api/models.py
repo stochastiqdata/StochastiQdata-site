@@ -8,6 +8,7 @@ from fastapi import APIRouter, HTTPException, Depends, Query, UploadFile, File
 from app.core.database import get_supabase_client, get_supabase_admin_client
 from app.middleware.supabase_auth import get_current_user, SupabaseUser
 from app.schemas.model import ModelCreate, ModelResponse
+from app.api.profiles import upsert_profile_from_user
 
 router = APIRouter(prefix="/models", tags=["models"])
 
@@ -55,6 +56,10 @@ async def create_model(
 
     data = model.model_dump()
     data["created_by"] = current_user.user_id if current_user else "anonymous"
+
+    # Auto-create profile from JWT data on first model submission
+    if current_user:
+        upsert_profile_from_user(current_user, supabase_admin)
 
     response = supabase_admin.table("models").insert(data).execute()
     if not response.data:

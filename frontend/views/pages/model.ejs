@@ -172,6 +172,41 @@
   </div>
   <% } %>
 
+  <!-- Auteur -->
+  <% if (author) { %>
+  <div class="card p-5 mb-6">
+    <h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-4">Auteur</h2>
+    <a href="/users/<%= author.id %>" class="flex items-center gap-4 group">
+      <% if (author.avatar_url) { %>
+        <img src="<%= author.avatar_url %>" alt="<%= author.display_name || 'Auteur' %>"
+             class="w-12 h-12 rounded-full object-cover border-2 border-gray-100 dark:border-navy-600 group-hover:border-violet-400 transition-colors"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="hidden w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-primary-500 items-center justify-center shrink-0">
+          <span class="text-white font-bold text-lg"><%= (author.display_name || '?')[0].toUpperCase() %></span>
+        </div>
+      <% } else { %>
+        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-primary-500 flex items-center justify-center shrink-0">
+          <span class="text-white font-bold text-lg"><%= (author.display_name || '?')[0].toUpperCase() %></span>
+        </div>
+      <% } %>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+          <%= author.display_name || 'Anonyme' %>
+        </p>
+        <% if (author.title || author.organization) { %>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            <%= [author.title, author.organization].filter(Boolean).join(' · ') %>
+          </p>
+        <% } %>
+        <% if (author.bio) { %>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 line-clamp-2"><%= author.bio %></p>
+        <% } %>
+      </div>
+      <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-violet-400 shrink-0 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+    </a>
+  </div>
+  <% } %>
+
   <!-- Citation -->
   <div class="card p-6 mb-6">
     <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
