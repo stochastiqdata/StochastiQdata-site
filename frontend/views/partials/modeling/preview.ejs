@@ -62,7 +62,7 @@
       rows.forEach((row, i) => {
         const bg = i % 2 === 0
           ? 'bg-white dark:bg-navy-800'
-          : 'bg-gray-50 dark:bg-navy-800/60';
+          : 'bg-gray-50 dark:bg-white/[0.03]';
         html += `<tr class="${bg} hover:bg-blue-50 dark:hover:bg-navy-700/50 transition-colors">`;
         row.forEach(val => {
           html += `<td class="px-4 py-2 text-gray-700 dark:text-gray-300 font-mono text-xs whitespace-nowrap max-w-[180px] truncate" title="${val}">${val !== '' ? val : '<span class="text-gray-300 dark:text-gray-600">—</span>'}</td>`;
