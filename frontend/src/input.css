@@ -203,26 +203,7 @@
     @apply bg-primary-500 text-white border-primary-500;
   }
 
-  /* Table row striping — fiable en dark mode */
-  /* Fond des lignes paires/impaires */
-  .tr-even td { background-color: #ffffff; transition: background-color 0.15s ease, box-shadow 0.15s ease; }
-  .tr-odd  td { background-color: #f8fafc; transition: background-color 0.15s ease, box-shadow 0.15s ease; }
-
-  /* Hover light mode : teinte teal douce + barre gauche */
-  .tr-even:hover td,
-  .tr-odd:hover  td { background-color: rgba(20, 184, 166, 0.07); }
-  .tr-even:hover td:first-child,
-  .tr-odd:hover  td:first-child { box-shadow: inset 3px 0 0 #14b8a6; }
-
-  /* Dark mode — fond des lignes */
-  html.dark .tr-even td { background-color: #1e293b; }
-  html.dark .tr-odd  td { background-color: #263349; }
-
-  /* Hover dark mode */
-  html.dark .tr-even:hover td,
-  html.dark .tr-odd:hover  td { background-color: #2f3f58; }
-  html.dark .tr-even:hover td:first-child,
-  html.dark .tr-odd:hover  td:first-child { box-shadow: inset 3px 0 0 #14b8a6; }
+  /* Table row striping : géré entièrement via JS inline dans preview.ejs et stats.ejs */
 
   /* Navigation sidebar */
   .nav-item {

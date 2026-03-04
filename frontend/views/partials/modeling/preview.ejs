@@ -64,12 +64,13 @@
         const bgDefault = i % 2 === 0
           ? (isDark ? '#1e293b' : '#ffffff')
           : (isDark ? '#263349' : '#f8fafc');
-        const bgHover = isDark ? '#2f3f58' : 'rgba(20,184,166,0.08)';
-        html += `<tr style="background-color:${bgDefault};cursor:default;transition:background-color 0.15s"
-          onmouseenter="this.style.backgroundColor='${bgHover}'"
-          onmouseleave="this.style.backgroundColor='${bgDefault}'">`;
+        const bgHover = isDark ? '#2f3f58' : '#e6faf8';
+        const txtColor = isDark ? '#cbd5e1' : '#374151';
+        html += `<tr
+          onmouseenter="Array.from(this.cells).forEach(td=>{td.style.backgroundColor='${bgHover}'})"
+          onmouseleave="Array.from(this.cells).forEach(td=>{td.style.backgroundColor='${bgDefault}'})">`;
         row.forEach(val => {
-          html += `<td class="px-4 py-2 text-gray-700 dark:text-gray-300 font-mono text-xs whitespace-nowrap max-w-[180px] truncate" title="${val}">${val !== '' ? val : '<span class="text-gray-300 dark:text-gray-600">—</span>'}</td>`;
+          html += `<td style="background-color:${bgDefault};color:${txtColor};transition:background-color 0.15s" class="px-4 py-2 font-mono text-xs whitespace-nowrap max-w-[180px] truncate" title="${val}">${val !== '' ? val : '<span style="opacity:0.4">—</span>'}</td>`;
         });
         html += '</tr>';
       });
