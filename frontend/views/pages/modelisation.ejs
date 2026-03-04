@@ -58,17 +58,17 @@
     <button onclick="filterDifficulty('niveau-1')" data-diff="niveau-1"
       class="diff-btn px-3 py-1.5 text-xs rounded-lg border font-medium transition-colors
              border-gray-200 dark:border-navy-600 text-gray-500 dark:text-gray-400 hover:border-emerald-400">
-      ⭐ Débutant
+      Débutant
     </button>
     <button onclick="filterDifficulty('niveau-2')" data-diff="niveau-2"
       class="diff-btn px-3 py-1.5 text-xs rounded-lg border font-medium transition-colors
              border-gray-200 dark:border-navy-600 text-gray-500 dark:text-gray-400 hover:border-amber-400">
-      ⭐⭐ Intermédiaire
+      Intermédiaire
     </button>
     <button onclick="filterDifficulty('niveau-3')" data-diff="niveau-3"
       class="diff-btn px-3 py-1.5 text-xs rounded-lg border font-medium transition-colors
              border-gray-200 dark:border-navy-600 text-gray-500 dark:text-gray-400 hover:border-rose-400">
-      ⭐⭐⭐ Avancé
+      Avancé
     </button>
   </div>
 
@@ -133,9 +133,9 @@
   let currentDiff = 'all';
 
   const DIFF_CONFIG = {
-    'niveau-1': { label: '⭐ Débutant',       cls: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' },
-    'niveau-2': { label: '⭐⭐ Intermédiaire', cls: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' },
-    'niveau-3': { label: '⭐⭐⭐ Avancé',      cls: 'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400' },
+    'niveau-1': { label: 'Débutant',      cls: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' },
+    'niveau-2': { label: 'Intermédiaire', cls: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' },
+    'niveau-3': { label: 'Avancé',        cls: 'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400' },
   };
 
   function getDifficulty(model) {
