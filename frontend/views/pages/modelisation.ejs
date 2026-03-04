@@ -57,6 +57,14 @@
     </div>
   </div>
 
+  <!-- Search bar -->
+  <div class="relative mb-4">
+    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input id="modelSearch" type="text" placeholder="Rechercher un modèle…"
+      oninput="applyFilters()"
+      class="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400 transition">
+  </div>
+
   <!-- Loading -->
   <div id="communityLoading" class="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 mb-6">
     <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -137,14 +145,6 @@
     return String(v);
   }
 
-  function getDifficulty(model) {
-    const tags = model.tags || [];
-    for (const k of ['niveau-1','niveau-2','niveau-3']) {
-      if (tags.includes(k)) return k;
-    }
-    return null;
-  }
-
   function renderCard(model) {
     const icon = TYPE_ICONS[model.model_type] || '🔬';
     const typeLabel = TYPE_LABELS[model.model_type] || model.model_type;
@@ -186,6 +186,33 @@
     `;
   }
 
+  function renderListItem(model) {
+    const icon = TYPE_ICONS[model.model_type] || '🔬';
+    const typeLabel = TYPE_LABELS[model.model_type] || model.model_type;
+    const diff = getDifficulty(model);
+    const diffBadge = diff
+      ? `<span class="px-1.5 py-0.5 text-xs rounded-full font-medium ${DIFF_BADGE[diff].cls}">${DIFF_BADGE[diff].label}</span>`
+      : '';
+    return `
+      <a href="/models/${model.id}"
+         class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-navy-700 transition-colors group">
+        <span class="text-base shrink-0">${icon}</span>
+        <div class="min-w-0 flex-1">
+          <span class="text-sm font-medium text-gray-800 dark:text-gray-200 group-hover:text-violet-600 dark:group-hover:text-violet-400 truncate block">${model.name}</span>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          ${diffBadge}
+          <span class="text-xs text-gray-400 dark:text-gray-500">${typeLabel}</span>
+          ${model.notebook_url
+            ? `<a href="${model.notebook_url}" target="_blank" rel="noopener" onclick="event.stopPropagation()"
+                 class="text-xs text-violet-500 hover:text-violet-600 font-medium">Source →</a>`
+            : ''}
+          <svg class="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 group-hover:text-violet-400 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+        </div>
+      </a>
+    `;
+  }
+
   function renderGrid(models) {
     const grid = document.getElementById('communityGrid');
     const empty = document.getElementById('communityEmpty');
@@ -195,14 +222,26 @@
       return;
     }
     empty.classList.add('hidden');
-    grid.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">${models.map(renderCard).join('')}</div>`;
+    const top = models.slice(0, 6);
+    const rest = models.slice(6);
+    let html = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">${top.map(renderCard).join('')}</div>`;
+    if (rest.length) {
+      html += `<div class="border border-gray-100 dark:border-navy-700 rounded-xl overflow-hidden divide-y divide-gray-100 dark:divide-navy-700">${rest.map(renderListItem).join('')}</div>`;
+    }
+    grid.innerHTML = html;
     grid.classList.remove('hidden');
   }
 
   function applyFilters() {
+    const q = (document.getElementById('modelSearch')?.value || '').toLowerCase().trim();
     let filtered = allModels;
     if (currentTab !== 'all') filtered = filtered.filter(m => (m.tags || []).includes(currentTab));
     if (currentFilter !== 'all') filtered = filtered.filter(m => m.model_type === currentFilter);
+    if (q) filtered = filtered.filter(m =>
+      (m.name || '').toLowerCase().includes(q) ||
+      (m.description || '').toLowerCase().includes(q) ||
+      (TYPE_LABELS[m.model_type] || m.model_type || '').toLowerCase().includes(q)
+    );
     renderGrid(filtered);
   }
 
