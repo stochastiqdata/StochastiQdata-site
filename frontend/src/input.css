@@ -203,6 +203,24 @@
     @apply bg-primary-500 text-white border-primary-500;
   }
 
+  /* Table row striping — fiable en dark mode */
+  .tr-even {
+    @apply bg-white;
+  }
+  html.dark .tr-even {
+    background-color: #1e293b; /* navy-800 */
+  }
+  .tr-odd {
+    @apply bg-gray-50;
+  }
+  html.dark .tr-odd {
+    background-color: #141c2b; /* entre navy-800 et navy-900, stripe subtil */
+  }
+  html.dark .tr-even:hover,
+  html.dark .tr-odd:hover {
+    background-color: #334155; /* navy-700 au hover */
+  }
+
   /* Navigation sidebar */
   .nav-item {
     @apply flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 transition-all duration-200 hover:bg-white/10 hover:text-white;
