@@ -99,8 +99,12 @@
           </thead>
           <tbody class="divide-y divide-gray-100 dark:divide-navy-700">`;
 
+      const isDark = document.documentElement.classList.contains('dark');
       data.columns.forEach((col, i) => {
-        const bg = i % 2 === 0 ? 'tr-even' : 'tr-odd';
+        const bgDefault = i % 2 === 0
+          ? (isDark ? '#1e293b' : '#ffffff')
+          : (isDark ? '#263349' : '#f8fafc');
+        const bgHover = isDark ? '#2f3f58' : 'rgba(20,184,166,0.08)';
         const typeLabel = col.is_numeric
           ? `<span class="px-2 py-0.5 rounded-md text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">${col.dtype}</span>`
           : `<span class="px-2 py-0.5 rounded-md text-xs font-medium bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300">${col.dtype}</span>`;
@@ -152,7 +156,9 @@
           </div>`;
         }
 
-        html += `<tr class="${bg} transition-colors">
+        html += `<tr style="background-color:${bgDefault};transition:background-color 0.15s"
+          onmouseenter="this.style.backgroundColor='${bgHover}'"
+          onmouseleave="this.style.backgroundColor='${bgDefault}'">
           <td class="px-4 py-3 font-mono text-xs font-semibold text-violet-700 dark:text-violet-300 whitespace-nowrap">${col.name}</td>
           <td class="px-4 py-3">${typeLabel}</td>
           <td class="px-4 py-3">${nullCell}</td>

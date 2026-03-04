@@ -59,9 +59,15 @@
 
       // Lignes
       html += '<tbody class="divide-y divide-gray-100 dark:divide-navy-700">';
+      const isDark = document.documentElement.classList.contains('dark');
       rows.forEach((row, i) => {
-        const bg = i % 2 === 0 ? 'tr-even' : 'tr-odd';
-        html += `<tr class="${bg} transition-colors">`;
+        const bgDefault = i % 2 === 0
+          ? (isDark ? '#1e293b' : '#ffffff')
+          : (isDark ? '#263349' : '#f8fafc');
+        const bgHover = isDark ? '#2f3f58' : 'rgba(20,184,166,0.08)';
+        html += `<tr style="background-color:${bgDefault};cursor:default;transition:background-color 0.15s"
+          onmouseenter="this.style.backgroundColor='${bgHover}'"
+          onmouseleave="this.style.backgroundColor='${bgDefault}'">`;
         row.forEach(val => {
           html += `<td class="px-4 py-2 text-gray-700 dark:text-gray-300 font-mono text-xs whitespace-nowrap max-w-[180px] truncate" title="${val}">${val !== '' ? val : '<span class="text-gray-300 dark:text-gray-600">—</span>'}</td>`;
         });
