@@ -320,7 +320,7 @@ app.get('/users/:id', async (req, res, next) => {
     res.render('pages/user-profile', { profile, TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
   } catch (error) {
     if (error.response?.status === 404) {
-      return res.status(404).render('pages/404', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
+      return res.status(404).render('pages/error', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS, statusCode: 404, message: 'Profil introuvable.' });
     }
     next(error);
   }
