@@ -100,14 +100,17 @@
           <tbody class="divide-y divide-gray-100 dark:divide-navy-700">`;
 
       const isDark = document.documentElement.classList.contains('dark');
+      const BG_EXPAND_S = isDark ? '#1a3a4a' : '#f0fdf9';
+      const BORDER_S = isDark ? '#334155' : '#e2e8f0';
+      const TXT_S = isDark ? '#cbd5e1' : '#374151';
       data.columns.forEach((col, i) => {
         const bgDefault = i % 2 === 0
           ? (isDark ? '#1e293b' : '#ffffff')
-          : (isDark ? '#263349' : '#f8fafc');
-        const bgHover = isDark ? '#2f3f58' : '#e6faf8';
+          : (isDark ? '#0f1929' : '#eef2ff');
+        const bgHover = isDark ? '#1e3a5f' : '#d1fae5';
         const typeLabel = col.is_numeric
-          ? `<span class="px-2 py-0.5 rounded-md text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">${col.dtype}</span>`
-          : `<span class="px-2 py-0.5 rounded-md text-xs font-medium bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300">${col.dtype}</span>`;
+          ? `<span style="padding:2px 8px;border-radius:6px;font-size:12px;font-weight:500;background:${isDark?'#1e3a8a':'#dbeafe'};color:${isDark?'#93c5fd':'#1d4ed8'}">${col.dtype}</span>`
+          : `<span style="padding:2px 8px;border-radius:6px;font-size:12px;font-weight:500;background:${isDark?'#3b1f6e':'#ede9fe'};color:${isDark?'#c4b5fd':'#6d28d9'}">${col.dtype}</span>`;
 
         const nullColor = col.null_pct > 10 ? 'text-red-500' : col.null_pct > 0 ? 'text-amber-500' : 'text-green-500';
         const nullBarColor = col.null_pct > 10 ? 'bg-red-500' : col.null_pct > 0 ? 'bg-amber-400' : 'bg-green-500';
@@ -156,15 +159,66 @@
           </div>`;
         }
 
-        const tdStyle = `style="background-color:${bgDefault};transition:background-color 0.15s"`;
-        html += `<tr
-          onmouseenter="Array.from(this.cells).forEach(td=>{td.style.backgroundColor='${bgHover}'})"
-          onmouseleave="Array.from(this.cells).forEach(td=>{td.style.backgroundColor='${bgDefault}'})">
-          <td ${tdStyle} class="px-4 py-3 font-mono text-xs font-semibold ${isDark ? 'text-violet-300' : 'text-violet-700'} whitespace-nowrap">${col.name}</td>
+        const tdStyle = `style="background-color:${bgDefault};transition:background-color 0.15s;cursor:pointer"`;
+        const detailId = 'st-detail-' + i;
+        const colColor = col.is_numeric ? '#60a5fa' : '#a78bfa';
+
+        // Build detail grid for this column
+        let detailItems = `
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px">
+            <div style="padding:8px 10px;background:${isDark?'rgba(255,255,255,0.04)':'rgba(0,0,0,0.03)'};border-radius:8px;border:1px solid ${BORDER_S}">
+              <p style="font-size:10px;color:#94a3b8;font-weight:600;margin-bottom:3px">Type</p>
+              <p style="font-size:12px;color:${colColor};font-family:monospace">${col.dtype}</p>
+            </div>
+            <div style="padding:8px 10px;background:${isDark?'rgba(255,255,255,0.04)':'rgba(0,0,0,0.03)'};border-radius:8px;border:1px solid ${BORDER_S}">
+              <p style="font-size:10px;color:#94a3b8;font-weight:600;margin-bottom:3px">Valeurs nulles</p>
+              <p style="font-size:12px;color:${TXT_S};font-family:monospace">${col.null_pct}% (${col.null_count ?? '—'})</p>
+            </div>
+            <div style="padding:8px 10px;background:${isDark?'rgba(255,255,255,0.04)':'rgba(0,0,0,0.03)'};border-radius:8px;border:1px solid ${BORDER_S}">
+              <p style="font-size:10px;color:#94a3b8;font-weight:600;margin-bottom:3px">Valeurs uniques</p>
+              <p style="font-size:12px;color:${TXT_S};font-family:monospace">${col.unique.toLocaleString('fr-FR')}</p>
+            </div>`;
+        if (col.is_numeric) {
+          detailItems += `
+            <div style="padding:8px 10px;background:${isDark?'rgba(255,255,255,0.04)':'rgba(0,0,0,0.03)'};border-radius:8px;border:1px solid ${BORDER_S}">
+              <p style="font-size:10px;color:#94a3b8;font-weight:600;margin-bottom:3px">Min / Max</p>
+              <p style="font-size:12px;color:${TXT_S};font-family:monospace">${col.min} / ${col.max}</p>
+            </div>
+            <div style="padding:8px 10px;background:${isDark?'rgba(255,255,255,0.04)':'rgba(0,0,0,0.03)'};border-radius:8px;border:1px solid ${BORDER_S}">
+              <p style="font-size:10px;color:#94a3b8;font-weight:600;margin-bottom:3px">Moyenne / Médiane</p>
+              <p style="font-size:12px;color:${TXT_S};font-family:monospace">${col.mean} / ${col.p50}</p>
+            </div>
+            <div style="padding:8px 10px;background:${isDark?'rgba(255,255,255,0.04)':'rgba(0,0,0,0.03)'};border-radius:8px;border:1px solid ${BORDER_S}">
+              <p style="font-size:10px;color:#94a3b8;font-weight:600;margin-bottom:3px">Écart-type</p>
+              <p style="font-size:12px;color:${TXT_S};font-family:monospace">σ ${col.std}</p>
+            </div>`;
+        } else {
+          const topVals = (col.top_values || []).slice(0, 5);
+          detailItems += `
+            <div style="padding:8px 10px;background:${isDark?'rgba(255,255,255,0.04)':'rgba(0,0,0,0.03)'};border-radius:8px;border:1px solid ${BORDER_S};grid-column:span 2">
+              <p style="font-size:10px;color:#94a3b8;font-weight:600;margin-bottom:6px">Top valeurs</p>
+              ${topVals.map(v => `<p style="font-size:12px;color:${TXT_S};font-family:monospace;margin-bottom:2px">${v.value} <span style="color:#94a3b8">(${v.count.toLocaleString('fr-FR')})</span></p>`).join('')}
+            </div>`;
+        }
+        detailItems += '</div>';
+
+        html += `<tr id="st-row-${i}"
+          onmouseenter="if(!this._open){Array.from(this.cells).forEach(td=>{td.style.backgroundColor='${bgHover}'})}"
+          onmouseleave="if(!this._open){Array.from(this.cells).forEach(td=>{td.style.backgroundColor='${bgDefault}'})}"
+          onclick="toggleStatsRow(this,'${detailId}','${bgDefault}','${BG_EXPAND_S}')">
+          <td ${tdStyle} class="px-4 py-3 font-mono text-xs font-semibold" style="background-color:${bgDefault};transition:background-color 0.15s;cursor:pointer;color:${isDark?'#c4b5fd':'#6d28d9'};white-space:nowrap">${col.name}</td>
           <td ${tdStyle} class="px-4 py-3">${typeLabel}</td>
           <td ${tdStyle} class="px-4 py-3">${nullCell}</td>
-          <td ${tdStyle} class="px-4 py-3 text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'} font-mono">${col.unique.toLocaleString('fr-FR')}</td>
+          <td style="background-color:${bgDefault};transition:background-color 0.15s;cursor:pointer;padding:12px 16px;font-size:12px;color:${isDark?'#94a3b8':'#6b7280'};font-family:monospace">${col.unique.toLocaleString('fr-FR')}</td>
           <td ${tdStyle} class="px-4 py-3">${statsCell}</td>
+        </tr>
+        <tr id="${detailId}" style="display:none">
+          <td colspan="5" style="padding:0">
+            <div style="padding:16px 20px;background:${BG_EXPAND_S};border-bottom:2px solid ${isDark?'#14b8a6':'#14b8a6'}22">
+              <p style="font-size:11px;font-weight:600;color:#14b8a6;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em">${col.name} — détail complet</p>
+              ${detailItems}
+            </div>
+          </td>
         </tr>`;
       });
 
@@ -176,6 +230,16 @@
       // Partage des données avec les autres sections (distributions)
       window._statsData = data;
       document.dispatchEvent(new CustomEvent('statsLoaded', { detail: data }));
+
+      window.toggleStatsRow = function(tr, detailId, bgDefault, bgExpand) {
+        const detail = document.getElementById(detailId);
+        const isOpen = tr._open;
+        tr._open = !isOpen;
+        detail.style.display = isOpen ? 'none' : 'table-row';
+        Array.from(tr.cells).forEach(td => {
+          td.style.backgroundColor = isOpen ? bgDefault : bgExpand;
+        });
+      };
     })
     .catch(() => {
       document.getElementById('statsProfileSkeleton').classList.add('hidden');
