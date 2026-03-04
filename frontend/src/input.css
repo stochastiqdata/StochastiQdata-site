@@ -206,19 +206,29 @@
   /* Table row striping — fiable en dark mode */
   .tr-even {
     @apply bg-white;
-  }
-  html.dark .tr-even {
-    background-color: #1e293b; /* navy-800, fond de carte */
+    border-left: 2px solid transparent;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
   }
   .tr-odd {
     @apply bg-gray-50;
+    border-left: 2px solid transparent;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+  }
+  .tr-even:hover,
+  .tr-odd:hover {
+    @apply bg-primary-50;
+    border-left-color: #14b8a6; /* primary-500 */
+  }
+  html.dark .tr-even {
+    background-color: #1e293b;
   }
   html.dark .tr-odd {
-    background-color: #263349; /* stripe visible : ~15% plus clair que navy-800 */
+    background-color: #263349;
   }
   html.dark .tr-even:hover,
   html.dark .tr-odd:hover {
-    background-color: #2f3f58; /* navy-700/70 au hover */
+    background-color: #2f3f58;
+    border-left-color: #14b8a6;
   }
 
   /* Navigation sidebar */
