@@ -126,13 +126,20 @@
           const p25pos = Math.round(((col.p25 - col.min) / range) * 100);
           const p75pos = Math.round(((col.p75 - col.min) / range) * 100);
           const medpos = Math.round(((col.p50 - col.min) / range) * 100);
+          // Détection outliers : max ou min au-delà de 3 écarts-types
+          const hasUpperOutlier = col.std > 0 && col.max > parseFloat(col.mean) + 3 * parseFloat(col.std);
+          const hasLowerOutlier = col.std > 0 && col.min < parseFloat(col.mean) - 3 * parseFloat(col.std);
+          const outlierBadge = (hasUpperOutlier || hasLowerOutlier)
+            ? `<span title="Valeurs extrêmes détectées (> ±3σ)" class="ml-2 px-1.5 py-0.5 text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded font-semibold">⚠ outliers</span>`
+            : '';
           statsCell = `<div class="space-y-1">
-            <div class="flex gap-3 text-xs font-mono text-gray-500 dark:text-gray-400">
+            <div class="flex flex-wrap gap-3 text-xs font-mono text-gray-500 dark:text-gray-400 items-center">
               <span title="Min">▼ ${col.min}</span>
               <span title="Moyenne" class="text-primary-500">⌀ ${col.mean}</span>
               <span title="Médiane">~ ${col.p50}</span>
               <span title="Max">▲ ${col.max}</span>
               <span title="Écart-type" class="text-gray-400">σ ${col.std}</span>
+              ${outlierBadge}
             </div>
             <div class="relative h-2 bg-gray-200 dark:bg-navy-600 rounded-full w-48">
               <div class="absolute h-full bg-blue-200 dark:bg-blue-900/50 rounded-full" style="left:${p25pos}%;width:${p75pos-p25pos}%"></div>

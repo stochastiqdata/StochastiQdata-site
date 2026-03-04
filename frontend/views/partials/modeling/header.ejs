@@ -120,7 +120,18 @@
       </div>
 
       <!-- Grand cercle de score -->
-      <div class="score-circle shrink-0" title="Score: <%= score %>/100">
+      <div class="score-circle shrink-0 relative group" title="Score: <%= score %>/100">
+        <!-- Tooltip explicatif -->
+        <div class="absolute right-0 top-full mt-2 w-56 bg-gray-900 dark:bg-navy-700 text-white text-xs rounded-xl p-3 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50" style="min-width:220px">
+          <p class="font-semibold text-teal-300 mb-2">Score qualité — <%= score %>/100</p>
+          <ul class="space-y-1 text-gray-300">
+            <li>· Complétude des métadonnées</li>
+            <li>· Taux de valeurs nulles</li>
+            <li>· Présence d'un dictionnaire</li>
+            <li>· Avis et téléchargements</li>
+            <li>· Disponibilité des benchmarks</li>
+          </ul>
+        </div>
         <svg width="100" height="100" viewBox="0 0 80 80">
           <circle cx="40" cy="40" r="36" fill="none" stroke="#E5E7EB" stroke-width="6"/>
           <defs>
@@ -132,7 +143,7 @@
           <circle cx="40" cy="40" r="36" fill="none" stroke="url(#scoreGradientLarge)" stroke-width="6" stroke-linecap="round" stroke-dasharray="<%= circumference %>" stroke-dashoffset="<%= strokeDashoffset %>"/>
         </svg>
         <span class="score-value text-2xl font-bold text-gray-900 dark:text-white"><%= score %></span>
-      </div>
+      </div><!-- /score-circle -->
     </div>
   </div>
 

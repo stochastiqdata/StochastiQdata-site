@@ -89,6 +89,17 @@
     </div>`;
   }
 
+  const TARGET_COL = '<%= dataset.target_variable || "" %>';
+
+  function sortByTarget(columns) {
+    if (!TARGET_COL) return columns;
+    return [...columns].sort((a, b) => {
+      if (a.name === TARGET_COL) return -1;
+      if (b.name === TARGET_COL) return 1;
+      return 0;
+    });
+  }
+
   function renderDistributions(data) {
     document.getElementById('distSkeleton').classList.add('hidden');
 
@@ -99,9 +110,22 @@
       return;
     }
 
+    const sorted = sortByTarget(data.columns);
     const grid = document.getElementById('distGrid');
-    grid.innerHTML = data.columns
-      .map(col => col.is_numeric ? renderNumericCard(col) : renderCategoricalCard(col))
+    grid.innerHTML = sorted
+      .map(col => {
+        const isTarget = col.name === TARGET_COL;
+        const card = col.is_numeric ? renderNumericCard(col) : renderCategoricalCard(col);
+        if (!card) return '';
+        // Badge "Variable cible" sur la première carte si c'est la cible
+        if (isTarget) {
+          return card.replace(
+            `title="${col.name}">${col.name}</span>`,
+            `title="${col.name}">${col.name}</span><span class="shrink-0 px-1.5 py-0.5 text-xs bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-300 rounded font-semibold ml-1">cible</span>`
+          );
+        }
+        return card;
+      })
       .filter(Boolean)
       .join('');
     grid.classList.remove('hidden');

@@ -13,52 +13,88 @@
 
     <div class="grid gap-3 md:grid-cols-2">
       <% if (isIARD || isPricing) { %>
-        <div class="p-3 rounded-lg bg-gray-50 dark:bg-navy-700/50 border-l-4 border-blue-500">
-          <p class="text-sm text-gray-700 dark:text-gray-300">Quels facteurs influencent le plus la fréquence des sinistres ?</p>
-        </div>
-        <div class="p-3 rounded-lg bg-gray-50 dark:bg-navy-700/50 border-l-4 border-blue-500">
-          <p class="text-sm text-gray-700 dark:text-gray-300">Comment segmenter le portefeuille par niveau de risque ?</p>
-        </div>
+        <% [
+          'Quels facteurs influencent le plus la fréquence des sinistres ?',
+          'Comment segmenter le portefeuille par niveau de risque ?',
+          'La sévérité des sinistres suit-elle une loi log-normale ou Gamma ?',
+          'Existe-t-il des effets non-linéaires entre l\'âge du véhicule et la sinistralité ?',
+          'Comment construire un modèle de tarification à deux parties (fréquence × coût moyen) ?',
+          'Quelles variables proxy peuvent remplacer des données manquantes ou réglementairement sensibles ?'
+        ].forEach(q => { %>
+          <div class="p-3 rounded-lg bg-gray-50 dark:bg-navy-700/50 border-l-4 border-blue-500">
+            <p class="text-sm text-gray-700 dark:text-gray-300"><%= q %></p>
+          </div>
+        <% }); %>
       <% } %>
       <% if (isFraude) { %>
-        <div class="p-3 rounded-lg bg-gray-50 dark:bg-navy-700/50 border-l-4 border-red-500">
-          <p class="text-sm text-gray-700 dark:text-gray-300">Quels patterns distinguent les déclarations frauduleuses ?</p>
-        </div>
-        <div class="p-3 rounded-lg bg-gray-50 dark:bg-navy-700/50 border-l-4 border-red-500">
-          <p class="text-sm text-gray-700 dark:text-gray-300">Comment optimiser le seuil de détection (précision vs rappel) ?</p>
-        </div>
+        <% [
+          'Quels patterns comportementaux distinguent les déclarations frauduleuses ?',
+          'Comment optimiser le seuil de détection (précision vs rappel) selon le coût métier ?',
+          'Le déséquilibre de classes impacte-t-il significativement la performance du modèle ?',
+          'Quelles techniques de rééchantillonnage (SMOTE, undersampling) donnent les meilleurs résultats ?',
+          'Les fraudes sont-elles regroupées géographiquement ou temporellement ?',
+          'Comment interpréter les décisions du modèle pour les équipes d\'investigation ?'
+        ].forEach(q => { %>
+          <div class="p-3 rounded-lg bg-gray-50 dark:bg-navy-700/50 border-l-4 border-red-500">
+            <p class="text-sm text-gray-700 dark:text-gray-300"><%= q %></p>
+          </div>
+        <% }); %>
       <% } %>
       <% if (isReserving) { %>
-        <div class="p-3 rounded-lg bg-gray-50 dark:bg-navy-700/50 border-l-4 border-violet-500">
-          <p class="text-sm text-gray-700 dark:text-gray-300">Quel est le développement attendu des sinistres ?</p>
-        </div>
-        <div class="p-3 rounded-lg bg-gray-50 dark:bg-navy-700/50 border-l-4 border-violet-500">
-          <p class="text-sm text-gray-700 dark:text-gray-300">Quelle est l'incertitude sur les provisions estimées ?</p>
-        </div>
+        <% [
+          'Quel est le développement attendu des sinistres à maturité ?',
+          'Quelle est l\'incertitude sur les provisions estimées (bootstrap Chain-Ladder) ?',
+          'Les sinistres tardifs ont-ils un profil de développement différent des sinistres rapides ?',
+          'Comment les provisions évoluent-elles selon l\'année de survenance ?',
+          'Quel modèle (GLM, Machine Learning) surpasse le Chain-Ladder classique ?',
+          'Comment intégrer l\'inflation des sinistres dans les projections ?'
+        ].forEach(q => { %>
+          <div class="p-3 rounded-lg bg-gray-50 dark:bg-navy-700/50 border-l-4 border-violet-500">
+            <p class="text-sm text-gray-700 dark:text-gray-300"><%= q %></p>
+          </div>
+        <% }); %>
       <% } %>
       <% if (isVie) { %>
-        <div class="p-3 rounded-lg bg-gray-50 dark:bg-navy-700/50 border-l-4 border-purple-500">
-          <p class="text-sm text-gray-700 dark:text-gray-300">Comment évolue la mortalité selon l'âge et le sexe ?</p>
-        </div>
-        <div class="p-3 rounded-lg bg-gray-50 dark:bg-navy-700/50 border-l-4 border-purple-500">
-          <p class="text-sm text-gray-700 dark:text-gray-300">Quels facteurs impactent la durée de survie ?</p>
-        </div>
+        <% [
+          'Comment évolue la mortalité selon l\'âge, le sexe et les facteurs socio-économiques ?',
+          'Quels facteurs impactent significativement la durée de survie ?',
+          'Le modèle de Cox proportional hazard est-il approprié pour ce dataset ?',
+          'Existe-t-il des effets d\'interaction entre les covariables ?',
+          'Comment comparer les tables de mortalité observées aux tables réglementaires ?',
+          'Quelle est la probabilité de rachat selon le profil de l\'assuré ?'
+        ].forEach(q => { %>
+          <div class="p-3 rounded-lg bg-gray-50 dark:bg-navy-700/50 border-l-4 border-purple-500">
+            <p class="text-sm text-gray-700 dark:text-gray-300"><%= q %></p>
+          </div>
+        <% }); %>
       <% } %>
       <% if (isSante) { %>
-        <div class="p-3 rounded-lg bg-gray-50 dark:bg-navy-700/50 border-l-4 border-green-500">
-          <p class="text-sm text-gray-700 dark:text-gray-300">Quels profils génèrent les dépenses les plus élevées ?</p>
-        </div>
-        <div class="p-3 rounded-lg bg-gray-50 dark:bg-navy-700/50 border-l-4 border-green-500">
-          <p class="text-sm text-gray-700 dark:text-gray-300">Comment prédire le risque d'hospitalisation ?</p>
-        </div>
+        <% [
+          'Quels profils de patients génèrent les dépenses de santé les plus élevées ?',
+          'Comment prédire le risque d\'hospitalisation à 12 mois ?',
+          'Les pathologies chroniques expliquent-elles l\'essentiel de la variance des coûts ?',
+          'Existe-t-il des clusters de patients avec des comportements de consommation similaires ?',
+          'Comment modéliser la récurrence des séjours hospitaliers ?',
+          'Quels indicateurs avancés permettent de détecter une dégradation de l\'état de santé ?'
+        ].forEach(q => { %>
+          <div class="p-3 rounded-lg bg-gray-50 dark:bg-navy-700/50 border-l-4 border-green-500">
+            <p class="text-sm text-gray-700 dark:text-gray-300"><%= q %></p>
+          </div>
+        <% }); %>
       <% } %>
       <% if (!isIARD && !isFraude && !isReserving && !isVie && !isSante && !isPricing) { %>
-        <div class="p-3 rounded-lg bg-gray-50 dark:bg-navy-700/50 border-l-4 border-cyan-500">
-          <p class="text-sm text-gray-700 dark:text-gray-300">Quelles sont les variables les plus prédictives ?</p>
-        </div>
-        <div class="p-3 rounded-lg bg-gray-50 dark:bg-navy-700/50 border-l-4 border-cyan-500">
-          <p class="text-sm text-gray-700 dark:text-gray-300">Comment améliorer la performance du modèle ?</p>
-        </div>
+        <% [
+          'Quelles sont les variables les plus prédictives de la variable cible ?',
+          'Existe-t-il des corrélations fortes entre variables pouvant induire de la multicolinéarité ?',
+          'Quel algorithme (GLM, GBM, Random Forest) donne les meilleures performances ?',
+          'Comment traiter les valeurs aberrantes identifiées dans les statistiques ?',
+          'La variable cible nécessite-t-elle une transformation (log, Box-Cox) ?',
+          'Quelle stratégie de validation croisée est la plus adaptée ?'
+        ].forEach(q => { %>
+          <div class="p-3 rounded-lg bg-gray-50 dark:bg-navy-700/50 border-l-4 border-cyan-500">
+            <p class="text-sm text-gray-700 dark:text-gray-300"><%= q %></p>
+          </div>
+        <% }); %>
       <% } %>
     </div>
 

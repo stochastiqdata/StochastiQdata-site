@@ -52,18 +52,25 @@
       + '</div>';
   }
 
+  var TARGET_VIZ = '<%= dataset.target_variable || "" %>';
+
   function pickBestColumns(columns) {
-    // 1. Variable cible (numérique) ou première colonne numérique
     var numeric = columns.filter(function(c) { return c.is_numeric && c.histogram; });
-    // 2. Colonnes catégorielles avec top_values
-    var categ = columns.filter(function(c) { return !c.is_numeric && c.top_values && c.top_values.length > 1; });
+    var categ   = columns.filter(function(c) { return !c.is_numeric && c.top_values && c.top_values.length > 1; });
+
+    // Variable cible en priorité absolue
+    var targetNum  = numeric.find(function(c) { return c.name === TARGET_VIZ; });
+    var targetCat  = categ.find(function(c)   { return c.name === TARGET_VIZ; });
+    var otherNum   = numeric.filter(function(c) { return c.name !== TARGET_VIZ; });
+    var otherCat   = categ.filter(function(c)   { return c.name !== TARGET_VIZ; });
 
     var selected = [];
-    if (numeric.length > 0) selected.push({ col: numeric[0], type: 'num' });
-    if (numeric.length > 1) selected.push({ col: numeric[1], type: 'num' });
-    if (categ.length > 0)   selected.push({ col: categ[0], type: 'cat' });
-    if (selected.length < 3 && numeric.length > 2) selected.push({ col: numeric[2], type: 'num' });
-    if (selected.length < 3 && categ.length > 1)   selected.push({ col: categ[1], type: 'cat' });
+    if (targetNum) selected.push({ col: targetNum, type: 'num', isTarget: true });
+    if (targetCat) selected.push({ col: targetCat, type: 'cat', isTarget: true });
+    if (selected.length < 3 && otherNum.length > 0) selected.push({ col: otherNum[0], type: 'num' });
+    if (selected.length < 3 && otherCat.length > 0) selected.push({ col: otherCat[0], type: 'cat' });
+    if (selected.length < 3 && otherNum.length > 1) selected.push({ col: otherNum[1], type: 'num' });
+    if (selected.length < 3 && otherCat.length > 1) selected.push({ col: otherCat[1], type: 'cat' });
 
     return selected.slice(0, 3);
   }
@@ -131,8 +138,9 @@
     }
 
     var html = picks.map(function(p, i) {
-      var title = p.col.name + (p.type === 'num' ? ' — distribution' : ' — top valeurs');
-      return makePanelHtml('viz-real-' + i, title);
+      var label = p.type === 'num' ? ' — distribution' : ' — top valeurs';
+      var targetBadge = p.isTarget ? ' <span style="font-size:10px;padding:1px 6px;background:#0d9488;color:#fff;border-radius:4px;font-weight:600;vertical-align:middle">cible</span>' : '';
+      return makePanelHtml('viz-real-' + i, p.col.name + label + targetBadge);
     }).join('');
 
     var vizGrid = document.getElementById('vizGrid');
