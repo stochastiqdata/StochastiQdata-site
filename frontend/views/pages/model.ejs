@@ -1,0 +1,223 @@
+<%
+  const TYPE_ICONS = {
+    glm: '📐', xgboost: '⚡', random_forest: '🌲', neural_network: '🧠',
+    lightgbm: '💡', catboost: '🐱', chain_ladder: '📊',
+    bornhuetter_ferguson: '📋', cox: '📈', kaplan_meier: '📉', other: '🔬'
+  };
+  const TYPE_LABELS = {
+    glm: 'GLM (Generalized Linear Model)', xgboost: 'XGBoost', random_forest: 'Random Forest',
+    neural_network: 'Réseau de neurones', lightgbm: 'LightGBM', catboost: 'CatBoost',
+    chain_ladder: 'Chain Ladder', bornhuetter_ferguson: 'Bornhuetter-Ferguson',
+    cox: 'Modèle de Cox', kaplan_meier: 'Kaplan-Meier', other: 'Autre'
+  };
+  const METRIC_LABELS = {
+    gini: 'Gini', rmse: 'RMSE', mae: 'MAE', aic: 'AIC', bic: 'BIC',
+    r2: 'R²', log_loss: 'Log Loss', auc: 'AUC', accuracy: 'Accuracy',
+    f1_score: 'F1 Score', mape: 'MAPE', other: 'Autre'
+  };
+  const icon = TYPE_ICONS[model.model_type] || '🔬';
+  const typeLabel = TYPE_LABELS[model.model_type] || model.model_type;
+%>
+
+<div class="max-w-4xl mx-auto">
+
+  <!-- Breadcrumb -->
+  <nav class="mb-6">
+    <div class="flex items-center gap-2 text-sm">
+      <a href="/" class="text-gray-500 hover:text-primary-500 transition-colors">Dashboard</a>
+      <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+      <a href="/modeling/<%= model.dataset_id %>" class="text-gray-500 hover:text-primary-500 transition-colors"><%= dataset ? dataset.name : 'Dataset' %></a>
+      <svg class="w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+      <span class="text-gray-900 dark:text-white font-medium truncate max-w-[200px]"><%= model.name %></span>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <div class="card p-6 mb-6">
+    <div class="flex items-start gap-4">
+      <span class="text-4xl shrink-0 mt-1"><%= icon %></span>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-start justify-between gap-4 mb-2">
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white"><%= model.name %></h1>
+            <p class="text-sm text-violet-500 dark:text-violet-400 font-medium mt-0.5"><%= typeLabel %></p>
+          </div>
+          <% if (model.notebook_url) { %>
+            <a href="<%= model.notebook_url %>" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm transition-all shadow-md hover:scale-[1.02] shrink-0">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+              </svg>
+              Open Notebook
+            </a>
+          <% } %>
+        </div>
+
+        <% if (model.description) { %>
+          <p class="text-gray-600 dark:text-gray-400 mb-4"><%= model.description %></p>
+        <% } %>
+
+        <!-- Badges: family + link -->
+        <div class="flex flex-wrap gap-2">
+          <% if (model.family) { %>
+            <span class="px-3 py-1 text-sm rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 font-medium">
+              Famille : <%= model.family %>
+            </span>
+          <% } %>
+          <% if (model.link_function) { %>
+            <span class="px-3 py-1 text-sm rounded-full bg-gray-100 dark:bg-navy-700 text-gray-600 dark:text-gray-300 font-mono">
+              link=<%= model.link_function %>
+            </span>
+          <% } %>
+          <% if (dataset) { %>
+            <a href="/modeling/<%= model.dataset_id %>"
+               class="px-3 py-1 text-sm rounded-full bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-800 hover:bg-primary-100 dark:hover:bg-primary-900/40 transition-colors flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <%= dataset.name %>
+            </a>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Métriques -->
+  <% const metricsEntries = Object.entries(model.metrics || {}); %>
+  <% if (metricsEntries.length > 0) { %>
+  <div class="card p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+      <svg class="w-5 h-5 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </svg>
+      Métriques d'évaluation
+    </h2>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      <% metricsEntries.forEach(([k, v]) => {
+           const isPercent = ['gini', 'r2', 'auc', 'accuracy', 'f1_score'].includes(k);
+           const display = typeof v === 'number'
+             ? (isPercent ? (v * 100).toFixed(1) + '%' : v.toFixed(4))
+             : String(v);
+      %>
+        <div class="text-center p-4 rounded-xl bg-gray-50 dark:bg-navy-700">
+          <p class="text-2xl font-bold text-gray-900 dark:text-white"><%= display %></p>
+          <p class="text-sm text-gray-500 dark:text-gray-400"><%= METRIC_LABELS[k] || k %></p>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+  <% } %>
+
+  <!-- Hyperparamètres -->
+  <% const paramEntries = Object.entries(model.parameters || {}); %>
+  <% if (paramEntries.length > 0) { %>
+  <div class="card p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+      <svg class="w-5 h-5 text-orange-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+        <path d="M4.93 4.93a10 10 0 0 0 0 14.14"/>
+      </svg>
+      Hyperparamètres
+    </h2>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-gray-200 dark:border-navy-700">
+            <th class="text-left py-2 pr-4 font-medium text-gray-500 dark:text-gray-400">Paramètre</th>
+            <th class="text-left py-2 font-medium text-gray-500 dark:text-gray-400">Valeur</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100 dark:divide-navy-700">
+          <% paramEntries.forEach(([k, v]) => { %>
+          <tr>
+            <td class="py-2 pr-4 font-mono text-xs text-gray-600 dark:text-gray-400"><%= k %></td>
+            <td class="py-2 font-mono text-xs text-gray-900 dark:text-white"><%= JSON.stringify(v) %></td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <% } %>
+
+  <!-- Code snippet -->
+  <% if (model.code_snippet) { %>
+  <div class="card p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+      <svg class="w-5 h-5 text-primary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+      </svg>
+      Code
+    </h2>
+    <div class="relative">
+      <pre id="modelCodeBlock" class="bg-gray-950 text-gray-100 rounded-xl p-4 text-sm overflow-x-auto leading-relaxed font-mono whitespace-pre"><%= model.code_snippet %></pre>
+      <button onclick="copyModelCode()"
+        class="absolute top-3 right-3 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-md transition-colors" title="Copier">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      </button>
+    </div>
+  </div>
+  <% } %>
+
+  <!-- Citation -->
+  <div class="card p-6 mb-6">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+      <svg class="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/>
+        <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/>
+      </svg>
+      Citer ce modèle
+    </h2>
+    <pre id="modelCiteBlock" class="bg-gray-950 text-gray-100 rounded-xl p-4 text-sm overflow-x-auto leading-relaxed font-mono whitespace-pre relative">
+      <button onclick="copyModelCite()" class="absolute top-3 right-3 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-md transition-colors" title="Copier">
+        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      </button>
+    </pre>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  const modelName = <%= JSON.stringify(model.name) %>;
+  const modelId   = '<%= model.id %>';
+  const year      = new Date(<%= JSON.stringify(model.created_at) %>).getFullYear();
+  const url       = window.location.origin + '/models/' + modelId;
+  const slug      = modelName.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+
+  const bibtex = `@misc{${slug}_${year},
+  title     = {${modelName}},
+  author    = {{StochastiQdata}},
+  year      = {${year}},
+  url       = {${url}},
+  note      = {Modèle actuariel hébergé sur StochastiQdata},
+  howpublished = {\\url{${url}}}
+}`;
+
+  const pre = document.getElementById('modelCiteBlock');
+  // insert text before the button
+  pre.childNodes[0].textContent = bibtex + '\n';
+})();
+
+async function copyModelCode() {
+  const el = document.getElementById('modelCodeBlock');
+  try {
+    await navigator.clipboard.writeText(el.innerText);
+    const btn = el.parentElement.querySelector('button');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<svg class="w-3.5 h-3.5 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+    setTimeout(() => { btn.innerHTML = orig; }, 1500);
+  } catch {}
+}
+
+async function copyModelCite() {
+  const el = document.getElementById('modelCiteBlock');
+  try {
+    await navigator.clipboard.writeText(el.innerText);
+    const btn = el.querySelector('button');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<svg class="w-3.5 h-3.5 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+    setTimeout(() => { btn.innerHTML = orig; }, 1500);
+  } catch {}
+}
+</script>

@@ -1,28 +1,146 @@
-  <!-- Modèles recommandés -->
-  <div class="card p-6 mb-6">
-    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-      <svg class="w-5 h-5 text-violet-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
-        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-        <line x1="12" y1="19" x2="12" y2="22"/>
-      </svg>
-      Modèles recommandés (SOTA)
-    </h2>
+<!-- ============================
+     MODÈLES
+     ============================ -->
+<div class="card p-6 mb-6" id="modelsSection">
+  <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+    <svg class="w-5 h-5 text-violet-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+      <line x1="12" y1="19" x2="12" y2="22"/>
+    </svg>
+    Modèles
+    <span id="modelsCountBadge" class="hidden ml-auto text-sm font-normal text-gray-400 dark:text-gray-500"></span>
+  </h2>
 
-    <% if (dataset.best_fit_models && dataset.best_fit_models.length > 0) { %>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        <% dataset.best_fit_models.forEach((model, index) => { %>
-          <div class="p-4 rounded-xl bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800 flex items-center gap-3">
-            <span class="w-8 h-8 rounded-lg bg-violet-500 text-white flex items-center justify-center font-bold text-sm">
-              <%= index + 1 %>
-            </span>
-            <span class="font-medium text-violet-700 dark:text-violet-300">
-              <%= MODEL_LABELS[model] || model %>
-            </span>
-          </div>
-        <% }); %>
-      </div>
-    <% } else { %>
-      <p class="text-gray-500 dark:text-gray-400">Aucun modèle recommandé pour le moment.</p>
-    <% } %>
+  <!-- Loading state -->
+  <div id="modelsLoading" class="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500">
+    <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+    </svg>
+    Chargement des modèles…
   </div>
+
+  <!-- Model cards grid -->
+  <div id="modelsGrid" class="hidden grid grid-cols-1 gap-4"></div>
+
+  <!-- Empty state -->
+  <div id="modelsEmpty" class="hidden text-center py-8">
+    <svg class="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+      <line x1="12" y1="19" x2="12" y2="22"/>
+    </svg>
+    <p class="text-sm text-gray-500 dark:text-gray-400">Aucun modèle affilié pour le moment.</p>
+    <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Les modèles entraînés sur ce dataset apparaîtront ici.</p>
+  </div>
+</div>
+
+<script>
+(function() {
+  const datasetId = '<%= dataset.id %>';
+
+  const TYPE_ICONS = {
+    glm: '📐', xgboost: '⚡', random_forest: '🌲', neural_network: '🧠',
+    lightgbm: '💡', catboost: '🐱', chain_ladder: '📊', cox: '📈',
+    kaplan_meier: '📉', other: '🔬'
+  };
+  const TYPE_LABELS = {
+    glm: 'GLM', xgboost: 'XGBoost', random_forest: 'Random Forest',
+    neural_network: 'Réseau de neurones', lightgbm: 'LightGBM',
+    catboost: 'CatBoost', chain_ladder: 'Chain Ladder',
+    bornhuetter_ferguson: 'Bornhuetter-Ferguson', cox: 'Cox', kaplan_meier: 'Kaplan-Meier', other: 'Autre'
+  };
+  const METRIC_LABELS = {
+    gini: 'Gini', rmse: 'RMSE', mae: 'MAE', aic: 'AIC', bic: 'BIC',
+    r2: 'R²', log_loss: 'Log Loss', auc: 'AUC', accuracy: 'Accuracy',
+    f1_score: 'F1', mape: 'MAPE'
+  };
+
+  function formatMetricValue(k, v) {
+    if (typeof v === 'number') {
+      return ['gini', 'r2', 'auc', 'accuracy', 'f1_score'].includes(k)
+        ? (v * 100).toFixed(1) + '%'
+        : v.toFixed(4);
+    }
+    return String(v);
+  }
+
+  function renderModelCard(model) {
+    const icon = TYPE_ICONS[model.model_type] || '🔬';
+    const typeLabel = TYPE_LABELS[model.model_type] || model.model_type;
+
+    const familyBadge = model.family
+      ? `<span class="px-2 py-0.5 text-xs rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300">${model.family}</span>`
+      : '';
+    const linkBadge = model.link_function
+      ? `<span class="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-navy-600 text-gray-600 dark:text-gray-300 font-mono">link=${model.link_function}</span>`
+      : '';
+
+    // Top 3 metrics
+    const metricsHtml = Object.entries(model.metrics || {}).slice(0, 3).map(([k, v]) => `
+      <div class="text-center">
+        <p class="text-xs text-gray-400 dark:text-gray-500">${METRIC_LABELS[k] || k}</p>
+        <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">${formatMetricValue(k, v)}</p>
+      </div>
+    `).join('');
+
+    const notebookBtn = model.notebook_url
+      ? `<a href="${model.notebook_url}" target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-1 text-xs text-amber-500 hover:text-amber-600 font-medium">
+           <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+           Notebook
+         </a>`
+      : '';
+
+    return `
+      <a href="/models/${model.id}"
+         class="block p-4 rounded-xl border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-800 hover:border-violet-400 dark:hover:border-violet-600 hover:shadow-md transition-all group">
+        <div class="flex items-start justify-between gap-3 mb-3">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">${icon}</span>
+            <div>
+              <p class="font-semibold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">${model.name}</p>
+              <p class="text-xs text-gray-400 dark:text-gray-500">${typeLabel}</p>
+            </div>
+          </div>
+          <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-violet-400 shrink-0 mt-1 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+        </div>
+
+        ${model.description ? `<p class="text-sm text-gray-500 dark:text-gray-400 mb-3 line-clamp-2">${model.description}</p>` : ''}
+
+        <div class="flex flex-wrap gap-1.5 mb-3">
+          ${familyBadge}${linkBadge}
+        </div>
+
+        ${metricsHtml ? `
+        <div class="flex gap-4 pt-3 border-t border-gray-100 dark:border-navy-700">
+          ${metricsHtml}
+        </div>` : ''}
+
+        ${notebookBtn ? `<div class="mt-3 pt-3 border-t border-gray-100 dark:border-navy-700">${notebookBtn}</div>` : ''}
+      </a>
+    `;
+  }
+
+  fetch(`/api/models?dataset_id=${datasetId}`)
+    .then(r => r.json())
+    .then(models => {
+      document.getElementById('modelsLoading').classList.add('hidden');
+      if (!models.length) {
+        document.getElementById('modelsEmpty').classList.remove('hidden');
+        return;
+      }
+      const badge = document.getElementById('modelsCountBadge');
+      badge.textContent = models.length + ' modèle' + (models.length > 1 ? 's' : '');
+      badge.classList.remove('hidden');
+
+      const grid = document.getElementById('modelsGrid');
+      grid.innerHTML = models.map(renderModelCard).join('');
+      grid.classList.remove('hidden');
+    })
+    .catch(() => {
+      document.getElementById('modelsLoading').classList.add('hidden');
+      document.getElementById('modelsEmpty').classList.remove('hidden');
+    });
+})();
+</script>

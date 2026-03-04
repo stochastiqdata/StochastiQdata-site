@@ -269,6 +269,26 @@ app.get('/modeling/:id', async (req, res, next) => {
   }
 });
 
+// Model detail page
+app.get('/models/:id', async (req, res, next) => {
+  try {
+    const modelRes = await axios.get(`${API_URL}/models/${req.params.id}`);
+    const model = modelRes.data;
+
+    // Fetch affiliated dataset for breadcrumb + link badge
+    let dataset = null;
+    try {
+      const dsRes = await axios.get(`${API_URL}/datasets/${model.dataset_id}`);
+      dataset = dsRes.data;
+    } catch {}
+
+    res.render('pages/model', { model, dataset, TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
+  } catch (error) {
+    logger.error('Model fetch error', { modelId: req.params.id, error: error.message });
+    next(error);
+  }
+});
+
 // Notebooks hub
 app.get('/notebooks', async (req, res) => {
   let notebooks = [];
@@ -426,6 +446,45 @@ app.get('/api/datasets/:id/preview', async (req, res) => {
   } catch (error) {
     res.status(error.response?.status || 500).json({
       detail: error.response?.data?.detail || 'Erreur lors du chargement du preview'
+    });
+  }
+});
+
+// Models API proxies
+app.get('/api/models', async (req, res) => {
+  try {
+    const params = new URLSearchParams();
+    if (req.query.dataset_id) params.append('dataset_id', req.query.dataset_id);
+    const response = await axios.get(`${API_URL}/models?${params.toString()}`);
+    res.json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json({
+      detail: error.response?.data?.detail || 'Erreur lors du chargement des modèles'
+    });
+  }
+});
+
+app.get('/api/models/:id', async (req, res) => {
+  try {
+    const response = await axios.get(`${API_URL}/models/${req.params.id}`);
+    res.json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json({
+      detail: error.response?.data?.detail || 'Modèle non trouvé'
+    });
+  }
+});
+
+app.post('/api/models', limiter, async (req, res) => {
+  try {
+    const headers = { 'Content-Type': 'application/json' };
+    if (req.headers.authorization) headers['Authorization'] = req.headers.authorization;
+    const response = await axios.post(`${API_URL}/models`, req.body, { headers });
+    res.status(201).json(response.data);
+  } catch (error) {
+    logger.error('Model creation error', { error: error.response?.data || error.message });
+    res.status(error.response?.status || 500).json({
+      detail: error.response?.data?.detail || 'Erreur lors de la création du modèle'
     });
   }
 });

@@ -33,6 +33,10 @@ from app.schemas.benchmark import (
     BenchmarkListResponse,
     BenchmarkLeaderboard,
 )
+from app.schemas.model import (
+    ModelCreate,
+    ModelResponse,
+)
 
 __all__ = [
     "DatasetSource",
@@ -61,4 +65,6 @@ __all__ = [
     "BenchmarkResponse",
     "BenchmarkListResponse",
     "BenchmarkLeaderboard",
+    "ModelCreate",
+    "ModelResponse",
 ]

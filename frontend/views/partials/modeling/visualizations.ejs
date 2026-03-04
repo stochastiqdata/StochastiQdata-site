@@ -1,7 +1,7 @@
 <!-- ============================
      VISUALISATIONS DES DONNÉES
      ============================ -->
-<div class="card p-6 mb-6">
+<div class="card p-6 mb-6" id="vizSection">
   <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
     <svg class="w-5 h-5 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
@@ -9,221 +9,153 @@
     </svg>
     Visualisations des données
   </h2>
-  <p class="text-xs text-gray-400 dark:text-gray-500 mb-5">Représentations statistiques illustratives basées sur ce type de dataset</p>
+  <p class="text-xs text-gray-400 dark:text-gray-500 mb-5">Basées sur les données réelles du dataset</p>
 
-  <div class="grid md:grid-cols-3 gap-4">
-    <div class="rounded-xl border border-gray-200 dark:border-navy-700 p-4">
-      <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-3" id="viz-title-1-<%= dataset.id || 'x' %>"></p>
-      <canvas id="viz-1-<%= dataset.id || 'x' %>" height="190"></canvas>
-    </div>
-    <div class="rounded-xl border border-gray-200 dark:border-navy-700 p-4">
-      <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-3" id="viz-title-2-<%= dataset.id || 'x' %>"></p>
-      <canvas id="viz-2-<%= dataset.id || 'x' %>" height="190"></canvas>
-    </div>
-    <div class="rounded-xl border border-gray-200 dark:border-navy-700 p-4">
-      <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-3" id="viz-title-3-<%= dataset.id || 'x' %>"></p>
-      <canvas id="viz-3-<%= dataset.id || 'x' %>" height="190"></canvas>
-    </div>
+  <!-- Loading -->
+  <div id="vizLoading" class="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500">
+    <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+    </svg>
+    Chargement…
   </div>
+
+  <div id="vizGrid" class="hidden grid md:grid-cols-3 gap-4"></div>
+  <div id="vizEmpty" class="hidden text-sm text-gray-400 dark:text-gray-500">Aucune donnée disponible pour générer des visualisations.</div>
 </div>
 
 <script>
 (function () {
-  var dsId = '<%= dataset.id || "x" %>';
   var isDark = document.documentElement.classList.contains('dark');
   var grid  = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
   var tick  = isDark ? '#94a3b8' : '#64748b';
-
-  var base = {
+  var baseOpts = {
     responsive: true,
     plugins: { legend: { display: false } },
     scales: {
-      x: { grid: { color: grid }, ticks: { color: tick, font: { size: 10 } } },
+      x: { grid: { color: grid }, ticks: { color: tick, font: { size: 10 }, maxRotation: 45 } },
       y: { grid: { color: grid }, ticks: { color: tick, font: { size: 10 } } }
     }
   };
 
-  function setTitle(n, t) {
-    var el = document.getElementById('viz-title-' + n + '-' + dsId);
-    if (el) el.textContent = t;
+  var PALETTE = ['#3b82f6','#6366f1','#8b5cf6','#a855f7','#ec4899','#f43f5e','#f97316','#eab308','#22c55e','#14b8a6'];
+
+  function buildChart(canvasId, type, data, opts) {
+    var el = document.getElementById(canvasId);
+    if (!el || !window.Chart) return;
+    new Chart(el, { type: type, data: data, options: opts || baseOpts });
   }
 
-  function mkChart(n, type, data, opts) {
-    var el = document.getElementById('viz-' + n + '-' + dsId);
-    if (!el) return;
-    new Chart(el, { type: type, data: data, options: opts || base });
+  function makePanelHtml(id, title) {
+    return '<div class="rounded-xl border border-gray-200 dark:border-navy-700 p-4">'
+      + '<p class="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-3">' + title + '</p>'
+      + '<canvas id="' + id + '" height="190"></canvas>'
+      + '</div>';
   }
 
-  <% if (isIARD || isPricing) { %>
-  /* ---- IARD / Tarification ---- */
-  setTitle(1, 'Distribution du nombre de sinistres');
-  mkChart(1, 'bar', {
-    labels: ['0', '1', '2', '3', '4+'],
-    datasets: [{ data: [88.2, 8.9, 2.1, 0.5, 0.3],
-      backgroundColor: ['#3b82f6','#6366f1','#8b5cf6','#a855f7','#db2777'],
-      borderRadius: 6 }]
-  }, Object.assign({}, base, {
-    plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c){ return c.raw + '%'; } } } },
-    scales: { x: base.scales.x, y: Object.assign({}, base.scales.y, { ticks: Object.assign({}, base.scales.y.ticks, { callback: function(v){ return v + '%'; } }) }) }
-  }));
+  function pickBestColumns(columns) {
+    // 1. Variable cible (numérique) ou première colonne numérique
+    var numeric = columns.filter(function(c) { return c.is_numeric && c.histogram; });
+    // 2. Colonnes catégorielles avec top_values
+    var categ = columns.filter(function(c) { return !c.is_numeric && c.top_values && c.top_values.length > 1; });
 
-  setTitle(2, 'Fréquence relative par âge conducteur');
-  mkChart(2, 'bar', {
-    labels: ['18-21','22-25','26-29','30-39','40-54','55-64','65+'],
-    datasets: [{ data: [1.85, 1.45, 1.20, 1.00, 0.90, 0.88, 0.95],
-      backgroundColor: function() {
-        var d = [1.85,1.45,1.20,1.00,0.90,0.88,0.95];
-        return d.map(function(v){ return v > 1.2 ? '#ef4444' : v > 1.0 ? '#f97316' : '#22c55e'; });
-      }(),
-      borderRadius: 6 }]
-  }, Object.assign({}, base, {
-    scales: { x: base.scales.x, y: Object.assign({}, base.scales.y, { min: 0.5, max: 2.1, ticks: Object.assign({}, base.scales.y.ticks, { callback: function(v){ return '×' + v.toFixed(1); } }) }) }
-  }));
+    var selected = [];
+    if (numeric.length > 0) selected.push({ col: numeric[0], type: 'num' });
+    if (numeric.length > 1) selected.push({ col: numeric[1], type: 'num' });
+    if (categ.length > 0)   selected.push({ col: categ[0], type: 'cat' });
+    if (selected.length < 3 && numeric.length > 2) selected.push({ col: numeric[2], type: 'num' });
+    if (selected.length < 3 && categ.length > 1)   selected.push({ col: categ[1], type: 'cat' });
 
-  setTitle(3, 'Distribution du coût des sinistres (log-normal)');
-  mkChart(3, 'bar', {
-    labels: ['0-500','500-1k','1k-2k','2k-5k','5k-10k','10k-20k','20k+'],
-    datasets: [{ data: [12, 18, 22, 25, 13, 7, 3],
-      backgroundColor: '#f97316', borderRadius: 6 }]
-  }, Object.assign({}, base, {
-    scales: { x: base.scales.x, y: Object.assign({}, base.scales.y, { ticks: Object.assign({}, base.scales.y.ticks, { callback: function(v){ return v + '%'; } }) }) }
-  }));
+    return selected.slice(0, 3);
+  }
 
-  <% } else if (isReserving) { %>
-  /* ---- Reserving / Provisionnement ---- */
-  setTitle(1, 'Facteurs de développement (LDF) par période');
-  mkChart(1, 'bar', {
-    labels: ['12m','24m','36m','48m','60m','72m','84m'],
-    datasets: [{ data: [2.41, 1.38, 1.17, 1.09, 1.05, 1.02, 1.01],
-      backgroundColor: '#6366f1', borderRadius: 6 }]
-  }, Object.assign({}, base, {
-    scales: { x: base.scales.x, y: Object.assign({}, base.scales.y, { min: 1.0, ticks: Object.assign({}, base.scales.y.ticks, { callback: function(v){ return '×' + v.toFixed(2); } }) }) }
-  }));
+  function renderNumChart(canvasId, col) {
+    var h = col.histogram;
+    var edges = h.edges;
+    var labels = h.counts.map(function(_, i) {
+      var lo = edges[i], hi = edges[i + 1];
+      if (Math.abs(lo) < 10 && Math.abs(hi) < 10) {
+        return lo.toFixed(2) + '–' + hi.toFixed(2);
+      }
+      return lo.toFixed(0) + '–' + hi.toFixed(0);
+    });
+    var total = h.counts.reduce(function(a, b) { return a + b; }, 0);
+    var pcts = h.counts.map(function(v) { return total > 0 ? parseFloat((v / total * 100).toFixed(2)) : 0; });
 
-  setTitle(2, 'IBNR estimé par année de survenance');
-  mkChart(2, 'bar', {
-    labels: ['2017','2018','2019','2020','2021','2022','2023'],
-    datasets: [{ data: [120, 280, 520, 890, 1450, 2300, 3800],
-      backgroundColor: ['#22c55e','#84cc16','#eab308','#f97316','#ef4444','#dc2626','#991b1b'],
-      borderRadius: 6 }]
-  }, Object.assign({}, base, {
-    scales: { x: base.scales.x, y: Object.assign({}, base.scales.y, { ticks: Object.assign({}, base.scales.y.ticks, { callback: function(v){ return v + ' k€'; } }) }) }
-  }));
+    buildChart(canvasId, 'bar', {
+      labels: labels,
+      datasets: [{ data: pcts, backgroundColor: '#3b82f6', borderRadius: 4 }]
+    }, Object.assign({}, baseOpts, {
+      scales: {
+        x: Object.assign({}, baseOpts.scales.x, { ticks: { color: tick, font: { size: 9 }, maxRotation: 45, maxTicksLimit: 10 } }),
+        y: Object.assign({}, baseOpts.scales.y, {
+          ticks: Object.assign({}, baseOpts.scales.y.ticks, { callback: function(v) { return v + '%'; } })
+        })
+      },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return c.raw + '%'; } } } }
+    }));
+  }
 
-  setTitle(3, 'Sinistres payés vs provisionnés');
-  mkChart(3, 'bar', {
-    labels: ['2019','2020','2021','2022','2023'],
-    datasets: [
-      { label: 'Payés',        data: [4200, 3800, 3100, 2200, 900],  backgroundColor: '#3b82f6', borderRadius: 4 },
-      { label: 'Provisionnés', data: [120,  280,  520,  890,  1450], backgroundColor: '#f97316', borderRadius: 4 }
-    ]
-  }, Object.assign({}, base, { plugins: { legend: { display: true, labels: { color: tick, font: { size: 10 } } } } }));
+  function renderCategChart(canvasId, col) {
+    var top = col.top_values.slice(0, 8);
+    var total = top.reduce(function(a, b) { return a + b.count; }, 0);
+    var labels = top.map(function(t) { return String(t.value); });
+    var pcts   = top.map(function(t) { return parseFloat((t.count / total * 100).toFixed(1)); });
 
-  <% } else if (isVie) { %>
-  /* ---- Vie / Mortalité ---- */
-  setTitle(1, 'Courbe de survie — Kaplan-Meier');
-  mkChart(1, 'line', {
-    labels: ['0','10','20','30','40','50','60','70','80','90','100'],
-    datasets: [
-      { label: 'Hommes',  data: [1,.995,.990,.980,.965,.940,.900,.830,.700,.490,.200], borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.08)', fill: true, tension: 0.4, pointRadius: 2 },
-      { label: 'Femmes', data: [1,.997,.993,.986,.975,.960,.934,.885,.780,.590,.280], borderColor: '#ec4899', backgroundColor: 'rgba(236,72,153,0.08)', fill: true, tension: 0.4, pointRadius: 2 }
-    ]
-  }, Object.assign({}, base, { plugins: { legend: { display: true, labels: { color: tick, font: { size: 10 } } } }, scales: { x: base.scales.x, y: Object.assign({}, base.scales.y, { min: 0, max: 1, ticks: Object.assign({}, base.scales.y.ticks, { callback: function(v){ return (v*100) + '%'; } }) }) } }));
+    buildChart(canvasId, 'bar', {
+      labels: labels,
+      datasets: [{ data: pcts, backgroundColor: top.map(function(_, i) { return PALETTE[i % PALETTE.length]; }), borderRadius: 4 }]
+    }, Object.assign({}, baseOpts, {
+      scales: {
+        x: Object.assign({}, baseOpts.scales.x, { ticks: { color: tick, font: { size: 9 }, maxRotation: 45 } }),
+        y: Object.assign({}, baseOpts.scales.y, {
+          ticks: Object.assign({}, baseOpts.scales.y.ticks, { callback: function(v) { return v + '%'; } })
+        })
+      },
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return c.raw + '%'; } } } }
+    }));
+  }
 
-  setTitle(2, 'Taux de mortalité (qx) par âge');
-  mkChart(2, 'line', {
-    labels: ['20','30','40','50','60','70','80','90'],
-    datasets: [{ data: [0.0008,0.0012,0.0025,0.0060,0.0140,0.0310,0.0720,0.1800],
-      borderColor: '#8b5cf6', backgroundColor: 'rgba(139,92,246,0.1)', fill: true, tension: 0.4, pointRadius: 3 }]
-  }, Object.assign({}, base, { scales: { x: base.scales.x, y: Object.assign({}, base.scales.y, { type: 'logarithmic', ticks: Object.assign({}, base.scales.y.ticks, { callback: function(v){ return v.toFixed(4); } }) }) } }));
+  function renderViz(data) {
+    var cols = data.columns || [];
+    if (!cols.length) {
+      document.getElementById('vizLoading').classList.add('hidden');
+      document.getElementById('vizEmpty').classList.remove('hidden');
+      return;
+    }
 
-  setTitle(3, 'Espérance de vie à la naissance (2000-2023)');
-  mkChart(3, 'line', {
-    labels: ['2000','2005','2010','2015','2020','2023'],
-    datasets: [
-      { label: 'Hommes', data: [75.2, 76.8, 78.1, 79.2, 79.0, 79.8], borderColor: '#3b82f6', tension: 0.3, pointRadius: 4 },
-      { label: 'Femmes', data: [82.8, 84.0, 84.7, 85.5, 85.1, 85.7], borderColor: '#ec4899', tension: 0.3, pointRadius: 4 }
-    ]
-  }, Object.assign({}, base, { plugins: { legend: { display: true, labels: { color: tick, font: { size: 10 } } } }, scales: { x: base.scales.x, y: Object.assign({}, base.scales.y, { min: 70 }) } }));
+    var picks = pickBestColumns(cols);
+    if (!picks.length) {
+      document.getElementById('vizLoading').classList.add('hidden');
+      document.getElementById('vizEmpty').classList.remove('hidden');
+      return;
+    }
 
-  <% } else if (isFraude) { %>
-  /* ---- Fraude ---- */
-  setTitle(1, 'Distribution des classes');
-  mkChart(1, 'doughnut', {
-    labels: ['Légitimes', 'Frauduleux'],
-    datasets: [{ data: [96.2, 3.8], backgroundColor: ['#22c55e', '#ef4444'], borderWidth: 0, hoverOffset: 6 }]
-  }, { responsive: true, cutout: '60%', plugins: { legend: { display: true, position: 'bottom', labels: { color: tick, font: { size: 11 }, boxWidth: 12 } } } });
+    var html = picks.map(function(p, i) {
+      var title = p.col.name + (p.type === 'num' ? ' — distribution' : ' — top valeurs');
+      return makePanelHtml('viz-real-' + i, title);
+    }).join('');
 
-  setTitle(2, 'Courbe ROC — AUC = 0.91');
-  mkChart(2, 'line', {
-    labels: ['0','0.1','0.2','0.3','0.4','0.5','0.6','0.7','0.8','0.9','1.0'],
-    datasets: [
-      { label: 'Modèle',    data: [0,0.42,0.63,0.74,0.81,0.86,0.90,0.93,0.96,0.98,1.0], borderColor: '#6366f1', tension: 0.3, pointRadius: 2, fill: false },
-      { label: 'Aléatoire', data: [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0],          borderColor: '#94a3b8', borderDash: [5,5], pointRadius: 0, fill: false }
-    ]
-  }, Object.assign({}, base, { plugins: { legend: { display: true, labels: { color: tick, font: { size: 10 } } } } }));
+    var vizGrid = document.getElementById('vizGrid');
+    vizGrid.innerHTML = html;
+    document.getElementById('vizLoading').classList.add('hidden');
+    vizGrid.classList.remove('hidden');
 
-  setTitle(3, 'Importance des features (SHAP)');
-  mkChart(3, 'bar', {
-    labels: ['Montant', 'Historique', 'Véhicule', 'Fréquence', 'Région', 'Âge'],
-    datasets: [{ data: [0.38, 0.22, 0.16, 0.12, 0.08, 0.04],
-      backgroundColor: '#f97316', borderRadius: 6, indexAxis: 'y' }]
-  }, Object.assign({}, base, { indexAxis: 'y' }));
+    picks.forEach(function(p, i) {
+      if (p.type === 'num') {
+        renderNumChart('viz-real-' + i, p.col);
+      } else {
+        renderCategChart('viz-real-' + i, p.col);
+      }
+    });
+  }
 
-  <% } else if (isSante) { %>
-  /* ---- Santé ---- */
-  setTitle(1, 'Distribution des coûts de santé annuels');
-  mkChart(1, 'bar', {
-    labels: ['0','1-500','500-2k','2k-5k','5k-15k','15k-30k','30k+'],
-    datasets: [{ data: [22, 28, 24, 14, 8, 3, 1],
-      backgroundColor: '#10b981', borderRadius: 6 }]
-  }, Object.assign({}, base, { scales: { x: base.scales.x, y: Object.assign({}, base.scales.y, { ticks: Object.assign({}, base.scales.y.ticks, { callback: function(v){ return v + '%'; } }) }) } }));
-
-  setTitle(2, 'Coût moyen annuel par tranche d\'âge');
-  mkChart(2, 'line', {
-    labels: ['18-24','25-34','35-44','45-54','55-64','65-74','75+'],
-    datasets: [{ data: [1200, 1800, 2600, 4100, 6800, 9200, 12500],
-      borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.08)', fill: true, tension: 0.4, pointRadius: 4 }]
-  }, Object.assign({}, base, { scales: { x: base.scales.x, y: Object.assign({}, base.scales.y, { ticks: Object.assign({}, base.scales.y.ticks, { callback: function(v){ return v + ' €'; } }) }) } }));
-
-  setTitle(3, 'Courbe de Lorenz — concentration des coûts');
-  mkChart(3, 'line', {
-    labels: ['0%','20%','40%','60%','80%','100%'],
-    datasets: [
-      { label: 'Lorenz',   data: [0, 0.02, 0.08, 0.20, 0.45, 1.0], borderColor: '#8b5cf6', tension: 0.3, pointRadius: 3, fill: false },
-      { label: 'Égalité', data: [0, 0.20, 0.40, 0.60, 0.80, 1.0],  borderColor: '#94a3b8', borderDash: [5,5], pointRadius: 0, fill: false }
-    ]
-  }, Object.assign({}, base, { plugins: { legend: { display: true, labels: { color: tick, font: { size: 10 } } } } }));
-
-  <% } else { %>
-  /* ---- Défaut ---- */
-  setTitle(1, 'Distribution de la variable cible');
-  mkChart(1, 'bar', {
-    labels: ['Q1','Q2','Q3','Q4','Q5'],
-    datasets: [{ data: [18, 24, 30, 20, 8],
-      backgroundColor: '#3b82f6', borderRadius: 6 }]
-  });
-
-  setTitle(2, 'Corrélations avec la cible');
-  mkChart(2, 'bar', {
-    labels: ['Var A','Var B','Var C','Var D','Var E'],
-    datasets: [{ data: [0.72, 0.61, 0.45, 0.38, 0.22],
-      backgroundColor: function() {
-        return [0.72,0.61,0.45,0.38,0.22].map(function(v){ return v > 0.5 ? '#22c55e' : '#f97316'; });
-      }(),
-      borderRadius: 6 }]
-  }, Object.assign({}, base, { scales: { x: base.scales.x, y: Object.assign({}, base.scales.y, { min: 0, max: 1 }) } }));
-
-  setTitle(3, 'Valeurs manquantes par colonne');
-  mkChart(3, 'bar', {
-    labels: ['Col 1','Col 2','Col 3','Col 4','Col 5'],
-    datasets: [{ data: [0, 2.1, 0, 8.4, 1.3],
-      backgroundColor: function() {
-        return [0,2.1,0,8.4,1.3].map(function(v){ return v > 5 ? '#ef4444' : v > 0 ? '#f97316' : '#22c55e'; });
-      }(),
-      borderRadius: 6 }]
-  }, Object.assign({}, base, { scales: { x: base.scales.x, y: Object.assign({}, base.scales.y, { ticks: Object.assign({}, base.scales.y.ticks, { callback: function(v){ return v + '%'; } }) }) } }));
-  <% } %>
-
+  // Écoute les stats si déjà chargées ou en attente
+  if (window._statsData) {
+    renderViz(window._statsData);
+  } else {
+    document.addEventListener('statsLoaded', function(e) {
+      renderViz(e.detail);
+    }, { once: true });
+  }
 })();
 </script>

@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import get_settings
 from app.middleware.supabase_auth import SupabaseAuthMiddleware
-from app.api import datasets, reviews, notebooks, benchmarks, favorites
+from app.api import datasets, reviews, notebooks, benchmarks, favorites, models
 
 settings = get_settings()
 
@@ -47,6 +47,7 @@ app.include_router(reviews.router, prefix="/api/v1")
 app.include_router(notebooks.router, prefix="/api/v1")
 app.include_router(benchmarks.router, prefix="/api/v1")
 app.include_router(favorites.router, prefix="/api/v1")
+app.include_router(models.router, prefix="/api/v1")
 
 
 @app.get("/")
