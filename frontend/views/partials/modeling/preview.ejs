@@ -58,23 +58,12 @@
       html += '</tr></thead>';
 
       // Lignes
-      const dark = document.documentElement.classList.contains('dark');
-      const EVEN = dark ? '#1e293b' : null;
-      const ODD  = dark ? '#162032' : null;
-      const HOV  = dark ? '#1e3a5f' : null;
-      const TXT  = dark ? '#cbd5e1' : null;
-
       html += '<tbody class="divide-y divide-gray-100 dark:divide-navy-700">';
       rows.forEach((row, i) => {
-        const bgDefault = i % 2 === 0 ? EVEN : ODD;
-        const trStyle = dark ? `style="background-color:${bgDefault}"` : '';
-        const bgClass = i % 2 === 0 ? 'bg-white' : 'bg-gray-50';
-        html += `<tr class="${bgClass} hover:bg-blue-50 transition-colors" ${trStyle}
-          ${dark ? `onmouseenter="Array.from(this.cells).forEach(td=>{td.style.backgroundColor='${HOV}'})"
-          onmouseleave="Array.from(this.cells).forEach(td=>{td.style.backgroundColor='${bgDefault}'})"` : ''}>`;
+        const rowClass = i % 2 === 0 ? 'row-even' : 'row-odd';
+        html += `<tr class="${rowClass} cursor-pointer transition-colors">`;
         row.forEach(val => {
-          const tdStyle = dark ? `style="background-color:${bgDefault};color:${TXT}"` : '';
-          html += `<td class="px-4 py-2 ${dark ? '' : 'text-gray-700'} font-mono text-xs whitespace-nowrap max-w-[180px] truncate" ${tdStyle} title="${val}">${val !== '' ? val : `<span style="opacity:0.4">—</span>`}</td>`;
+          html += `<td class="px-4 py-2 text-gray-700 dark:text-gray-300 font-mono text-xs whitespace-nowrap max-w-[180px] truncate" title="${val}">${val !== '' ? val : '<span class="opacity-40">—</span>'}</td>`;
         });
         html += '</tr>';
       });
