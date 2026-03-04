@@ -9,10 +9,10 @@
     </svg>
     Aperçu des données
     <span class="text-sm font-normal text-gray-400 dark:text-gray-500">(10 premières lignes)</span>
+    <span class="text-xs font-normal text-gray-400 dark:text-gray-500 ml-auto">Cliquez sur une ligne pour l'agrandir</span>
   </h2>
 
   <div id="previewContainer">
-    <!-- Skeleton loader -->
     <div id="previewSkeleton" class="space-y-2">
       <div class="h-8 bg-gray-100 dark:bg-navy-700 rounded-lg animate-pulse"></div>
       <% for(let i = 0; i < 5; i++) { %>
@@ -42,38 +42,61 @@
 
       const cols = data.columns;
       const rows = data.rows;
+      const dark = document.documentElement.classList.contains('dark');
 
-      let html = '<table class="w-full text-sm text-left border-collapse">';
+      // Couleurs selon mode
+      const BG_EVEN   = dark ? '#1e293b' : '#ffffff';
+      const BG_ODD    = dark ? '#263349' : '#f8fafc';
+      const BG_HOVER  = dark ? '#2f3f58' : '#e8fdf9';
+      const BG_EXPAND = dark ? '#1a3a4a' : '#f0fdf9';
+      const TXT       = dark ? '#cbd5e1' : '#374151';
+      const BORDER    = dark ? '#334155' : '#e2e8f0';
 
-      // En-têtes avec type
+      let html = '<table style="width:100%;font-size:13px;border-collapse:collapse">';
+
+      // En-têtes
       html += '<thead><tr>';
       cols.forEach(col => {
-        const typeColor = col.type.includes('float') || col.type.includes('int')
-          ? 'text-blue-400' : 'text-purple-400';
-        html += `<th class="px-4 py-3 bg-gray-50 dark:bg-navy-700 text-gray-700 dark:text-gray-300 font-semibold whitespace-nowrap border-b border-gray-200 dark:border-navy-600">
-          <span class="block">${col.name}</span>
-          <span class="block text-xs font-normal ${typeColor} mt-0.5">${col.type}</span>
+        const typeColor = col.type.includes('float') || col.type.includes('int') ? '#60a5fa' : '#a78bfa';
+        html += `<th style="padding:10px 14px;background:${dark?'#334155':'#f1f5f9'};color:${dark?'#e2e8f0':'#374151'};font-weight:600;white-space:nowrap;border-bottom:2px solid ${BORDER};text-align:left">
+          <span style="display:block">${col.name}</span>
+          <span style="display:block;font-size:11px;font-weight:400;color:${typeColor};margin-top:2px">${col.type}</span>
         </th>`;
       });
-      html += '</tr></thead>';
+      html += '</tr></thead><tbody>';
 
-      // Lignes
-      html += '<tbody class="divide-y divide-gray-100 dark:divide-navy-700">';
-      const isDark = document.documentElement.classList.contains('dark');
       rows.forEach((row, i) => {
-        const bgDefault = i % 2 === 0
-          ? (isDark ? '#1e293b' : '#ffffff')
-          : (isDark ? '#263349' : '#f8fafc');
-        const bgHover = isDark ? '#2f3f58' : '#e6faf8';
-        const txtColor = isDark ? '#cbd5e1' : '#374151';
-        html += `<tr
-          onmouseenter="Array.from(this.cells).forEach(td=>{td.style.backgroundColor='${bgHover}'})"
-          onmouseleave="Array.from(this.cells).forEach(td=>{td.style.backgroundColor='${bgDefault}'})">`;
+        const bg = i % 2 === 0 ? BG_EVEN : BG_ODD;
+        const rowId = 'pr-detail-' + i;
+
+        // Ligne principale
+        html += `<tr id="pr-row-${i}" style="background:${bg};cursor:pointer;transition:background 0.12s"
+          onmouseenter="if(!this._open){Array.from(this.cells).forEach(td=>td.style.background='${BG_HOVER}')}"
+          onmouseleave="if(!this._open){Array.from(this.cells).forEach(td=>td.style.background='${bg}')}"
+          onclick="togglePreviewRow(this,'${rowId}','${bg}','${BG_EXPAND}')">`;
+
         row.forEach(val => {
-          html += `<td style="background-color:${bgDefault};color:${txtColor};transition:background-color 0.15s" class="px-4 py-2 font-mono text-xs whitespace-nowrap max-w-[180px] truncate" title="${val}">${val !== '' ? val : '<span style="opacity:0.4">—</span>'}</td>`;
+          html += `<td style="padding:8px 14px;color:${TXT};font-family:monospace;white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis;border-bottom:1px solid ${BORDER}" title="${val}">${val !== '' ? val : '<span style="opacity:0.35">—</span>'}</td>`;
         });
         html += '</tr>';
+
+        // Ligne d'expansion (cachée par défaut)
+        html += `<tr id="${rowId}" style="display:none">
+          <td colspan="${cols.length}" style="padding:0">
+            <div style="padding:16px 20px;background:${BG_EXPAND};border-bottom:2px solid ${dark?'#14b8a6':'#14b8a6'}22">
+              <p style="font-size:11px;font-weight:600;color:#14b8a6;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em">Ligne ${i+1} — détail complet</p>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px">
+                ${cols.map((col, j) => `
+                  <div style="padding:8px 10px;background:${dark?'rgba(255,255,255,0.04)':'rgba(0,0,0,0.03)'};border-radius:8px;border:1px solid ${BORDER}">
+                    <p style="font-size:10px;color:${col.type.includes('float')||col.type.includes('int')?'#60a5fa':'#a78bfa'};font-weight:600;margin-bottom:3px">${col.name}</p>
+                    <p style="font-size:13px;color:${TXT};font-family:monospace;word-break:break-all">${row[j] !== '' ? row[j] : '<span style="opacity:0.35">—</span>'}</p>
+                  </div>`).join('')}
+              </div>
+            </div>
+          </td>
+        </tr>`;
       });
+
       html += '</tbody></table>';
 
       const tableDiv = document.getElementById('previewTable');
@@ -86,6 +109,16 @@
       err.textContent = "Impossible de charger l'aperçu.";
       err.classList.remove('hidden');
     });
+
+  window.togglePreviewRow = function(tr, detailId, bgDefault, bgExpand) {
+    const detail = document.getElementById(detailId);
+    const isOpen = tr._open;
+    tr._open = !isOpen;
+    detail.style.display = isOpen ? 'none' : 'table-row';
+    Array.from(tr.cells).forEach(td => {
+      td.style.background = isOpen ? bgDefault : bgExpand;
+    });
+  };
 })();
 </script>
 <% } %>
