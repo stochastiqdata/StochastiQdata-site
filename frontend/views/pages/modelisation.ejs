@@ -1,12 +1,204 @@
 <div class="max-w-5xl mx-auto px-4 py-8">
 
-  <!-- En-tête -->
-  <div class="mb-10">
-    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-3">Modèles & Démos</h1>
-    <p class="text-gray-500 dark:text-gray-400">Explorez les modèles actuariels de référence et visualisez leur comportement graphiquement.</p>
+  <!-- Header -->
+  <div class="flex items-start justify-between gap-4 mb-8">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Modèles</h1>
+      <p class="text-gray-500 dark:text-gray-400">Modèles actuariels soumis par la communauté, liés aux datasets de la plateforme.</p>
+    </div>
+    <a href="/datasets"
+       class="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-violet-500 hover:bg-violet-600 text-white font-semibold text-sm transition-all shadow hover:scale-[1.02]">
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Soumettre un modèle
+    </a>
+  </div>
+
+  <!-- Stats bar -->
+  <div id="modelsStats" class="hidden grid grid-cols-3 gap-4 mb-8">
+    <div class="card p-4 text-center">
+      <p id="statTotal" class="text-2xl font-bold text-gray-900 dark:text-white">—</p>
+      <p class="text-xs text-gray-400 mt-0.5">Modèles soumis</p>
+    </div>
+    <div class="card p-4 text-center">
+      <p id="statDatasets" class="text-2xl font-bold text-gray-900 dark:text-white">—</p>
+      <p class="text-xs text-gray-400 mt-0.5">Datasets couverts</p>
+    </div>
+    <div class="card p-4 text-center">
+      <p id="statDownloadable" class="text-2xl font-bold text-gray-900 dark:text-white">—</p>
+      <p class="text-xs text-gray-400 mt-0.5">Téléchargeables</p>
+    </div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="flex flex-wrap gap-2 mb-6">
+    <button onclick="filterModels('all')" data-filter="all"
+      class="filter-btn active px-3 py-1.5 text-sm rounded-lg border font-medium transition-colors
+             border-violet-500 bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300">
+      Tous
+    </button>
+    <% [['glm','GLM'],['xgboost','XGBoost'],['lightgbm','LightGBM'],['random_forest','Random Forest'],
+        ['chain_ladder','Chain Ladder'],['cox','Cox'],['kaplan_meier','Kaplan-Meier'],['neural_network','Neural Network'],['other','Autre']].forEach(([val,label]) => { %>
+    <button onclick="filterModels('<%= val %>')" data-filter="<%= val %>"
+      class="filter-btn px-3 py-1.5 text-sm rounded-lg border font-medium transition-colors
+             border-gray-200 dark:border-navy-600 text-gray-600 dark:text-gray-400 hover:border-violet-400 dark:hover:border-violet-500">
+      <%= label %>
+    </button>
+    <% }); %>
+  </div>
+
+  <!-- Loading -->
+  <div id="communityLoading" class="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 mb-6">
+    <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+    </svg>
+    Chargement des modèles…
+  </div>
+
+  <!-- Grid modèles communauté -->
+  <div id="communityGrid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10"></div>
+
+  <!-- Empty state -->
+  <div id="communityEmpty" class="hidden text-center py-16 mb-10">
+    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-violet-50 dark:bg-violet-900/20 flex items-center justify-center">
+      <svg class="w-8 h-8 text-violet-300 dark:text-violet-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+        <line x1="12" y1="19" x2="12" y2="22"/>
+      </svg>
+    </div>
+    <p class="text-gray-500 dark:text-gray-400 mb-1">Aucun modèle soumis pour ce filtre.</p>
+    <p class="text-sm text-gray-400 dark:text-gray-500">Ouvrez un dataset et soumettez le vôtre.</p>
+    <a href="/datasets" class="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-violet-400 text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-colors">
+      Parcourir les datasets →
+    </a>
+  </div>
+
+  <!-- Séparateur -->
+  <div class="border-t border-gray-100 dark:border-navy-700 pt-10 mb-8">
+    <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">Modèles de référence</h2>
+    <p class="text-sm text-gray-400 dark:text-gray-500">Les grands classiques de l'actuariat — avec démos visuelles.</p>
   </div>
 
   <%- include('../partials/modelisation/models-hub') %>
   <%- include('../partials/modelisation/demos') %>
 
 </div>
+
+<script>
+(function () {
+  const TYPE_ICONS = {
+    glm: '📐', xgboost: '⚡', random_forest: '🌲', neural_network: '🧠',
+    lightgbm: '💡', catboost: '🐱', chain_ladder: '📊', cox: '📈',
+    kaplan_meier: '📉', bornhuetter_ferguson: '📋', other: '🔬'
+  };
+  const TYPE_LABELS = {
+    glm: 'GLM', xgboost: 'XGBoost', random_forest: 'Random Forest',
+    neural_network: 'Réseau de neurones', lightgbm: 'LightGBM', catboost: 'CatBoost',
+    chain_ladder: 'Chain Ladder', bornhuetter_ferguson: 'Bornhuetter-Ferguson',
+    cox: 'Cox', kaplan_meier: 'Kaplan-Meier', other: 'Autre'
+  };
+  const METRIC_LABELS = {
+    gini: 'Gini', rmse: 'RMSE', mae: 'MAE', aic: 'AIC', bic: 'BIC',
+    r2: 'R²', log_loss: 'Log Loss', auc: 'AUC', accuracy: 'Accuracy', f1_score: 'F1'
+  };
+
+  let allModels = [];
+  let currentFilter = 'all';
+
+  function formatMetricValue(k, v) {
+    if (typeof v === 'number') {
+      return ['gini', 'r2', 'auc', 'accuracy', 'f1_score'].includes(k)
+        ? (v * 100).toFixed(1) + '%' : v.toFixed(4);
+    }
+    return String(v);
+  }
+
+  function renderCard(model) {
+    const icon = TYPE_ICONS[model.model_type] || '🔬';
+    const typeLabel = TYPE_LABELS[model.model_type] || model.model_type;
+    const metricsHtml = Object.entries(model.metrics || {}).slice(0, 2).map(([k, v]) =>
+      `<span class="text-xs text-gray-400">${METRIC_LABELS[k] || k}: <strong class="text-gray-700 dark:text-gray-200">${formatMetricValue(k, v)}</strong></span>`
+    ).join('<span class="text-gray-200 dark:text-navy-600 mx-1">•</span>');
+
+    const fileBadge = model.model_file_url
+      ? `<span class="px-1.5 py-0.5 text-xs rounded bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">↓ fichier</span>`
+      : '';
+    const familyBadge = model.family
+      ? `<span class="px-1.5 py-0.5 text-xs rounded bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300">${model.family}</span>`
+      : '';
+
+    return `
+      <a href="/models/${model.id}"
+         class="block card p-4 hover:border-violet-400 dark:hover:border-violet-600 hover:shadow-md transition-all group border border-transparent">
+        <div class="flex items-start gap-3 mb-3">
+          <span class="text-xl shrink-0 mt-0.5">${icon}</span>
+          <div class="min-w-0 flex-1">
+            <p class="font-semibold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors truncate">${model.name}</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500">${typeLabel}</p>
+          </div>
+          <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-violet-400 shrink-0 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+        </div>
+        ${model.description ? `<p class="text-xs text-gray-500 dark:text-gray-400 mb-3 line-clamp-2">${model.description}</p>` : ''}
+        <div class="flex flex-wrap gap-1 mb-3">${familyBadge}${fileBadge}</div>
+        ${metricsHtml ? `<div class="pt-2 border-t border-gray-100 dark:border-navy-700 flex flex-wrap gap-2">${metricsHtml}</div>` : ''}
+      </a>
+    `;
+  }
+
+  function renderGrid(models) {
+    const grid = document.getElementById('communityGrid');
+    const empty = document.getElementById('communityEmpty');
+    if (!models.length) {
+      grid.classList.add('hidden');
+      empty.classList.remove('hidden');
+    } else {
+      empty.classList.add('hidden');
+      grid.innerHTML = models.map(renderCard).join('');
+      grid.classList.remove('hidden');
+    }
+  }
+
+  window.filterModels = function(filter) {
+    currentFilter = filter;
+    // Update button states
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      const active = btn.dataset.filter === filter;
+      btn.classList.toggle('active', active);
+      btn.classList.toggle('border-violet-500', active);
+      btn.classList.toggle('bg-violet-50', active);
+      btn.classList.toggle('dark:bg-violet-900/20', active);
+      btn.classList.toggle('text-violet-700', active);
+      btn.classList.toggle('dark:text-violet-300', active);
+      btn.classList.toggle('border-gray-200', !active);
+      btn.classList.toggle('dark:border-navy-600', !active);
+      btn.classList.toggle('text-gray-600', !active);
+      btn.classList.toggle('dark:text-gray-400', !active);
+    });
+    const filtered = filter === 'all' ? allModels : allModels.filter(m => m.model_type === filter);
+    renderGrid(filtered);
+  };
+
+  fetch('/api/models')
+    .then(r => r.json())
+    .then(models => {
+      document.getElementById('communityLoading').classList.add('hidden');
+      allModels = models;
+
+      // Stats
+      const uniqueDatasets = new Set(models.map(m => m.dataset_id)).size;
+      const downloadable = models.filter(m => m.model_file_url).length;
+      document.getElementById('statTotal').textContent = models.length;
+      document.getElementById('statDatasets').textContent = uniqueDatasets;
+      document.getElementById('statDownloadable').textContent = downloadable;
+      if (models.length > 0) document.getElementById('modelsStats').classList.remove('hidden');
+
+      renderGrid(models);
+    })
+    .catch(() => {
+      document.getElementById('communityLoading').classList.add('hidden');
+      document.getElementById('communityEmpty').classList.remove('hidden');
+    });
+})();
+</script>
