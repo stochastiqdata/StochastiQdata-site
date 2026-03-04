@@ -208,17 +208,17 @@
     @apply bg-white;
   }
   html.dark .tr-even {
-    background-color: #1e293b; /* navy-800 */
+    background-color: #1e293b; /* navy-800, fond de carte */
   }
   .tr-odd {
     @apply bg-gray-50;
   }
   html.dark .tr-odd {
-    background-color: #141c2b; /* entre navy-800 et navy-900, stripe subtil */
+    background-color: #263349; /* stripe visible : ~15% plus clair que navy-800 */
   }
   html.dark .tr-even:hover,
   html.dark .tr-odd:hover {
-    background-color: #334155; /* navy-700 au hover */
+    background-color: #2f3f58; /* navy-700/70 au hover */
   }
 
   /* Navigation sidebar */
