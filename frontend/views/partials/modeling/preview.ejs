@@ -44,10 +44,7 @@
       const rows = data.rows;
       const dark = document.documentElement.classList.contains('dark');
 
-      // Couleurs selon mode
-      const BG_EVEN   = dark ? '#1e293b' : '#ffffff';
-      const BG_ODD    = dark ? '#0f1929' : '#eef2ff';
-      const BG_HOVER  = dark ? '#1e3a5f' : '#d1fae5';
+      // Couleurs fixes (hors striping géré par CSS .row-even/.row-odd)
       const BG_EXPAND = dark ? '#1a3a4a' : '#f0fdf9';
       const TXT       = dark ? '#cbd5e1' : '#374151';
       const BORDER    = dark ? '#334155' : '#e2e8f0';
@@ -66,17 +63,15 @@
       html += '</tr></thead><tbody>';
 
       rows.forEach((row, i) => {
-        const bg = i % 2 === 0 ? BG_EVEN : BG_ODD;
+        const rowClass = i % 2 === 0 ? 'row-even' : 'row-odd';
         const rowId = 'pr-detail-' + i;
 
         // Ligne principale
-        html += `<tr id="pr-row-${i}" style="cursor:pointer"
-          onmouseenter="if(!this._open){Array.from(this.cells).forEach(td=>{td.style.backgroundColor='${BG_HOVER}'})}"
-          onmouseleave="if(!this._open){Array.from(this.cells).forEach(td=>{td.style.backgroundColor='${bg}'})}"
-          onclick="togglePreviewRow(this,'${rowId}','${bg}','${BG_EXPAND}')">`;
+        html += `<tr id="pr-row-${i}" class="${rowClass}" style="cursor:pointer"
+          onclick="togglePreviewRow(this,'${rowId}','${BG_EXPAND}')">`;
 
         row.forEach(val => {
-          html += `<td style="padding:8px 14px;background-color:${bg};color:${TXT};font-family:monospace;white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis;border-bottom:1px solid ${BORDER};transition:background-color 0.12s" title="${val !== '' ? val : ''}">${val !== '' ? val : '<span style="opacity:0.35">—</span>'}</td>`;
+          html += `<td style="padding:8px 14px;color:${TXT};font-family:monospace;white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis;border-bottom:1px solid ${BORDER}" title="${val !== '' ? val : ''}">${val !== '' ? val : '<span style="opacity:0.35">—</span>'}</td>`;
         });
         html += '</tr>';
 
@@ -110,13 +105,14 @@
       err.classList.remove('hidden');
     });
 
-  window.togglePreviewRow = function(tr, detailId, bgDefault, bgExpand) {
+  window.togglePreviewRow = function(tr, detailId, bgExpand) {
     const detail = document.getElementById(detailId);
     const isOpen = tr._open;
     tr._open = !isOpen;
     detail.style.display = isOpen ? 'none' : 'table-row';
+    // En mode ouvert : couleur expand. En mode fermé : CSS .row-even/.row-odd reprend
     Array.from(tr.cells).forEach(td => {
-      td.style.backgroundColor = isOpen ? bgDefault : bgExpand;
+      td.style.backgroundColor = isOpen ? '' : bgExpand;
     });
   };
 })();

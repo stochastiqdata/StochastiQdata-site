@@ -21,6 +21,16 @@
 }
 
 @layer components {
+  /* Table zebra striping - réagit automatiquement au changement de thème */
+  .row-even td { background-color: #ffffff; }
+  .row-odd  td { background-color: #f1f5f9; }
+  html.dark .row-even td { background-color: #1e293b; }
+  html.dark .row-odd  td { background-color: #162032; }
+  .row-even:hover td,
+  .row-odd:hover  td  { background-color: #dbeafe; }
+  html.dark .row-even:hover td,
+  html.dark .row-odd:hover  td { background-color: #1e3a5f; }
+
   /* Glassmorphism containers - Light */
   .glass {
     @apply bg-white/85 backdrop-blur-xl border border-white/30 shadow-glass;
