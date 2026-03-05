@@ -366,18 +366,25 @@
         const grid = document.getElementById('modelsGrid');
         const hasMore = models.length > 3;
         const cardsHtml = models.map(renderModelCard).join('');
-        const scrollStyle = hasMore
-          ? 'max-height:700px;overflow-y:auto;padding-right:4px;'
-          : '';
         grid.innerHTML = `
-          <div style="${scrollStyle}">
-            <div style="display:grid;grid-template-columns:1fr;gap:1rem;">${cardsHtml}</div>
+          <style>
+            #modelsScroll::-webkit-scrollbar { width: 4px; }
+            #modelsScroll::-webkit-scrollbar-track { background: transparent; }
+            #modelsScroll::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.35); border-radius: 99px; }
+            #modelsScroll::-webkit-scrollbar-thumb:hover { background: rgba(139,92,246,0.6); }
+          </style>
+          <div style="position:relative;">
+            <div id="modelsScroll" style="${hasMore ? 'max-height:680px;overflow-y:auto;' : ''}padding-right:2px;">
+              <div style="display:grid;grid-template-columns:1fr;gap:0.75rem;">${cardsHtml}</div>
+            </div>
+            ${hasMore ? `<div style="pointer-events:none;position:absolute;bottom:0;left:0;right:0;height:64px;background:linear-gradient(to bottom,transparent,var(--card-bg,rgba(15,23,42,0.95)));border-radius:0 0 12px 12px;"></div>` : ''}
           </div>
-          <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(107,114,128,0.2);text-align:right;">
-            <a href="/modelisation" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:#7c3aed;text-decoration:none;"
-               onmouseover="this.style.color='#6d28d9'" onmouseout="this.style.color='#7c3aed'">
-              Voir tous les modèles actuariels
-              <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+          <div style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid rgba(139,92,246,0.15);display:flex;align-items:center;justify-content:space-between;">
+            ${hasMore ? `<span style="font-size:11px;color:#6b7280;">${models.length} modèles · défilez pour voir la suite</span>` : `<span></span>`}
+            <a href="/modelisation" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#8b5cf6;text-decoration:none;letter-spacing:0.01em;"
+               onmouseover="this.style.color='#7c3aed'" onmouseout="this.style.color='#8b5cf6'">
+              Tous les modèles
+              <svg style="width:13px;height:13px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
             </a>
           </div>`;
         grid.classList.remove('hidden');
