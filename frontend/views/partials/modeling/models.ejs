@@ -369,12 +369,12 @@
         let html = `<div class="grid grid-cols-1 gap-4">${top3.map(renderModelCard).join('')}</div>`;
         if (rest.length) {
           html += `
-          <div id="modelsExtra" class="hidden grid grid-cols-1 gap-4 mt-4">${rest.map(renderModelCard).join('')}</div>
+          <div id="modelsExtra" style="display:none;grid-template-columns:1fr;gap:1rem;margin-top:1rem;">${rest.map(renderModelCard).join('')}</div>
           <div class="mt-4 pt-4 border-t border-gray-100 dark:border-navy-700 flex items-center justify-between">
             <button id="modelsShowMore" onclick="toggleMoreModels()"
               class="inline-flex items-center gap-2 text-sm font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors">
               <svg id="modelsShowMoreIcon" class="w-4 h-4 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-              Voir ${rest.length} modèle${rest.length > 1 ? 's' : ''} de plus
+              <span>Voir ${rest.length} modèle${rest.length > 1 ? 's' : ''} de plus</span>
             </button>
             <a href="/modelisation" class="inline-flex items-center gap-2 text-sm font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors">
               Tous les modèles
@@ -410,10 +410,11 @@ function toggleMoreModels() {
   const btn   = document.getElementById('modelsShowMore');
   const icon  = document.getElementById('modelsShowMoreIcon');
   if (!extra) return;
-  const open = !extra.classList.contains('hidden');
-  extra.classList.toggle('hidden', open);
-  icon.style.transform = open ? '' : 'rotate(180deg)';
-  btn.childNodes[1].textContent = open ? ` Voir ${extra.children.length} modèle${extra.children.length > 1 ? 's' : ''} de plus` : ' Réduire';
+  const isHidden = extra.style.display === 'none';
+  extra.style.display = isHidden ? 'grid' : 'none';
+  icon.style.transform = isHidden ? 'rotate(180deg)' : '';
+  const n = extra.children.length;
+  btn.querySelector('span') && (btn.querySelector('span').textContent = isHidden ? 'Réduire' : `Voir ${n} modèle${n > 1 ? 's' : ''} de plus`);
 }
 
 function openModelModal() {
