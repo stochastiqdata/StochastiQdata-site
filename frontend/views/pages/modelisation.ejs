@@ -137,26 +137,22 @@
     const diff      = getDifficulty(model);
     const diffBadge = diff
       ? `<span class="px-2 py-0.5 text-xs rounded-full font-medium shrink-0 ${DIFF_BADGE[diff].cls}">${DIFF_BADGE[diff].label}</span>`
+      : `<span class="w-20 shrink-0"></span>`;
+    const metric = Object.entries(model.metrics || {})[0];
+    const metricStr = metric
+      ? `<span class="text-xs text-gray-400 dark:text-gray-500">${METRIC_LABELS[metric[0]]||metric[0]}: <span class="font-medium text-gray-600 dark:text-gray-300">${formatMetricValue(metric[0], metric[1])}</span></span>`
       : '';
-    const metrics = Object.entries(model.metrics || {}).slice(0, 2)
-      .map(([k,v]) => `<span class="text-xs text-gray-400 dark:text-gray-500">${METRIC_LABELS[k]||k}: <span class="text-gray-600 dark:text-gray-300 font-medium">${formatMetricValue(k,v)}</span></span>`)
-      .join('<span class="text-gray-300 dark:text-gray-600 mx-1">·</span>');
 
     return `
       <a href="/models/${model.id}"
-         class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-navy-700/60 transition-colors group">
-        <span class="text-lg shrink-0 w-6 text-center">${icon}</span>
+         class="flex items-center gap-3 px-4 py-3 border-b border-gray-100 dark:border-navy-700 last:border-0 hover:bg-gray-50 dark:hover:bg-navy-700/50 transition-colors group">
+        <span class="text-base shrink-0">${icon}</span>
         <div class="min-w-0 flex-1">
-          <span class="text-sm font-mono font-semibold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors truncate block">${model.name}</span>
-          <div class="flex items-center gap-2 mt-0.5 flex-wrap">
-            <span class="text-xs text-gray-400 dark:text-gray-500">${typeLabel}</span>
-            ${metrics ? `<span class="text-gray-300 dark:text-gray-600">·</span>${metrics}` : ''}
-          </div>
+          <p class="text-sm font-semibold font-mono text-gray-900 dark:text-white group-hover:text-violet-500 dark:group-hover:text-violet-400 truncate transition-colors">${model.name}</p>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">${typeLabel}${metricStr ? ' · ' : ''}${metricStr}</p>
         </div>
-        <div class="flex items-center gap-2 shrink-0">
-          ${diffBadge}
-          <svg class="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 group-hover:text-violet-400 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
-        </div>
+        ${diffBadge}
+        <svg class="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 group-hover:text-violet-400 shrink-0 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
       </a>
     `;
   }
@@ -178,14 +174,9 @@
     const start = (page - 1) * PAGE_SIZE;
     const page_models = models.slice(start, start + PAGE_SIZE);
 
-    // 2 colonnes style HuggingFace
-    const mid   = Math.ceil(page_models.length / 2);
-    const left  = page_models.slice(0, mid);
-    const right = page_models.slice(mid);
-    const col   = (items) =>
-      `<div class="divide-y divide-gray-100 dark:divide-navy-700 border border-gray-100 dark:border-navy-700 rounded-xl overflow-hidden">${items.map(renderRow).join('')}</div>`;
-
-    grid.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${col(left)}${right.length ? col(right) : ''}</div>`;
+    // Grille 2 colonnes — chaque item dans sa cellule
+    const rows = page_models.map(m => `<div class="rounded-xl overflow-hidden border border-gray-100 dark:border-navy-700">${renderRow(m)}</div>`).join('');
+    grid.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-3">${rows}</div>`;
     grid.classList.remove('hidden');
 
     // Pagination
