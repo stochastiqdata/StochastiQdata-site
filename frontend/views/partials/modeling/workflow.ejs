@@ -1,7 +1,7 @@
   <!-- Section: Parcours Actuariel A→Z -->
-  <div class="card p-6 mb-6">
-    <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center shrink-0">
+  <div class="card p-4 mb-6">
+    <h2 class="text-base font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
+      <div class="w-7 h-7 rounded-lg bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center shrink-0">
         <svg class="w-5 h-5 text-cyan-600 dark:text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 2L2 7l10 5 10-5-10-5z"/>
           <path d="M2 17l10 5 10-5"/>
@@ -10,7 +10,7 @@
       </div>
       Parcours actuariel complet — de A à Z
     </h2>
-    <p class="text-sm text-gray-500 dark:text-gray-400 mb-6 ml-14">
+    <p class="text-xs text-gray-500 dark:text-gray-400 mb-4 ml-9">
       Suivez chaque étape du travail concret d'un actuaire avec ce dataset.
     </p>
 
@@ -559,7 +559,7 @@
     %>
 
     <!-- Barre de progression des étapes -->
-    <div class="flex items-center gap-1 mb-8 overflow-x-auto pb-2">
+    <div class="flex items-center gap-1 mb-4 overflow-x-auto pb-1">
       <% workflowSteps.forEach((step, idx) => { %>
         <% const sc = stepColors[step.color]; %>
         <button
@@ -576,51 +576,51 @@
     </div>
 
     <!-- Étapes détaillées -->
-    <div class="space-y-4">
+    <div class="space-y-2">
       <% workflowSteps.forEach((step) => { %>
         <% const sc = stepColors[step.color]; %>
-        <div id="step-<%= step.num %>" class="rounded-2xl border border-gray-200 dark:border-navy-700 overflow-hidden">
+        <div id="step-<%= step.num %>" class="rounded-xl border border-gray-200 dark:border-navy-700 overflow-hidden">
 
           <!-- En-tête cliquable -->
           <button
             onclick="toggleStep(<%= step.num %>)"
-            class="w-full flex items-center gap-4 p-4 sm:p-5 text-left hover:bg-gray-50 dark:hover:bg-navy-700/50 transition-colors"
+            class="w-full flex items-center gap-3 p-3 text-left hover:bg-gray-50 dark:hover:bg-navy-700/50 transition-colors"
           >
             <!-- Numéro -->
-            <div class="w-11 h-11 rounded-xl <%= sc.bg %> flex items-center justify-center shrink-0">
-              <span class="<%= sc.text %> font-bold text-lg"><%= step.num %></span>
+            <div class="w-8 h-8 rounded-lg <%= sc.bg %> flex items-center justify-center shrink-0">
+              <span class="<%= sc.text %> font-bold text-sm"><%= step.num %></span>
             </div>
 
             <!-- Titre + objectif -->
             <div class="flex-1 min-w-0">
-              <h3 class="font-bold text-gray-900 dark:text-white text-sm sm:text-base"><%= step.title %></h3>
+              <h3 class="font-semibold text-gray-900 dark:text-white text-sm"><%= step.title %></h3>
               <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate"><%= step.goal %></p>
             </div>
 
             <!-- Outils pills (desktop) -->
-            <div class="hidden md:flex items-center gap-1.5 shrink-0">
+            <div class="hidden md:flex items-center gap-1 shrink-0">
               <% step.tools.slice(0, 2).forEach(tool => { %>
-                <span class="text-xs px-2 py-0.5 rounded-md <%= sc.tag %>"><%= tool %></span>
+                <span class="text-xs px-1.5 py-0.5 rounded <%= sc.tag %>"><%= tool %></span>
               <% }); %>
             </div>
 
             <!-- Chevron -->
-            <svg id="chevron-<%= step.num %>" class="w-5 h-5 text-gray-400 shrink-0 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <svg id="chevron-<%= step.num %>" class="w-4 h-4 text-gray-400 shrink-0 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="m6 9 6 6 6-6"/>
             </svg>
           </button>
 
           <!-- Contenu dépliable -->
           <div id="content-<%= step.num %>" class="hidden border-t border-gray-100 dark:border-navy-700">
-            <div class="p-4 sm:p-5 grid md:grid-cols-2 gap-5">
+            <div class="p-3 grid md:grid-cols-2 gap-4">
 
               <!-- Actions concrètes -->
               <div>
-                <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3">Actions concrètes</h4>
-                <ul class="space-y-2">
+                <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Actions concrètes</h4>
+                <ul class="space-y-1.5">
                   <% step.actions.forEach(action => { %>
-                    <li class="flex items-start gap-2 text-sm text-gray-700 dark:text-gray-300">
-                      <svg class="w-4 h-4 <%= sc.text %> mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <li class="flex items-start gap-2 text-xs text-gray-700 dark:text-gray-300">
+                      <svg class="w-3.5 h-3.5 <%= sc.text %> mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                         <polyline points="20 6 9 17 4 12"/>
                       </svg>
                       <%= action %>
@@ -629,11 +629,11 @@
                 </ul>
 
                 <!-- Outils -->
-                <div class="mt-4">
-                  <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Librairies & outils</h4>
-                  <div class="flex flex-wrap gap-2">
+                <div class="mt-3">
+                  <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1.5">Librairies & outils</h4>
+                  <div class="flex flex-wrap gap-1.5">
                     <% step.tools.forEach(tool => { %>
-                      <span class="text-xs px-2.5 py-1 rounded-lg <%= sc.tag %> font-mono"><%= tool %></span>
+                      <span class="text-xs px-2 py-0.5 rounded-md <%= sc.tag %> font-mono"><%= tool %></span>
                     <% }); %>
                   </div>
                 </div>
@@ -641,8 +641,8 @@
 
               <!-- Code snippet -->
               <div>
-                <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3">Exemple de code</h4>
-                <div class="rounded-xl bg-gray-900 dark:bg-navy-950 p-4 overflow-x-auto">
+                <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Exemple de code</h4>
+                <div class="rounded-lg bg-gray-900 dark:bg-navy-950 p-3 overflow-x-auto">
                   <pre class="text-xs text-green-400 font-mono leading-relaxed whitespace-pre"><%= step.code %></pre>
                 </div>
               </div>
