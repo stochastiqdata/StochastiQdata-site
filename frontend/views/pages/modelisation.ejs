@@ -9,8 +9,7 @@
         <span id="statDatasets" class="font-medium text-gray-700 dark:text-gray-300">—</span> datasets
       </p>
     </div>
-    <a href="/"
-       class="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-violet-500 hover:bg-violet-600 text-white font-semibold text-sm transition-all shadow">
+    <a href="/" class="shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-violet-500 hover:bg-violet-600 text-white font-semibold text-sm transition-all shadow">
       <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
       </svg>
@@ -18,70 +17,52 @@
     </a>
   </div>
 
-  <!-- Filtres + search -->
-  <div class="flex flex-col gap-3 mb-5">
-    <!-- Onglets difficulté -->
+  <!-- Search bar -->
+  <div class="relative mb-4">
+    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input id="modelSearch" type="text" placeholder="Rechercher un modèle…"
+      oninput="applyFilters()"
+      class="w-full pl-9 pr-4 py-2.5 text-sm rounded-xl border-2 border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-violet-400 dark:focus:border-violet-500 transition">
+  </div>
+
+  <!-- Filtres -->
+  <div class="flex flex-col gap-2 mb-5">
     <div class="flex gap-1 p-1 bg-gray-100 dark:bg-navy-800 rounded-xl w-fit">
       <button onclick="setTab('all')" data-tab="all"
-        class="tab-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors bg-white dark:bg-navy-600 text-gray-900 dark:text-white shadow-sm">
-        Tous
-      </button>
+        class="tab-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors bg-white dark:bg-navy-600 text-gray-900 dark:text-white shadow-sm">Tous</button>
       <button onclick="setTab('niveau-1')" data-tab="niveau-1"
-        class="tab-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-700">
-        Débutant
-      </button>
+        class="tab-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">Débutant</button>
       <button onclick="setTab('niveau-2')" data-tab="niveau-2"
-        class="tab-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-700">
-        Intermédiaire
-      </button>
+        class="tab-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">Intermédiaire</button>
       <button onclick="setTab('niveau-3')" data-tab="niveau-3"
-        class="tab-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-700">
-        Avancé
-      </button>
+        class="tab-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">Avancé</button>
     </div>
-    <!-- Filtres type + search sur la même ligne -->
-    <div class="flex flex-wrap items-center gap-2">
+    <div class="flex flex-wrap gap-2">
       <button onclick="filterModels('all')" data-filter="all"
-        class="filter-btn px-3 py-1 text-xs rounded-lg border font-medium transition-colors
-               border-violet-500 bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300">
-        Tous types
-      </button>
-      <% [['glm','GLM'],['xgboost','XGBoost'],['lightgbm','LightGBM'],['catboost','CatBoost'],
-          ['neural_network','Neural Network'],['other','Autre']].forEach(([val,label]) => { %>
+        class="filter-btn px-3 py-1 text-xs rounded-lg border-2 font-medium transition-colors border-violet-500 bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300">Tous types</button>
+      <% [['glm','GLM'],['xgboost','XGBoost'],['lightgbm','LightGBM'],['catboost','CatBoost'],['neural_network','Neural Network'],['other','Autre']].forEach(([val,label]) => { %>
       <button onclick="filterModels('<%= val %>')" data-filter="<%= val %>"
-        class="filter-btn px-3 py-1 text-xs rounded-lg border font-medium transition-colors
-               border-gray-200 dark:border-navy-600 text-gray-500 dark:text-gray-400 hover:border-violet-400">
-        <%= label %>
-      </button>
+        class="filter-btn px-3 py-1 text-xs rounded-lg border-2 font-medium transition-colors border-gray-200 dark:border-navy-600 text-gray-500 dark:text-gray-400 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400"><%= label %></button>
       <% }); %>
-      <!-- Search inline -->
-      <div class="relative ml-auto">
-        <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input id="modelSearch" type="text" placeholder="Rechercher…"
-          oninput="applyFilters()"
-          class="pl-8 pr-3 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400 transition w-48">
-      </div>
     </div>
   </div>
 
   <!-- Loading -->
   <div id="communityLoading" class="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 mb-4">
-    <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
-    </svg>
+    <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
     Chargement des modèles…
   </div>
 
-  <!-- Liste modèles -->
+  <!-- Liste -->
   <div id="communityGrid" class="hidden"></div>
 
   <!-- Pagination -->
   <div id="communityPagination" class="hidden flex items-center justify-center gap-1 mt-6"></div>
 
-  <!-- Empty state -->
+  <!-- Empty -->
   <div id="communityEmpty" class="hidden text-center py-12">
-    <p class="text-gray-500 dark:text-gray-400 mb-1">Aucun modèle pour ce filtre.</p>
-    <a href="/" class="mt-3 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-violet-400 text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-colors">
+    <p class="text-gray-500 dark:text-gray-400 mb-3">Aucun modèle pour ce filtre.</p>
+    <a href="/" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-violet-400 text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-colors">
       Parcourir les datasets →
     </a>
   </div>
@@ -91,70 +72,70 @@
 <script>
 (function () {
   const TYPE_ICONS = {
-    glm: '📐', xgboost: '⚡', random_forest: '🌲', neural_network: '🧠',
-    lightgbm: '💡', catboost: '🐱', chain_ladder: '📊', cox: '📈',
-    kaplan_meier: '📉', bornhuetter_ferguson: '📋', other: '🔬'
+    glm:'📐', xgboost:'⚡', random_forest:'🌲', neural_network:'🧠',
+    lightgbm:'💡', catboost:'🐱', chain_ladder:'📊', cox:'📈',
+    kaplan_meier:'📉', bornhuetter_ferguson:'📋', other:'🔬'
   };
   const TYPE_LABELS = {
-    glm: 'GLM', xgboost: 'XGBoost', random_forest: 'Random Forest',
-    neural_network: 'Neural Network', lightgbm: 'LightGBM', catboost: 'CatBoost',
-    chain_ladder: 'Chain Ladder', bornhuetter_ferguson: 'Bornhuetter-Ferguson',
-    cox: 'Cox', kaplan_meier: 'Kaplan-Meier', other: 'Autre'
+    glm:'GLM', xgboost:'XGBoost', random_forest:'Random Forest',
+    neural_network:'Neural Network', lightgbm:'LightGBM', catboost:'CatBoost',
+    chain_ladder:'Chain Ladder', bornhuetter_ferguson:'Bornhuetter-Ferguson',
+    cox:'Cox', kaplan_meier:'Kaplan-Meier', other:'Autre'
   };
   const METRIC_LABELS = {
-    gini: 'Gini', rmse: 'RMSE', mae: 'MAE', aic: 'AIC', bic: 'BIC',
-    r2: 'R²', log_loss: 'Log Loss', auc: 'AUC', accuracy: 'Accuracy', f1_score: 'F1'
+    gini:'Gini', rmse:'RMSE', mae:'MAE', aic:'AIC', bic:'BIC',
+    r2:'R²', log_loss:'Log Loss', auc:'AUC', accuracy:'Accuracy', f1_score:'F1'
   };
   const DIFF_BADGE = {
-    'niveau-1': { label: 'Débutant',      cls: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' },
-    'niveau-2': { label: 'Intermédiaire', cls: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' },
-    'niveau-3': { label: 'Avancé',        cls: 'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400' },
+    'niveau-1': { label:'Débutant',      cls:'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' },
+    'niveau-2': { label:'Intermédiaire', cls:'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' },
+    'niveau-3': { label:'Avancé',        cls:'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400' },
   };
 
-  let allModels = [];
-  let filteredModels = [];
-  let currentFilter = 'all';
-  let currentTab = 'all';
-  let currentPage = 1;
+  let allModels = [], filteredModels = [];
+  let currentFilter = 'all', currentTab = 'all', currentPage = 1;
   const PAGE_SIZE = 20;
 
-  function getDifficulty(model) {
+  function getDifficulty(m) {
     for (const k of ['niveau-1','niveau-2','niveau-3'])
-      if ((model.tags || []).includes(k)) return k;
+      if ((m.tags||[]).includes(k)) return k;
     return null;
   }
 
-  function formatMetricValue(k, v) {
-    if (typeof v === 'number')
-      return ['gini','r2','auc','accuracy','f1_score'].includes(k)
-        ? (v * 100).toFixed(1) + '%' : v.toFixed(4);
-    return String(v);
+  function fmtMetric(k, v) {
+    if (typeof v !== 'number') return String(v);
+    return ['gini','r2','auc','accuracy','f1_score'].includes(k)
+      ? (v*100).toFixed(1)+'%' : v.toFixed(4);
   }
 
-  function renderRow(model) {
-    const icon      = TYPE_ICONS[model.model_type] || '🔬';
-    const typeLabel = TYPE_LABELS[model.model_type] || model.model_type;
-    const diff      = getDifficulty(model);
-    const diffBadge = diff
-      ? `<span class="px-2 py-0.5 text-xs rounded-full font-medium shrink-0 ${DIFF_BADGE[diff].cls}">${DIFF_BADGE[diff].label}</span>`
-      : `<span class="w-20 shrink-0"></span>`;
-    const metric = Object.entries(model.metrics || {})[0];
-    const metricStr = metric
-      ? `<span class="text-xs text-gray-400 dark:text-gray-500">${METRIC_LABELS[metric[0]]||metric[0]}: <span class="font-medium text-gray-600 dark:text-gray-300">${formatMetricValue(metric[0], metric[1])}</span></span>`
+  function renderRow(m) {
+    const icon  = TYPE_ICONS[m.model_type] || '🔬';
+    const type  = TYPE_LABELS[m.model_type] || m.model_type;
+    const diff  = getDifficulty(m);
+    const badge = diff
+      ? `<span class="text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap ${DIFF_BADGE[diff].cls}">${DIFF_BADGE[diff].label}</span>`
+      : '';
+    const entries = Object.entries(m.metrics||{});
+    const metric  = entries.length
+      ? `<span class="text-gray-300 dark:text-gray-600 mx-1">·</span><span class="text-xs text-gray-400 dark:text-gray-500">${METRIC_LABELS[entries[0][0]]||entries[0][0]}: <b class="text-gray-700 dark:text-gray-200 font-medium">${fmtMetric(entries[0][0],entries[0][1])}</b></span>`
       : '';
 
-    return `
-      <a href="/models/${model.id}"
-         class="flex items-center gap-3 px-4 py-3 border-b border-gray-100 dark:border-navy-700 last:border-0 hover:bg-gray-50 dark:hover:bg-navy-700/50 transition-colors group">
-        <span class="text-base shrink-0">${icon}</span>
-        <div class="min-w-0 flex-1">
-          <p class="text-sm font-semibold font-mono text-gray-900 dark:text-white group-hover:text-violet-500 dark:group-hover:text-violet-400 truncate transition-colors">${model.name}</p>
-          <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">${typeLabel}${metricStr ? ' · ' : ''}${metricStr}</p>
-        </div>
-        ${diffBadge}
-        <svg class="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 group-hover:text-violet-400 shrink-0 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
-      </a>
-    `;
+    return `<a href="/models/${m.id}"
+      class="flex items-center gap-3 px-4 py-3 rounded-xl border border-gray-100 dark:border-navy-700
+             bg-white dark:bg-navy-800
+             hover:border-violet-300 dark:hover:border-violet-600
+             hover:bg-violet-50/40 dark:hover:bg-violet-900/10
+             transition-all group">
+      <span class="text-base shrink-0 w-5 text-center">${icon}</span>
+      <div class="min-w-0 flex-1">
+        <p class="text-sm font-semibold font-mono text-gray-900 dark:text-white truncate">${m.name}</p>
+        <p class="flex items-center flex-wrap text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+          <span>${type}</span>${metric}
+        </p>
+      </div>
+      ${badge}
+      <svg class="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 group-hover:text-violet-400 shrink-0 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+    </a>`;
   }
 
   function renderPage(models, page) {
@@ -163,112 +144,84 @@
     const pag   = document.getElementById('communityPagination');
 
     if (!models.length) {
-      grid.classList.add('hidden');
-      pag.classList.add('hidden');
-      empty.classList.remove('hidden');
-      return;
+      grid.classList.add('hidden'); pag.classList.add('hidden');
+      empty.classList.remove('hidden'); return;
     }
     empty.classList.add('hidden');
 
     const totalPages = Math.ceil(models.length / PAGE_SIZE);
-    const start = (page - 1) * PAGE_SIZE;
-    const page_models = models.slice(start, start + PAGE_SIZE);
+    const slice = models.slice((page-1)*PAGE_SIZE, page*PAGE_SIZE);
 
-    // Grille 2 colonnes — chaque item dans sa cellule
-    const rows = page_models.map(m => `<div class="rounded-xl overflow-hidden border border-gray-100 dark:border-navy-700">${renderRow(m)}</div>`).join('');
-    grid.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-3">${rows}</div>`;
+    grid.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-2">${slice.map(renderRow).join('')}</div>`;
     grid.classList.remove('hidden');
 
-    // Pagination
     if (totalPages <= 1) { pag.classList.add('hidden'); return; }
     pag.classList.remove('hidden');
 
-    const btn = (label, p, active = false, disabled = false) =>
-      `<button onclick="goToPage(${p})"
-        class="px-3 py-1.5 text-sm rounded-lg font-medium transition-colors
-          ${active   ? 'bg-violet-500 text-white'
-                     : disabled ? 'text-gray-300 dark:text-gray-600 cursor-default pointer-events-none'
-                                : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-navy-700'}"
-        ${disabled ? 'disabled' : ''}>
-        ${label}
-      </button>`;
+    const mkBtn = (label, p, active, disabled) =>
+      `<button onclick="goToPage(${p})" ${disabled?'disabled':''} class="px-3 py-1.5 text-sm rounded-lg font-medium transition-colors ${
+        active   ? 'bg-violet-500 text-white' :
+        disabled ? 'text-gray-300 dark:text-gray-600 cursor-default pointer-events-none' :
+                   'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-navy-700'
+      }">${label}</button>`;
 
-    let pages = '';
-    // Always show first, last, current ±1, with "..." gaps
-    const show = new Set([1, totalPages, page, page-1, page+1].filter(p => p >= 1 && p <= totalPages));
-    let prev = 0;
-    [...show].sort((a,b)=>a-b).forEach(p => {
-      if (prev && p - prev > 1) pages += `<span class="px-2 text-gray-400">…</span>`;
-      pages += btn(p, p, p === page);
-      prev = p;
+    const show = new Set([1, totalPages, page, page-1, page+1].filter(p=>p>=1&&p<=totalPages));
+    let pages='', prev=0;
+    [...show].sort((a,b)=>a-b).forEach(p=>{
+      if (prev && p-prev>1) pages+=`<span class="px-1 text-gray-400">…</span>`;
+      pages+=mkBtn(p,p,p===page,false); prev=p;
     });
 
-    pag.innerHTML =
-      btn('‹ Précédent', page - 1, false, page === 1) +
-      pages +
-      btn('Suivant ›', page + 1, false, page === totalPages);
+    pag.innerHTML = mkBtn('‹',page-1,false,page===1)+pages+mkBtn('›',page+1,false,page===totalPages);
   }
 
   window.goToPage = function(p) {
-    currentPage = p;
-    renderPage(filteredModels, currentPage);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    currentPage=p; renderPage(filteredModels,p);
+    window.scrollTo({top:0,behavior:'smooth'});
   };
 
   function applyFilters() {
-    const q = (document.getElementById('modelSearch')?.value || '').toLowerCase().trim();
-    let filtered = allModels;
-    if (currentTab !== 'all') filtered = filtered.filter(m => (m.tags || []).includes(currentTab));
-    if (currentFilter !== 'all') filtered = filtered.filter(m => m.model_type === currentFilter);
-    if (q) filtered = filtered.filter(m =>
-      (m.name || '').toLowerCase().includes(q) ||
-      (m.description || '').toLowerCase().includes(q) ||
-      (TYPE_LABELS[m.model_type] || '').toLowerCase().includes(q)
-    );
-    filteredModels = filtered;
-    currentPage = 1;
-    renderPage(filteredModels, currentPage);
+    const q = (document.getElementById('modelSearch')?.value||'').toLowerCase().trim();
+    let f = allModels;
+    if (currentTab!=='all') f=f.filter(m=>(m.tags||[]).includes(currentTab));
+    if (currentFilter!=='all') f=f.filter(m=>m.model_type===currentFilter);
+    if (q) f=f.filter(m=>(m.name||'').toLowerCase().includes(q)||(m.description||'').toLowerCase().includes(q)||(TYPE_LABELS[m.model_type]||'').toLowerCase().includes(q));
+    filteredModels=f; currentPage=1; renderPage(f,1);
   }
 
   window.setTab = function(tab) {
-    currentTab = tab;
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      const active = btn.dataset.tab === tab;
-      btn.className = active
-        ? 'tab-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors bg-white dark:bg-navy-600 text-gray-900 dark:text-white shadow-sm'
-        : 'tab-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-700';
+    currentTab=tab;
+    document.querySelectorAll('.tab-btn').forEach(b=>{
+      const on=b.dataset.tab===tab;
+      b.className=on
+        ?'tab-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors bg-white dark:bg-navy-600 text-gray-900 dark:text-white shadow-sm'
+        :'tab-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200';
     });
     applyFilters();
   };
 
   window.filterModels = function(filter) {
-    currentFilter = filter;
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      const active = btn.dataset.filter === filter;
-      btn.classList.toggle('border-violet-500', active);
-      btn.classList.toggle('bg-violet-50', active);
-      btn.classList.toggle('dark:bg-violet-900/20', active);
-      btn.classList.toggle('text-violet-700', active);
-      btn.classList.toggle('dark:text-violet-300', active);
-      btn.classList.toggle('border-gray-200', !active);
-      btn.classList.toggle('dark:border-navy-600', !active);
-      btn.classList.toggle('text-gray-500', !active);
-      btn.classList.toggle('dark:text-gray-400', !active);
+    currentFilter=filter;
+    document.querySelectorAll('.filter-btn').forEach(b=>{
+      const on=b.dataset.filter===filter;
+      b.className=`filter-btn px-3 py-1 text-xs rounded-lg border-2 font-medium transition-colors ${
+        on ? 'border-violet-500 bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300'
+           : 'border-gray-200 dark:border-navy-600 text-gray-500 dark:text-gray-400 hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400'
+      }`;
     });
     applyFilters();
   };
 
   fetch('/api/models')
-    .then(r => r.json())
-    .then(models => {
+    .then(r=>r.json())
+    .then(models=>{
       document.getElementById('communityLoading').classList.add('hidden');
-      allModels = models;
-      filteredModels = models;
-      document.getElementById('statTotal').textContent = models.length;
-      document.getElementById('statDatasets').textContent = new Set(models.map(m => m.dataset_id)).size;
-      renderPage(filteredModels, currentPage);
+      allModels=models; filteredModels=models;
+      document.getElementById('statTotal').textContent=models.length;
+      document.getElementById('statDatasets').textContent=new Set(models.map(m=>m.dataset_id)).size;
+      renderPage(models,1);
     })
-    .catch(() => {
+    .catch(()=>{
       document.getElementById('communityLoading').classList.add('hidden');
       document.getElementById('communityEmpty').classList.remove('hidden');
     });
