@@ -183,14 +183,14 @@
     window.scrollTo({top:0,behavior:'smooth'});
   };
 
-  function applyFilters() {
+  window.applyFilters = function applyFilters() {
     const q = (document.getElementById('modelSearch')?.value||'').toLowerCase().trim();
     let f = allModels;
     if (currentTab!=='all') f=f.filter(m=>(m.tags||[]).includes(currentTab));
     if (currentFilter!=='all') f=f.filter(m=>m.model_type===currentFilter);
     if (q) f=f.filter(m=>(m.name||'').toLowerCase().includes(q)||(m.description||'').toLowerCase().includes(q)||(TYPE_LABELS[m.model_type]||'').toLowerCase().includes(q));
     filteredModels=f; currentPage=1; renderPage(f,1);
-  }
+  };
 
   window.setTab = function(tab) {
     currentTab=tab;
