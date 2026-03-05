@@ -364,32 +364,22 @@
         badge.textContent = models.length + ' modèle' + (models.length > 1 ? 's' : '');
         badge.classList.remove('hidden');
         const grid = document.getElementById('modelsGrid');
-        const top3 = models.slice(0, 3);
-        const rest = models.slice(3);
-        let html = `<div class="grid grid-cols-1 gap-4">${top3.map(renderModelCard).join('')}</div>`;
-        if (rest.length) {
-          html += `
-          <div id="modelsExtra" style="display:none;grid-template-columns:1fr;gap:1rem;margin-top:1rem;">${rest.map(renderModelCard).join('')}</div>
-          <div class="mt-4 pt-4 border-t border-gray-100 dark:border-navy-700 flex items-center justify-between">
-            <button id="modelsShowMore" onclick="toggleMoreModels()"
-              class="inline-flex items-center gap-2 text-sm font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors">
-              <svg id="modelsShowMoreIcon" class="w-4 h-4 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-              <span>Voir ${rest.length} modèle${rest.length > 1 ? 's' : ''} de plus</span>
-            </button>
-            <a href="/modelisation" class="inline-flex items-center gap-2 text-sm font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors">
-              Tous les modèles
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+        const hasMore = models.length > 3;
+        const cardsHtml = models.map(renderModelCard).join('');
+        const scrollStyle = hasMore
+          ? 'max-height:700px;overflow-y:auto;padding-right:4px;'
+          : '';
+        grid.innerHTML = `
+          <div style="${scrollStyle}">
+            <div style="display:grid;grid-template-columns:1fr;gap:1rem;">${cardsHtml}</div>
+          </div>
+          <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(107,114,128,0.2);text-align:right;">
+            <a href="/modelisation" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:#7c3aed;text-decoration:none;"
+               onmouseover="this.style.color='#6d28d9'" onmouseout="this.style.color='#7c3aed'">
+              Voir tous les modèles actuariels
+              <svg style="width:14px;height:14px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
             </a>
           </div>`;
-        } else {
-          html += `<div class="mt-4 pt-4 border-t border-gray-100 dark:border-navy-700 text-right">
-            <a href="/modelisation" class="inline-flex items-center gap-2 text-sm font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors">
-              Tous les modèles
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
-            </a>
-          </div>`;
-        }
-        grid.innerHTML = html;
         grid.classList.remove('hidden');
         document.getElementById('modelsEmpty').classList.add('hidden');
       })
@@ -404,18 +394,6 @@
 })();
 
 // ---- Modal logic (global scope for onclick handlers) ----
-
-function toggleMoreModels() {
-  const extra = document.getElementById('modelsExtra');
-  const btn   = document.getElementById('modelsShowMore');
-  const icon  = document.getElementById('modelsShowMoreIcon');
-  if (!extra) return;
-  const isHidden = extra.style.display === 'none';
-  extra.style.display = isHidden ? 'grid' : 'none';
-  icon.style.transform = isHidden ? 'rotate(180deg)' : '';
-  const n = extra.children.length;
-  btn.querySelector('span') && (btn.querySelector('span').textContent = isHidden ? 'Réduire' : `Voir ${n} modèle${n > 1 ? 's' : ''} de plus`);
-}
 
 function openModelModal() {
   const modal = document.getElementById('modelModal');
