@@ -75,6 +75,9 @@
   <!-- Liste modèles -->
   <div id="communityGrid" class="hidden"></div>
 
+  <!-- Pagination -->
+  <div id="communityPagination" class="hidden flex items-center justify-center gap-1 mt-6"></div>
+
   <!-- Empty state -->
   <div id="communityEmpty" class="hidden text-center py-12">
     <p class="text-gray-500 dark:text-gray-400 mb-1">Aucun modèle pour ce filtre.</p>
@@ -109,8 +112,11 @@
   };
 
   let allModels = [];
+  let filteredModels = [];
   let currentFilter = 'all';
   let currentTab = 'all';
+  let currentPage = 1;
+  const PAGE_SIZE = 20;
 
   function getDifficulty(model) {
     for (const k of ['niveau-1','niveau-2','niveau-3'])
@@ -155,27 +161,68 @@
     `;
   }
 
-  function renderGrid(models) {
+  function renderPage(models, page) {
     const grid  = document.getElementById('communityGrid');
     const empty = document.getElementById('communityEmpty');
+    const pag   = document.getElementById('communityPagination');
+
     if (!models.length) {
       grid.classList.add('hidden');
+      pag.classList.add('hidden');
       empty.classList.remove('hidden');
       return;
     }
     empty.classList.add('hidden');
 
-    // 2 colonnes, style liste HuggingFace
-    const mid   = Math.ceil(models.length / 2);
-    const left  = models.slice(0, mid);
-    const right = models.slice(mid);
+    const totalPages = Math.ceil(models.length / PAGE_SIZE);
+    const start = (page - 1) * PAGE_SIZE;
+    const page_models = models.slice(start, start + PAGE_SIZE);
 
-    const col = (items) =>
+    // 2 colonnes style HuggingFace
+    const mid   = Math.ceil(page_models.length / 2);
+    const left  = page_models.slice(0, mid);
+    const right = page_models.slice(mid);
+    const col   = (items) =>
       `<div class="divide-y divide-gray-100 dark:divide-navy-700 border border-gray-100 dark:border-navy-700 rounded-xl overflow-hidden">${items.map(renderRow).join('')}</div>`;
 
     grid.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${col(left)}${right.length ? col(right) : ''}</div>`;
     grid.classList.remove('hidden');
+
+    // Pagination
+    if (totalPages <= 1) { pag.classList.add('hidden'); return; }
+    pag.classList.remove('hidden');
+
+    const btn = (label, p, active = false, disabled = false) =>
+      `<button onclick="goToPage(${p})"
+        class="px-3 py-1.5 text-sm rounded-lg font-medium transition-colors
+          ${active   ? 'bg-violet-500 text-white'
+                     : disabled ? 'text-gray-300 dark:text-gray-600 cursor-default pointer-events-none'
+                                : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-navy-700'}"
+        ${disabled ? 'disabled' : ''}>
+        ${label}
+      </button>`;
+
+    let pages = '';
+    // Always show first, last, current ±1, with "..." gaps
+    const show = new Set([1, totalPages, page, page-1, page+1].filter(p => p >= 1 && p <= totalPages));
+    let prev = 0;
+    [...show].sort((a,b)=>a-b).forEach(p => {
+      if (prev && p - prev > 1) pages += `<span class="px-2 text-gray-400">…</span>`;
+      pages += btn(p, p, p === page);
+      prev = p;
+    });
+
+    pag.innerHTML =
+      btn('‹ Précédent', page - 1, false, page === 1) +
+      pages +
+      btn('Suivant ›', page + 1, false, page === totalPages);
   }
+
+  window.goToPage = function(p) {
+    currentPage = p;
+    renderPage(filteredModels, currentPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   function applyFilters() {
     const q = (document.getElementById('modelSearch')?.value || '').toLowerCase().trim();
@@ -187,7 +234,9 @@
       (m.description || '').toLowerCase().includes(q) ||
       (TYPE_LABELS[m.model_type] || '').toLowerCase().includes(q)
     );
-    renderGrid(filtered);
+    filteredModels = filtered;
+    currentPage = 1;
+    renderPage(filteredModels, currentPage);
   }
 
   window.setTab = function(tab) {
@@ -223,9 +272,10 @@
     .then(models => {
       document.getElementById('communityLoading').classList.add('hidden');
       allModels = models;
+      filteredModels = models;
       document.getElementById('statTotal').textContent = models.length;
       document.getElementById('statDatasets').textContent = new Set(models.map(m => m.dataset_id)).size;
-      renderGrid(models);
+      renderPage(filteredModels, currentPage);
     })
     .catch(() => {
       document.getElementById('communityLoading').classList.add('hidden');
