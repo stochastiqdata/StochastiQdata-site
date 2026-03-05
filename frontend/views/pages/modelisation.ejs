@@ -18,8 +18,8 @@
     </a>
   </div>
 
-  <!-- Onglets niveau + filtres type -->
-  <div class="flex flex-col gap-3 mb-6">
+  <!-- Filtres + search -->
+  <div class="flex flex-col gap-3 mb-5">
     <!-- Onglets difficulté -->
     <div class="flex gap-1 p-1 bg-gray-100 dark:bg-navy-800 rounded-xl w-fit">
       <button onclick="setTab('all')" data-tab="all"
@@ -39,8 +39,8 @@
         Avancé
       </button>
     </div>
-    <!-- Filtres type -->
-    <div class="flex flex-wrap gap-2">
+    <!-- Filtres type + search sur la même ligne -->
+    <div class="flex flex-wrap items-center gap-2">
       <button onclick="filterModels('all')" data-filter="all"
         class="filter-btn px-3 py-1 text-xs rounded-lg border font-medium transition-colors
                border-violet-500 bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-300">
@@ -54,49 +54,33 @@
         <%= label %>
       </button>
       <% }); %>
+      <!-- Search inline -->
+      <div class="relative ml-auto">
+        <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input id="modelSearch" type="text" placeholder="Rechercher…"
+          oninput="applyFilters()"
+          class="pl-8 pr-3 py-1.5 text-xs rounded-lg border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400 transition w-48">
+      </div>
     </div>
   </div>
 
-  <!-- Search bar -->
-  <div class="relative mb-4">
-    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-    <input id="modelSearch" type="text" placeholder="Rechercher un modèle…"
-      oninput="applyFilters()"
-      class="w-full pl-9 pr-4 py-2 text-sm rounded-xl border border-gray-200 dark:border-navy-600 bg-white dark:bg-navy-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400 transition">
-  </div>
-
   <!-- Loading -->
-  <div id="communityLoading" class="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 mb-6">
+  <div id="communityLoading" class="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 mb-4">
     <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
     </svg>
     Chargement des modèles…
   </div>
 
-  <!-- Sections modèles par niveau -->
-  <div id="communityGrid" class="hidden mb-10"></div>
+  <!-- Liste modèles -->
+  <div id="communityGrid" class="hidden"></div>
 
   <!-- Empty state -->
-  <div id="communityEmpty" class="hidden text-center py-16 mb-10">
-    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-violet-50 dark:bg-violet-900/20 flex items-center justify-center">
-      <svg class="w-8 h-8 text-violet-300 dark:text-violet-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
-        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-        <line x1="12" y1="19" x2="12" y2="22"/>
-      </svg>
-    </div>
-    <p class="text-gray-500 dark:text-gray-400 mb-1">Aucun modèle soumis pour ce filtre.</p>
-    <p class="text-sm text-gray-400 dark:text-gray-500">Ouvrez un dataset et soumettez le vôtre.</p>
-    <a href="/" class="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-violet-400 text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-colors">
+  <div id="communityEmpty" class="hidden text-center py-12">
+    <p class="text-gray-500 dark:text-gray-400 mb-1">Aucun modèle pour ce filtre.</p>
+    <a href="/" class="mt-3 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-violet-400 text-violet-600 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-colors">
       Parcourir les datasets →
     </a>
-  </div>
-
-  <!-- Démos visuelles -->
-  <div class="border-t border-gray-100 dark:border-navy-700 pt-8 mt-4">
-    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">Démos visuelles</h2>
-    <p class="text-sm text-gray-400 dark:text-gray-500 mb-6">Comportement graphique des modèles classiques.</p>
-    <%- include('../partials/modelisation/demos') %>
   </div>
 
 </div>
@@ -110,7 +94,7 @@
   };
   const TYPE_LABELS = {
     glm: 'GLM', xgboost: 'XGBoost', random_forest: 'Random Forest',
-    neural_network: 'Réseau de neurones', lightgbm: 'LightGBM', catboost: 'CatBoost',
+    neural_network: 'Neural Network', lightgbm: 'LightGBM', catboost: 'CatBoost',
     chain_ladder: 'Chain Ladder', bornhuetter_ferguson: 'Bornhuetter-Ferguson',
     cox: 'Cox', kaplan_meier: 'Kaplan-Meier', other: 'Autre'
   };
@@ -118,95 +102,53 @@
     gini: 'Gini', rmse: 'RMSE', mae: 'MAE', aic: 'AIC', bic: 'BIC',
     r2: 'R²', log_loss: 'Log Loss', auc: 'AUC', accuracy: 'Accuracy', f1_score: 'F1'
   };
-
-  let allModels = [];
-  let currentFilter = 'all';
-  let currentTab = 'all';
-
   const DIFF_BADGE = {
     'niveau-1': { label: 'Débutant',      cls: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' },
     'niveau-2': { label: 'Intermédiaire', cls: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' },
     'niveau-3': { label: 'Avancé',        cls: 'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400' },
   };
 
+  let allModels = [];
+  let currentFilter = 'all';
+  let currentTab = 'all';
+
   function getDifficulty(model) {
-    const tags = model.tags || [];
-    for (const k of ['niveau-1','niveau-2','niveau-3']) {
-      if (tags.includes(k)) return k;
-    }
+    for (const k of ['niveau-1','niveau-2','niveau-3'])
+      if ((model.tags || []).includes(k)) return k;
     return null;
   }
 
   function formatMetricValue(k, v) {
-    if (typeof v === 'number') {
-      return ['gini', 'r2', 'auc', 'accuracy', 'f1_score'].includes(k)
+    if (typeof v === 'number')
+      return ['gini','r2','auc','accuracy','f1_score'].includes(k)
         ? (v * 100).toFixed(1) + '%' : v.toFixed(4);
-    }
     return String(v);
   }
 
-  function renderCard(model) {
-    const icon = TYPE_ICONS[model.model_type] || '🔬';
+  function renderRow(model) {
+    const icon      = TYPE_ICONS[model.model_type] || '🔬';
     const typeLabel = TYPE_LABELS[model.model_type] || model.model_type;
-    const desc = (model.description || '').replace(/^(Débutant|Intermédiaire|Avancé)\s*·\s*/i, '');
-    const diff = getDifficulty(model);
+    const diff      = getDifficulty(model);
     const diffBadge = diff
-      ? `<span class="px-2 py-0.5 text-xs rounded-full font-medium ${DIFF_BADGE[diff].cls}">${DIFF_BADGE[diff].label}</span>`
+      ? `<span class="px-2 py-0.5 text-xs rounded-full font-medium shrink-0 ${DIFF_BADGE[diff].cls}">${DIFF_BADGE[diff].label}</span>`
       : '';
     const metrics = Object.entries(model.metrics || {}).slice(0, 2)
-      .map(([k,v]) => `<span class="text-xs text-gray-400">${METRIC_LABELS[k]||k}: <strong class="text-gray-700 dark:text-gray-200">${formatMetricValue(k,v)}</strong></span>`)
-      .join('<span class="mx-1 text-gray-300 dark:text-navy-600">·</span>');
-    const familyBadge = model.family
-      ? `<span class="px-2 py-0.5 text-xs rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300">${model.family}</span>`
-      : '';
+      .map(([k,v]) => `<span class="text-xs text-gray-400 dark:text-gray-500">${METRIC_LABELS[k]||k}: <span class="text-gray-600 dark:text-gray-300 font-medium">${formatMetricValue(k,v)}</span></span>`)
+      .join('<span class="text-gray-300 dark:text-gray-600 mx-1">·</span>');
 
     return `
       <a href="/models/${model.id}"
-         class="block card p-4 hover:border-violet-400 dark:hover:border-violet-600 hover:shadow-md transition-all group border border-transparent">
-        <div class="flex items-start gap-3 mb-2">
-          <span class="text-xl shrink-0 mt-0.5">${icon}</span>
-          <div class="min-w-0 flex-1">
-            <p class="font-semibold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors truncate">${model.name}</p>
-            <p class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">${typeLabel}</p>
-          </div>
-          <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-violet-400 shrink-0 mt-1 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
-        </div>
-        ${desc ? `<p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mb-2">${desc}</p>` : ''}
-        <div class="flex items-center justify-between gap-2 flex-wrap">
-          <div class="flex flex-wrap items-center gap-1.5">
-            ${diffBadge}${familyBadge}
-            ${metrics ? `<span class="text-xs text-gray-400">${metrics}</span>` : ''}
-          </div>
-          ${model.notebook_url
-            ? `<a href="${model.notebook_url}" target="_blank" rel="noopener" onclick="event.stopPropagation()"
-                 class="text-xs text-violet-500 hover:text-violet-600 font-medium shrink-0">Source →</a>`
-            : ''}
-        </div>
-      </a>
-    `;
-  }
-
-  function renderListItem(model) {
-    const icon = TYPE_ICONS[model.model_type] || '🔬';
-    const typeLabel = TYPE_LABELS[model.model_type] || model.model_type;
-    const diff = getDifficulty(model);
-    const diffBadge = diff
-      ? `<span class="px-1.5 py-0.5 text-xs rounded-full font-medium ${DIFF_BADGE[diff].cls}">${DIFF_BADGE[diff].label}</span>`
-      : '';
-    return `
-      <a href="/models/${model.id}"
-         class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-navy-700 transition-colors group">
-        <span class="text-base shrink-0">${icon}</span>
+         class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-navy-700/60 transition-colors group">
+        <span class="text-lg shrink-0 w-6 text-center">${icon}</span>
         <div class="min-w-0 flex-1">
-          <span class="text-sm font-medium text-gray-800 dark:text-gray-200 group-hover:text-violet-600 dark:group-hover:text-violet-400 truncate block">${model.name}</span>
+          <span class="text-sm font-mono font-semibold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors truncate block">${model.name}</span>
+          <div class="flex items-center gap-2 mt-0.5 flex-wrap">
+            <span class="text-xs text-gray-400 dark:text-gray-500">${typeLabel}</span>
+            ${metrics ? `<span class="text-gray-300 dark:text-gray-600">·</span>${metrics}` : ''}
+          </div>
         </div>
         <div class="flex items-center gap-2 shrink-0">
           ${diffBadge}
-          <span class="text-xs text-gray-400 dark:text-gray-500">${typeLabel}</span>
-          ${model.notebook_url
-            ? `<a href="${model.notebook_url}" target="_blank" rel="noopener" onclick="event.stopPropagation()"
-                 class="text-xs text-violet-500 hover:text-violet-600 font-medium">Source →</a>`
-            : ''}
           <svg class="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 group-hover:text-violet-400 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
         </div>
       </a>
@@ -214,7 +156,7 @@
   }
 
   function renderGrid(models) {
-    const grid = document.getElementById('communityGrid');
+    const grid  = document.getElementById('communityGrid');
     const empty = document.getElementById('communityEmpty');
     if (!models.length) {
       grid.classList.add('hidden');
@@ -222,13 +164,16 @@
       return;
     }
     empty.classList.add('hidden');
-    const top = models.slice(0, 6);
-    const rest = models.slice(6);
-    let html = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">${top.map(renderCard).join('')}</div>`;
-    if (rest.length) {
-      html += `<div class="border border-gray-100 dark:border-navy-700 rounded-xl overflow-hidden divide-y divide-gray-100 dark:divide-navy-700">${rest.map(renderListItem).join('')}</div>`;
-    }
-    grid.innerHTML = html;
+
+    // 2 colonnes, style liste HuggingFace
+    const mid   = Math.ceil(models.length / 2);
+    const left  = models.slice(0, mid);
+    const right = models.slice(mid);
+
+    const col = (items) =>
+      `<div class="divide-y divide-gray-100 dark:divide-navy-700 border border-gray-100 dark:border-navy-700 rounded-xl overflow-hidden">${items.map(renderRow).join('')}</div>`;
+
+    grid.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${col(left)}${right.length ? col(right) : ''}</div>`;
     grid.classList.remove('hidden');
   }
 
@@ -240,7 +185,7 @@
     if (q) filtered = filtered.filter(m =>
       (m.name || '').toLowerCase().includes(q) ||
       (m.description || '').toLowerCase().includes(q) ||
-      (TYPE_LABELS[m.model_type] || m.model_type || '').toLowerCase().includes(q)
+      (TYPE_LABELS[m.model_type] || '').toLowerCase().includes(q)
     );
     renderGrid(filtered);
   }
@@ -278,11 +223,8 @@
     .then(models => {
       document.getElementById('communityLoading').classList.add('hidden');
       allModels = models;
-
-      // Stats inline
       document.getElementById('statTotal').textContent = models.length;
       document.getElementById('statDatasets').textContent = new Set(models.map(m => m.dataset_id)).size;
-
       renderGrid(models);
     })
     .catch(() => {
