@@ -247,7 +247,30 @@ app.get('/modeling/preview/:type', (req, res) => {
     sante: { name: 'MEPS Health Expenditure', description: 'Dépenses de santé individuelles aux États-Unis — Medical Expenditure Panel Survey.', global_score: 79, source: 'soa', tags: ['sante'], best_fit_models: ['tweedie', 'xgboost'], row_count: 31880, column_count: 22, file_size_mb: 18, review_count: 0, source_url: null, data_dictionary_url: null }
   };
   const dataset = mockDatasets[type] || mockDatasets.iard;
-  res.render('pages/modeling', { dataset, TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
+  const mockNotebooks = {
+    iard: [
+      { title: 'GLM Poisson — Tarification fréquence freMTPL2freq', platform: 'Kaggle', author: 'floser', url: 'https://www.kaggle.com/code/floser/glm-neural-nets-and-xgboost-for-insurance-pricing' },
+      { title: 'Tweedie Regression — Pure Premium Insurance Claims', platform: 'Kaggle', author: 'captcalculator', url: 'https://www.kaggle.com/code/captcalculator/tweedie-regression-insurance-claims' },
+      { title: 'XGBoost vs GLM — French Motor Dataset Benchmark', platform: 'GitHub', author: 'actuarial-data-science', url: 'https://github.com/actuarial-data-science/Tutorials/tree/master/2%20-%20French%20Motor%20Third-Party%20Liability' }
+    ],
+    reserving: [
+      { title: 'Chain-Ladder Reserving with CAS Triangle Data', platform: 'GitHub', author: 'mages', url: 'https://github.com/mages/ChainLadder' },
+      { title: 'Bornhuetter-Ferguson — Loss Reserve Estimation', platform: 'Kaggle', author: 'reserving_actuaire', url: 'https://www.kaggle.com/code/stochastiqdata/bornhuetter-ferguson-reserve' }
+    ],
+    vie: [
+      { title: 'Kaplan-Meier & Cox — Human Mortality Database', platform: 'GitHub', author: 'lifelines', url: 'https://github.com/CamDavidsonPilon/lifelines' },
+      { title: 'Lee-Carter Mortality Forecast — HMD Data', platform: 'Kaggle', author: 'mortalitymodels', url: 'https://www.kaggle.com/code/stochastiqdata/lee-carter-mortality' }
+    ],
+    fraude: [
+      { title: 'Fraud Detection — XGBoost + SHAP Explainability', platform: 'Kaggle', author: 'anokas', url: 'https://www.kaggle.com/code/anokas/fraud-detection-eda' },
+      { title: 'Logistic Regression Baseline — Vehicle Claim Fraud', platform: 'Kaggle', author: 'fraud_detect', url: 'https://www.kaggle.com/code/stochastiqdata/logistic-fraud-baseline' }
+    ],
+    sante: [
+      { title: 'Tweedie GLM — Health Expenditure Prediction (MEPS)', platform: 'GitHub', author: 'sklearn-examples', url: 'https://scikit-learn.org/stable/auto_examples/linear_model/plot_tweedie_regression_insurance_claims.html' }
+    ]
+  };
+  const notebooks = mockNotebooks[type] || mockNotebooks.iard;
+  res.render('pages/modeling', { dataset, notebooks, TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
 });
 
 // Modeling specific dataset
@@ -256,6 +279,7 @@ app.get('/modeling/:id', async (req, res, next) => {
     const response = await axios.get(`${API_URL}/datasets/${req.params.id}`);
     res.render('pages/modeling', {
       dataset: response.data,
+      notebooks: [],
       TAG_LABELS,
       SOURCE_LABELS,
       MODEL_LABELS
