@@ -123,37 +123,65 @@
     @apply bg-gray-500/20 text-gray-400;
   }
 
-  /* Tags métier - style pilule */
+  /* Tags métier - style pilule compact */
   .tag {
-    @apply inline-flex items-center rounded-lg px-3 py-1.5 text-xs font-semibold transition-all;
+    @apply inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold transition-all;
   }
 
   .tag-iard {
-    @apply bg-orange-500 text-white;
+    @apply bg-orange-100 text-orange-700;
+  }
+  html.dark .tag-iard {
+    @apply bg-orange-500/20 text-orange-400;
   }
 
   .tag-sante {
-    @apply bg-teal-500 text-white;
+    @apply bg-teal-100 text-teal-700;
+  }
+  html.dark .tag-sante {
+    @apply bg-teal-500/20 text-teal-400;
   }
 
   .tag-vie {
-    @apply bg-blue-500 text-white;
+    @apply bg-blue-100 text-blue-700;
+  }
+  html.dark .tag-vie {
+    @apply bg-blue-500/20 text-blue-400;
   }
 
-  .tag-glm, .tag-pricing {
-    @apply bg-violet-500 text-white;
+  .tag-glm {
+    @apply bg-violet-100 text-violet-700;
+  }
+  html.dark .tag-glm {
+    @apply bg-violet-500/20 text-violet-400;
+  }
+
+  .tag-pricing {
+    @apply bg-purple-100 text-purple-700;
+  }
+  html.dark .tag-pricing {
+    @apply bg-purple-500/20 text-purple-400;
   }
 
   .tag-reserving {
-    @apply bg-cyan-500 text-white;
+    @apply bg-cyan-100 text-cyan-700;
+  }
+  html.dark .tag-reserving {
+    @apply bg-cyan-500/20 text-cyan-400;
   }
 
   .tag-fraude {
-    @apply bg-red-500 text-white;
+    @apply bg-red-100 text-red-700;
+  }
+  html.dark .tag-fraude {
+    @apply bg-red-500/20 text-red-400;
   }
 
   .tag-machine_learning {
-    @apply bg-pink-500 text-white;
+    @apply bg-pink-100 text-pink-700;
+  }
+  html.dark .tag-machine_learning {
+    @apply bg-pink-500/20 text-pink-400;
   }
 
   /* Input de recherche */

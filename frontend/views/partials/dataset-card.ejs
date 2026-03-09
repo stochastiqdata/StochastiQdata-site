@@ -1,113 +1,114 @@
 <%
-  // Fonction pour calculer la couleur du score
   function getScoreColor(score) {
-    if (score >= 70) return '#14B8A6'; // Teal
-    if (score >= 50) return '#3B82F6'; // Bleu
-    if (score >= 30) return '#EAB308'; // Jaune
-    return '#EF4444'; // Rouge
+    if (score >= 70) return '#14B8A6';
+    if (score >= 50) return '#3B82F6';
+    if (score >= 30) return '#EAB308';
+    return '#EF4444';
   }
 
-  // Calcul du pourcentage pour le cercle
   const score = dataset.global_score || 0;
-  const circumference = 2 * Math.PI * 36; // rayon = 36
-  const strokeDasharray = circumference;
-  const strokeDashoffset = circumference - (score / 100) * circumference;
   const scoreColor = getScoreColor(score);
 
-  // Calcul des jours depuis la mise à jour
   const updatedAt = dataset.data_updated_at ? new Date(dataset.data_updated_at) : new Date(dataset.created_at);
   const daysAgo = Math.floor((new Date() - updatedAt) / (1000 * 60 * 60 * 24));
+  const timeLabel = daysAgo === 0 ? "Aujourd'hui" : daysAgo < 30 ? `Il y a ${daysAgo}j` : `Il y a ${Math.floor(daysAgo/30)}mois`;
 
-  // Modèle recommandé
   const recommendedModel = dataset.best_fit_models && dataset.best_fit_models.length > 0
     ? MODEL_LABELS[dataset.best_fit_models[0]] || dataset.best_fit_models[0]
-    : 'N/A';
+    : null;
+
+  // Accent color based on main domain tag
+  const domainTag = (dataset.tags || []).find(t => ['iard','sante','vie','cat'].includes(t));
+  const accentColors = { iard: '#f97316', sante: '#14b8a6', vie: '#3b82f6', cat: '#8b5cf6' };
+  const accentColor = accentColors[domainTag] || '#8b5cf6';
 %>
 
-<article class="card p-2.5 flex flex-col cursor-pointer group hover:scale-[1.02] transition-all duration-300" onclick="window.location.href='/modeling/<%= dataset.id %>'">
+<article
+  class="card flex flex-col cursor-pointer group hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200"
+  style="border-left: 3px solid <%= accentColor %>20; padding: 14px 14px 12px;"
+  onclick="window.location.href='/modeling/<%= dataset.id %>'"
+>
 
-  <!-- Header: label + score badge -->
-  <div class="flex items-center justify-between mb-1">
-    <span class="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide">Dataset</span>
-    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style="background: <%= scoreColor %>22; color: <%= scoreColor %>">
-      <%= score %><span class="font-normal opacity-70">/100</span>
+  <!-- Header: type label + score -->
+  <div class="flex items-center justify-between mb-2">
+    <div class="flex items-center gap-1.5">
+      <span class="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Dataset</span>
+      <% if (dataset.source && dataset.source !== 'other') { %>
+        <span class="badge badge-<%= dataset.source %>" style="padding: 2px 6px; font-size: 9px; gap: 3px;">
+          <% if (dataset.source === 'kaggle') { %>
+            <svg class="w-2 h-2" viewBox="0 0 24 24" fill="currentColor"><path d="M18.825 23.859c-.022.092-.117.141-.281.141h-3.139c-.187 0-.351-.082-.492-.248l-5.178-6.589-1.448 1.374v5.111c0 .235-.117.352-.351.352H5.505c-.236 0-.354-.117-.354-.352V.353c0-.233.118-.353.354-.353h2.431c.234 0 .351.12.351.353v14.343l6.203-6.272c.165-.165.33-.246.495-.246h3.239c.144 0 .236.06.285.18.046.149.034.255-.036.315l-6.555 6.344 6.836 8.507c.095.104.117.208.071.358z"/></svg>
+          <% } %>
+          <%= SOURCE_LABELS[dataset.source] || dataset.source %>
+        </span>
+      <% } %>
+    </div>
+    <!-- Score pill -->
+    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full" style="background: <%= scoreColor %>18; color: <%= scoreColor %>; border: 1px solid <%= scoreColor %>40;">
+      <%= score %><span class="font-normal opacity-60">/100</span>
     </span>
   </div>
 
   <!-- Titre -->
-  <h3 class="text-xs font-bold text-gray-900 dark:text-white mb-1.5 group-hover:text-primary-500 transition-colors line-clamp-2 leading-snug">
+  <h3 class="text-[13px] font-bold text-gray-900 dark:text-white mb-2.5 group-hover:text-primary-500 transition-colors line-clamp-2 leading-snug">
     <%= dataset.name %>
   </h3>
 
-  <!-- Source badges -->
-  <div class="flex flex-wrap items-center gap-0.5 mb-1.5">
-    <span class="badge badge-<%= dataset.source %>">
-      <% if (dataset.source === 'kaggle') { %>
-        <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.825 23.859c-.022.092-.117.141-.281.141h-3.139c-.187 0-.351-.082-.492-.248l-5.178-6.589-1.448 1.374v5.111c0 .235-.117.352-.351.352H5.505c-.236 0-.354-.117-.354-.352V.353c0-.233.118-.353.354-.353h2.431c.234 0 .351.12.351.353v14.343l6.203-6.272c.165-.165.33-.246.495-.246h3.239c.144 0 .236.06.285.18.046.149.034.255-.036.315l-6.555 6.344 6.836 8.507c.095.104.117.208.071.358z"/></svg>
-      <% } else if (dataset.source === 'insee') { %>
-        <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
-      <% } %>
-      <%= SOURCE_LABELS[dataset.source] || dataset.source %>
-    </span>
-    <% if (dataset.tags && dataset.tags.includes('iard')) { %>
-      <span class="badge badge-iard">
-        <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
-        IARD
-      </span>
-    <% } %>
+  <!-- Tags: domaine + méthodes, tous en une ligne compacte -->
+  <div class="flex flex-wrap gap-1 mb-3">
     <% if (dataset.file_url) { %>
-      <span class="badge badge-opendata">
-        <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Disponible
+      <span class="tag" style="background:#14b8a610; color:#0d9488; font-size:9px; padding: 2px 6px;">
+        <svg class="w-2 h-2 mr-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Dispo
       </span>
     <% } %>
-  </div>
-
-  <!-- Tags métier -->
-  <div class="flex flex-wrap gap-0.5 mb-1.5">
-    <% (dataset.tags || []).slice(0, 3).forEach(tag => { %>
+    <% (dataset.tags || []).slice(0, 4).forEach(tag => { %>
       <span class="tag tag-<%= tag %>"><%= TAG_LABELS[tag] || tag %></span>
     <% }); %>
   </div>
 
-  <!-- Infos + Recommandé -->
-  <div class="flex items-center justify-between text-[10px] text-gray-500 dark:text-gray-400 mt-auto mb-1.5">
-    <div class="flex items-center gap-1.5">
-      <span><%= dataset.review_count || 0 %> avis</span>
-      <% if (dataset.file_url) { %><span><%= (dataset.download_count || 0).toLocaleString('fr-FR') %> DL</span><% } %>
-      <span><%= daysAgo === 0 ? 'Aujourd\'hui' : 'Il y a ' + daysAgo + 'j' %></span>
-    </div>
-    <span class="text-primary-500 font-semibold truncate ml-1"><%= recommendedModel %></span>
+  <!-- Stats ligne -->
+  <div class="flex items-center gap-2 text-[10px] text-gray-400 dark:text-gray-500 mb-3 mt-auto">
+    <span class="flex items-center gap-0.5">
+      <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      <%= dataset.review_count || 0 %> avis
+    </span>
+    <% if (dataset.file_url) { %>
+      <span class="flex items-center gap-0.5">
+        <svg class="w-2.5 h-2.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <%= (dataset.download_count || 0).toLocaleString('fr-FR') %> DL
+      </span>
+    <% } %>
+    <span class="ml-auto"><%= timeLabel %></span>
+    <% if (recommendedModel) { %>
+      <span class="text-primary-400 font-semibold truncate max-w-[60px]" title="<%= recommendedModel %>"><%= recommendedModel %></span>
+    <% } %>
   </div>
 
-  <!-- Bouton principal -->
-  <% if (dataset.file_url) { %>
-  <button onclick="event.stopPropagation(); cardTrackAndDownload('<%= dataset.id %>', '<%= dataset.file_url %>', this)"
-     class="flex items-center justify-center gap-1 w-full py-1.5 px-2.5 bg-gradient-to-r from-primary-500 to-teal-500 hover:from-primary-600 hover:to-teal-600 text-white text-xs font-semibold rounded-lg transition-all duration-300 shadow hover:shadow-md">
-    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-      <polyline points="7 10 12 15 17 10"/>
-      <line x1="12" y1="15" x2="12" y2="3"/>
-    </svg>
-    Télécharger<span class="opacity-70"><%= dataset.file_size_mb ? ' · ' + dataset.file_size_mb + ' MB' : '' %></span>
-  </button>
-  <% } else { %>
-  <a href="/modeling/<%= dataset.id %>"
-     class="flex items-center justify-center gap-1 w-full py-1.5 px-2.5 bg-gray-100 dark:bg-navy-700 hover:bg-gray-200 dark:hover:bg-navy-600 text-gray-700 dark:text-gray-200 text-xs font-semibold rounded-lg transition-all duration-300"
-     onclick="event.stopPropagation()">
-    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-      <polyline points="14 2 14 8 20 8"/>
-    </svg>
-    Voir la fiche
-  </a>
-  <% } %>
-
-  <!-- Actions secondaires (hover) -->
-  <div class="flex gap-1 mt-1.5 pt-1.5 border-t border-gray-100 dark:border-navy-700 overflow-hidden max-h-0 group-hover:max-h-10 transition-all duration-200">
-    <a href="/modeling/<%= dataset.id %>" class="btn-secondary flex-1 text-center text-[10px] py-1" onclick="event.stopPropagation()">Voir détails</a>
-    <button class="btn-primary flex-1 text-[10px] py-1" onclick="event.stopPropagation(); openRatingModal('<%= dataset.id %>')">Noter</button>
+  <!-- Actions toujours visibles -->
+  <div class="flex gap-1.5">
+    <% if (dataset.file_url) { %>
+      <button
+        onclick="event.stopPropagation(); cardTrackAndDownload('<%= dataset.id %>', '<%= dataset.file_url %>', this)"
+        class="flex-1 flex items-center justify-center gap-1 py-1.5 bg-gradient-to-r from-primary-500 to-teal-500 hover:from-primary-600 hover:to-teal-600 text-white text-[11px] font-semibold rounded-lg transition-all shadow-sm hover:shadow">
+        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <% if (dataset.file_size_mb) { %>Télécharger · <%= dataset.file_size_mb %> MB<% } else { %>Télécharger<% } %>
+      </button>
+    <% } else { %>
+      <a href="/modeling/<%= dataset.id %>"
+        class="flex-1 flex items-center justify-center gap-1 py-1.5 bg-gray-100 dark:bg-navy-700 hover:bg-gray-200 dark:hover:bg-navy-600 text-gray-600 dark:text-gray-300 text-[11px] font-semibold rounded-lg transition-all"
+        onclick="event.stopPropagation()">
+        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Voir la fiche
+      </a>
+    <% } %>
+    <button
+      onclick="event.stopPropagation(); openRatingModal('<%= dataset.id %>')"
+      class="px-3 py-1.5 bg-gray-100 dark:bg-navy-700 hover:bg-primary-50 dark:hover:bg-primary-500/10 text-gray-500 dark:text-gray-400 hover:text-primary-500 text-[11px] font-semibold rounded-lg transition-all"
+      title="Noter ce dataset">
+      <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+    </button>
   </div>
+
 </article>
 
 <script>
@@ -118,14 +119,9 @@ if (!window.cardTrackAndDownload) {
       const data = await res.json();
       const url = data.file_url || fallbackUrl;
       const a = document.createElement('a');
-      a.href = url;
-      a.download = '';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    } catch {
-      window.location.href = fallbackUrl;
-    }
+      a.href = url; a.download = '';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    } catch { window.location.href = fallbackUrl; }
   };
 }
 </script>
