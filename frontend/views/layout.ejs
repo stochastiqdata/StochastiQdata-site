@@ -81,5 +81,26 @@
   <!-- Authentification supprimée - Sera réimplémentée -->
 
   <script src="/js/main.js"></script>
+
+  <!-- ── Transitions de page fluides ── -->
+  <div id="pt-overlay"></div>
+  <script>
+  (function () {
+    var ov = document.getElementById('pt-overlay');
+    document.addEventListener('DOMContentLoaded', function () {
+      ov.classList.add('pt-out');
+    });
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest('a[href]');
+      if (!a) return;
+      var href = a.getAttribute('href');
+      if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto') || a.target === '_blank') return;
+      e.preventDefault();
+      ov.classList.remove('pt-out');
+      ov.classList.add('pt-in');
+      setTimeout(function () { window.location.href = href; }, 180);
+    });
+  })();
+  </script>
 </body>
 </html>
