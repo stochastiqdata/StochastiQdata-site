@@ -95,6 +95,11 @@ app.use(express.static(path.join(__dirname, 'public'), {
   etag: true
 }));
 
+// Favicon.ico — sert le logo PNG comme favicon (pour Google Search)
+app.get('/favicon.ico', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'images', 'logo.png'));
+});
+
 // Common data middleware
 const SITE_URL = process.env.SITE_URL || 'https://www.stochastiqdata.com';
 app.use((req, res, next) => {
@@ -121,7 +126,7 @@ app.use((req, res, next) => {
     '@type': 'WebSite',
     name: 'StochastiQdata',
     url: SITE_URL,
-    description: 'Plateforme de référence pour les professionnels de l\'assurance et de la banque : actuaires, data scientists, analystes risque, souscripteurs.',
+    description: 'Plateforme de référence pour les data scientists, data analysts, data engineers, ML engineers et BI analysts travaillant avec des données d\'assurance et de banque.',
     potentialAction: {
       '@type': 'SearchAction',
       target: { '@type': 'EntryPoint', urlTemplate: SITE_URL + '/?search={search_term_string}' },
@@ -203,8 +208,8 @@ app.get('/', async (req, res, next) => {
       totalPages: Math.ceil((response.data.total || 0) / 12),
       filters: { source, tags, search, sortBy, modelingTypes },
       TAG_LABELS, SOURCE_LABELS, MODEL_LABELS, MODELING_TYPE_LABELS,
-      pageTitle: 'Datasets Assurance & Banque',
-      pageDescription: 'Explorez et téléchargez des datasets qualifiés pour la modélisation en assurance et en banque : tarification IARD, provisionnement, détection de fraude, risque de crédit, mortalité.',
+      pageTitle: 'Datasets pour Data Scientists, Analysts & ML Engineers',
+      pageDescription: 'Datasets qualifiés pour la data science en assurance et en banque : tarification, fraude, crédit, provisionnement, mortalité. Pour data scientists, analysts, ML engineers et BI.',
     });
   } catch (error) {
     logger.error('Dashboard error', { error: error.message, stack: error.stack });
@@ -212,8 +217,8 @@ app.get('/', async (req, res, next) => {
       datasets: [], total: 0, page: 1, totalPages: 0, filters: {},
       TAG_LABELS, SOURCE_LABELS, MODEL_LABELS, MODELING_TYPE_LABELS,
       error: 'Impossible de charger les datasets',
-      pageTitle: 'Datasets Assurance & Banque',
-      pageDescription: 'Plateforme de datasets pour les professionnels de l\'assurance et de la banque.',
+      pageTitle: 'Datasets pour Data Scientists, Analysts & ML Engineers',
+      pageDescription: 'Plateforme de datasets assurance et banque pour data scientists, analysts, ML engineers et BI analysts.',
     });
   }
 });
@@ -223,7 +228,7 @@ app.get('/modeling', (req, res) => {
   res.render('pages/modelisation', {
     TAG_LABELS, SOURCE_LABELS, MODEL_LABELS,
     pageTitle: 'Modélisation & Machine Learning',
-    pageDescription: 'Workflows de modélisation pour l\'assurance et la banque : GLM, XGBoost, réseaux de neurones, séries temporelles. Benchmarks et comparatifs pour actuaires et data scientists.',
+    pageDescription: 'Workflows de modélisation pour l\'assurance et la banque : GLM, XGBoost, réseaux de neurones, séries temporelles. Benchmarks et comparatifs pour data scientists, ML engineers et analystes.',
   });
 });
 
@@ -232,7 +237,7 @@ app.get('/modelisation', (req, res) => {
   res.render('pages/modelisation', {
     TAG_LABELS, SOURCE_LABELS, MODEL_LABELS,
     pageTitle: 'Modélisation & Machine Learning',
-    pageDescription: 'Workflows de modélisation pour l\'assurance et la banque : GLM, XGBoost, réseaux de neurones, séries temporelles. Benchmarks et comparatifs pour actuaires et data scientists.',
+    pageDescription: 'Workflows de modélisation pour l\'assurance et la banque : GLM, XGBoost, réseaux de neurones, séries temporelles. Benchmarks et comparatifs pour data scientists, ML engineers et analystes.',
     canonicalPath: '/modeling',
   });
 });
