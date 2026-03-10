@@ -23,20 +23,20 @@
   <%/* ── Onglets ── */%>
   <div class="mb-4">
     <div class="flex gap-1 p-1 bg-gray-100 dark:bg-navy-800 rounded-xl w-fit overflow-x-auto">
-      <button onclick="switchTab('exploration')" id="tab-exploration"
-        class="tab-page-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap bg-white dark:bg-navy-600 text-gray-900 dark:text-white shadow-sm">
+      <button type="button" onclick="switchTab('exploration')" id="tab-exploration" data-active="true"
+        class="tab-page-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap cursor-pointer">
         Exploration
       </button>
-      <button onclick="switchTab('modelisation')" id="tab-modelisation"
-        class="tab-page-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+      <button type="button" onclick="switchTab('modelisation')" id="tab-modelisation"
+        class="tab-page-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap cursor-pointer">
         Modélisation
       </button>
-      <button onclick="switchTab('communaute')" id="tab-communaute"
-        class="tab-page-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+      <button type="button" onclick="switchTab('communaute')" id="tab-communaute"
+        class="tab-page-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap cursor-pointer">
         Communauté
       </button>
-      <button onclick="switchTab('docs')" id="tab-docs"
-        class="tab-page-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+      <button type="button" onclick="switchTab('docs')" id="tab-docs"
+        class="tab-page-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap cursor-pointer">
         Documentation
       </button>
     </div>
@@ -84,12 +84,10 @@ function switchTab(name) {
     const btn   = document.getElementById('tab-' + p);
     if (p === name) {
       panel.classList.remove('hidden');
-      btn.classList.add('bg-white', 'dark:bg-navy-600', 'text-gray-900', 'dark:text-white', 'shadow-sm');
-      btn.classList.remove('text-gray-500', 'dark:text-gray-400');
+      btn.setAttribute('data-active', 'true');
     } else {
       panel.classList.add('hidden');
-      btn.classList.remove('bg-white', 'dark:bg-navy-600', 'text-gray-900', 'dark:text-white', 'shadow-sm');
-      btn.classList.add('text-gray-500', 'dark:text-gray-400');
+      btn.removeAttribute('data-active');
     }
   });
 }

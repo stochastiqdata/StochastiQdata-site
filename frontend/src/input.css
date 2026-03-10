@@ -272,6 +272,15 @@
       #0f172a;
   }
 
+  /* Onglets de page (modeling, etc.) */
+  .tab-page-btn {
+    @apply text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200;
+  }
+
+  .tab-page-btn[data-active="true"] {
+    @apply bg-white dark:bg-navy-600 text-gray-900 dark:text-white shadow-sm;
+  }
+
   /* Cercle de score */
   .score-circle {
     @apply relative inline-flex items-center justify-center;
