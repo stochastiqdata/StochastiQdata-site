@@ -95,9 +95,10 @@ app.use(express.static(path.join(__dirname, 'public'), {
   etag: true
 }));
 
-// Favicon.ico — sert le logo PNG comme favicon (pour Google Search)
+// Favicon — sert le SVG cube (logo réel)
 app.get('/favicon.ico', (_req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'images', 'logo.png'));
+  res.setHeader('Content-Type', 'image/svg+xml');
+  res.sendFile(path.join(__dirname, 'public', 'favicon.svg'));
 });
 
 // Common data middleware
