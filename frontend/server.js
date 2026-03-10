@@ -126,7 +126,7 @@ app.use((req, res, next) => {
     '@type': 'WebSite',
     name: 'StochastiQdata',
     url: SITE_URL,
-    description: 'Plateforme de référence pour les data scientists, data analysts, data engineers, ML engineers et BI analysts travaillant avec des données d\'assurance et de banque.',
+    description: 'Plateforme de modélisation et visualisation de données assurance & banque — datasets qualifiés, modèles de référence, notebooks et benchmarks.',
     potentialAction: {
       '@type': 'SearchAction',
       target: { '@type': 'EntryPoint', urlTemplate: SITE_URL + '/?search={search_term_string}' },
@@ -208,8 +208,8 @@ app.get('/', async (req, res, next) => {
       totalPages: Math.ceil((response.data.total || 0) / 12),
       filters: { source, tags, search, sortBy, modelingTypes },
       TAG_LABELS, SOURCE_LABELS, MODEL_LABELS, MODELING_TYPE_LABELS,
-      pageTitle: 'Datasets pour Data Scientists, Analysts & ML Engineers',
-      pageDescription: 'Datasets qualifiés pour la data science en assurance et en banque : tarification, fraude, crédit, provisionnement, mortalité. Pour data scientists, analysts, ML engineers et BI.',
+      pageTitle: 'Datasets & Modèles — Assurance & Banque',
+      pageDescription: 'Plateforme de modélisation et visualisation de données assurance et banque. Datasets qualifiés, modèles actuariels et ML, notebooks et benchmarks pour tous les métiers de la donnée.',
     });
   } catch (error) {
     logger.error('Dashboard error', { error: error.message, stack: error.stack });
