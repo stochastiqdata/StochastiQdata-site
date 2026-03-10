@@ -451,6 +451,22 @@ app.get('/mission', (req, res) => {
   });
 });
 
+app.get('/docs', (_req, res) => {
+  res.render('pages/docs', {
+    TAG_LABELS, SOURCE_LABELS, MODEL_LABELS,
+    pageTitle: 'Documentation',
+    pageDescription: 'Documentation, guides techniques et ressources pour les professionnels de la donnée en assurance et en banque — modèles actuariels, machine learning, analyse de risque.',
+  });
+});
+
+app.get('/communaute', (_req, res) => {
+  res.render('pages/communaute', {
+    TAG_LABELS, SOURCE_LABELS, MODEL_LABELS,
+    pageTitle: 'Communauté',
+    pageDescription: 'Articles, recherches, défis et ressources partagés par la communauté StochastiQdata — professionnels de la donnée en assurance et en banque.',
+  });
+});
+
 // Legal pages
 app.get('/mentions-legales', (req, res) => {
   res.render('pages/mentions-legales', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS, pageTitle: 'Mentions Légales', noIndex: true });
