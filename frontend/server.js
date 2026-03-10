@@ -472,6 +472,14 @@ app.get('/communaute', (_req, res) => {
   });
 });
 
+app.get('/code', (_req, res) => {
+  res.render('pages/code', {
+    TAG_LABELS, SOURCE_LABELS, MODEL_LABELS,
+    pageTitle: 'Code — Notebooks & Scripts',
+    pageDescription: 'Notebooks et scripts prêts à l\'emploi pour la modélisation assurance et banque — GLM, XGBoost, détection de fraude, scoring crédit.',
+  });
+});
+
 // Legal pages
 app.get('/mentions-legales', (req, res) => {
   res.render('pages/mentions-legales', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS, pageTitle: 'Mentions Légales', noIndex: true });
