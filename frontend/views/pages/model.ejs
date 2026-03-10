@@ -72,6 +72,13 @@
                 <%= nbLabel %>
               </a>
             <% } %>
+            <a href="/compare?a=<%= model.dataset_id %>"
+               class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 dark:bg-navy-700 hover:bg-gray-200 dark:hover:bg-navy-600 text-gray-700 dark:text-gray-300 font-medium text-sm transition-all">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="9" height="18" rx="2"/><rect x="13" y="3" width="9" height="18" rx="2"/>
+              </svg>
+              Comparer
+            </a>
           </div>
         </div>
 
