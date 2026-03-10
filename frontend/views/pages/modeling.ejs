@@ -14,32 +14,83 @@
 %>
 
 <div class="max-w-5xl mx-auto">
-  <%/* ── Bloc 1 : Identification rapide ──────────────────────────── */%>
+
+  <%/* ── Toujours visible : Header + Metadata + Skills ── */%>
   <%- include('../partials/modeling/header', vars) %>
   <%- include('../partials/modeling/metadata', vars) %>
   <%- include('../partials/modeling/skills', vars) %>
 
-  <%/* ── Bloc 2 : Exploration des données ────────────────────────── */%>
-  <%- include('../partials/modeling/preview', vars) %>
-  <%- include('../partials/modeling/stats', vars) %>
-  <%- include('../partials/modeling/variable-dict', vars) %>
-  <%- include('../partials/modeling/distributions', vars) %>
-  <%- include('../partials/modeling/correlations', vars) %>
-  <%- include('../partials/modeling/visualizations', vars) %>
+  <%/* ── Onglets ── */%>
+  <div class="mb-4">
+    <div class="flex gap-1 p-1 bg-gray-100 dark:bg-navy-800 rounded-xl w-fit overflow-x-auto">
+      <button onclick="switchTab('exploration')" id="tab-exploration"
+        class="tab-page-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap bg-white dark:bg-navy-600 text-gray-900 dark:text-white shadow-sm">
+        Exploration
+      </button>
+      <button onclick="switchTab('modelisation')" id="tab-modelisation"
+        class="tab-page-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+        Modélisation
+      </button>
+      <button onclick="switchTab('communaute')" id="tab-communaute"
+        class="tab-page-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+        Communauté
+      </button>
+      <button onclick="switchTab('docs')" id="tab-docs"
+        class="tab-page-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+        Documentation
+      </button>
+    </div>
+  </div>
 
-  <%/* ── Bloc 3 : Mise en pratique ───────────────────────────────── */%>
-  <%- include('../partials/modeling/workflow', vars) %>
-  <%- include('../partials/modeling/code-snippet', vars) %>
-  <%- include('../partials/modeling/benchmarks', vars) %>
-  <%- include('../partials/modeling/models', vars) %>
-  <%- include('../partials/modeling/notebooks', vars) %>
+  <%/* ── Onglet Exploration ── */%>
+  <div id="panel-exploration">
+    <%- include('../partials/modeling/preview', vars) %>
+    <%- include('../partials/modeling/stats', vars) %>
+    <%- include('../partials/modeling/variable-dict', vars) %>
+    <%- include('../partials/modeling/distributions', vars) %>
+    <%- include('../partials/modeling/correlations', vars) %>
+    <%- include('../partials/modeling/visualizations', vars) %>
+  </div>
 
-  <%/* ── Bloc 4 : Communauté ─────────────────────────────────────── */%>
-  <%- include('../partials/modeling/reviews', vars) %>
-  <%- include('../partials/modeling/questions', vars) %>
-  <%- include('../partials/modeling/similar', vars) %>
+  <%/* ── Onglet Modélisation ── */%>
+  <div id="panel-modelisation" class="hidden">
+    <%- include('../partials/modeling/workflow', vars) %>
+    <%- include('../partials/modeling/code-snippet', vars) %>
+    <%- include('../partials/modeling/benchmarks', vars) %>
+    <%- include('../partials/modeling/models', vars) %>
+    <%- include('../partials/modeling/notebooks', vars) %>
+  </div>
 
-  <%/* ── Bloc 5 : Documentation ──────────────────────────────────── */%>
-  <%- include('../partials/modeling/citation', vars) %>
-  <%- include('../partials/modeling/changelog', vars) %>
+  <%/* ── Onglet Communauté ── */%>
+  <div id="panel-communaute" class="hidden">
+    <%- include('../partials/modeling/reviews', vars) %>
+    <%- include('../partials/modeling/questions', vars) %>
+    <%- include('../partials/modeling/similar', vars) %>
+  </div>
+
+  <%/* ── Onglet Documentation ── */%>
+  <div id="panel-docs" class="hidden">
+    <%- include('../partials/modeling/citation', vars) %>
+    <%- include('../partials/modeling/changelog', vars) %>
+  </div>
+
 </div>
+
+<script>
+function switchTab(name) {
+  const panels = ['exploration', 'modelisation', 'communaute', 'docs'];
+  panels.forEach(p => {
+    const panel = document.getElementById('panel-' + p);
+    const btn   = document.getElementById('tab-' + p);
+    if (p === name) {
+      panel.classList.remove('hidden');
+      btn.classList.add('bg-white', 'dark:bg-navy-600', 'text-gray-900', 'dark:text-white', 'shadow-sm');
+      btn.classList.remove('text-gray-500', 'dark:text-gray-400');
+    } else {
+      panel.classList.add('hidden');
+      btn.classList.remove('bg-white', 'dark:bg-navy-600', 'text-gray-900', 'dark:text-white', 'shadow-sm');
+      btn.classList.add('text-gray-500', 'dark:text-gray-400');
+    }
+  });
+}
+</script>

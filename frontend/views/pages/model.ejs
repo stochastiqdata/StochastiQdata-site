@@ -110,137 +110,182 @@
     </div>
   </div>
 
-  <!-- Métriques -->
-  <% const metricsEntries = Object.entries(model.metrics || {}); %>
-  <% if (metricsEntries.length > 0) { %>
-  <div class="card p-6 mb-6">
-    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-      <svg class="w-5 h-5 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-      </svg>
-      Métriques d'évaluation
-    </h2>
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-      <% metricsEntries.forEach(([k, v]) => {
-           const isPercent = ['gini', 'r2', 'auc', 'accuracy', 'f1_score'].includes(k);
-           const display = typeof v === 'number'
-             ? (isPercent ? (v * 100).toFixed(1) + '%' : v.toFixed(4))
-             : String(v);
-      %>
-        <div class="text-center p-4 rounded-xl bg-gray-50 dark:bg-navy-700">
-          <p class="text-2xl font-bold text-gray-900 dark:text-white"><%= display %></p>
-          <p class="text-sm text-gray-500 dark:text-gray-400"><%= METRIC_LABELS[k] || k %></p>
-        </div>
-      <% }); %>
-    </div>
-  </div>
-  <% } %>
-
-  <!-- Hyperparamètres -->
-  <% const paramEntries = Object.entries(model.parameters || {}); %>
-  <% if (paramEntries.length > 0) { %>
-  <div class="card p-6 mb-6">
-    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-      <svg class="w-5 h-5 text-orange-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
-        <path d="M4.93 4.93a10 10 0 0 0 0 14.14"/>
-      </svg>
-      Hyperparamètres
-    </h2>
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="border-b border-gray-200 dark:border-navy-700">
-            <th class="text-left py-2 pr-4 font-medium text-gray-500 dark:text-gray-400">Paramètre</th>
-            <th class="text-left py-2 font-medium text-gray-500 dark:text-gray-400">Valeur</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100 dark:divide-navy-700">
-          <% paramEntries.forEach(([k, v]) => { %>
-          <tr>
-            <td class="py-2 pr-4 font-mono text-xs text-gray-600 dark:text-gray-400"><%= k %></td>
-            <td class="py-2 font-mono text-xs text-gray-900 dark:text-white"><%= JSON.stringify(v) %></td>
-          </tr>
-          <% }); %>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <% } %>
-
-  <!-- Code snippet -->
-  <% if (model.code_snippet) { %>
-  <div class="card p-6 mb-6">
-    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-      <svg class="w-5 h-5 text-primary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
-      </svg>
-      Code
-    </h2>
-    <div class="relative">
-      <pre id="modelCodeBlock" class="bg-gray-950 text-gray-100 rounded-xl p-4 text-sm overflow-x-auto leading-relaxed font-mono whitespace-pre"><%= model.code_snippet %></pre>
-      <button onclick="copyModelCode()"
-        class="absolute top-3 right-3 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-md transition-colors" title="Copier">
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+  <!-- Onglets -->
+  <div class="mb-4">
+    <div class="flex gap-1 p-1 bg-gray-100 dark:bg-navy-800 rounded-xl w-fit overflow-x-auto">
+      <button onclick="switchModelTab('apercu')" id="mtab-apercu"
+        class="mtab-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap bg-white dark:bg-navy-600 text-gray-900 dark:text-white shadow-sm">
+        Aperçu
       </button>
-    </div>
-  </div>
-  <% } %>
-
-  <!-- Auteur -->
-  <% if (author) { %>
-  <div class="card p-5 mb-6">
-    <h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-4">Auteur</h2>
-    <a href="/users/<%= author.id %>" class="flex items-center gap-4 group">
-      <% if (author.avatar_url) { %>
-        <img src="<%= author.avatar_url %>" alt="<%= author.display_name || 'Auteur' %>"
-             class="w-12 h-12 rounded-full object-cover border-2 border-gray-100 dark:border-navy-600 group-hover:border-violet-400 transition-colors"
-             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-        <div class="hidden w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-primary-500 items-center justify-center shrink-0">
-          <span class="text-white font-bold text-lg"><%= (author.display_name || '?')[0].toUpperCase() %></span>
-        </div>
-      <% } else { %>
-        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-primary-500 flex items-center justify-center shrink-0">
-          <span class="text-white font-bold text-lg"><%= (author.display_name || '?')[0].toUpperCase() %></span>
-        </div>
+      <% if (model.code_snippet) { %>
+      <button onclick="switchModelTab('code')" id="mtab-code"
+        class="mtab-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+        Code
+      </button>
       <% } %>
-      <div class="flex-1 min-w-0">
-        <p class="font-semibold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
-          <%= author.display_name || 'Anonyme' %>
-        </p>
-        <% if (author.title || author.organization) { %>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
-            <%= [author.title, author.organization].filter(Boolean).join(' · ') %>
-          </p>
-        <% } %>
-        <% if (author.bio) { %>
-          <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 line-clamp-2"><%= author.bio %></p>
-        <% } %>
+      <button onclick="switchModelTab('citation')" id="mtab-citation"
+        class="mtab-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+        Citation
+      </button>
+    </div>
+  </div>
+
+  <!-- Onglet Aperçu -->
+  <div id="mpanel-apercu">
+    <!-- Métriques -->
+    <% const metricsEntries = Object.entries(model.metrics || {}); %>
+    <% if (metricsEntries.length > 0) { %>
+    <div class="card p-6 mb-6">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+        Métriques d'évaluation
+      </h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        <% metricsEntries.forEach(([k, v]) => {
+             const isPercent = ['gini', 'r2', 'auc', 'accuracy', 'f1_score'].includes(k);
+             const display = typeof v === 'number'
+               ? (isPercent ? (v * 100).toFixed(1) + '%' : v.toFixed(4))
+               : String(v);
+        %>
+          <div class="text-center p-4 rounded-xl bg-gray-50 dark:bg-navy-700">
+            <p class="text-2xl font-bold text-gray-900 dark:text-white"><%= display %></p>
+            <p class="text-sm text-gray-500 dark:text-gray-400"><%= METRIC_LABELS[k] || k %></p>
+          </div>
+        <% }); %>
       </div>
-      <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-violet-400 shrink-0 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
-    </a>
+    </div>
+    <% } %>
+
+    <!-- Hyperparamètres -->
+    <% const paramEntries = Object.entries(model.parameters || {}); %>
+    <% if (paramEntries.length > 0) { %>
+    <div class="card p-6 mb-6">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-orange-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+          <path d="M4.93 4.93a10 10 0 0 0 0 14.14"/>
+        </svg>
+        Hyperparamètres
+      </h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-gray-200 dark:border-navy-700">
+              <th class="text-left py-2 pr-4 font-medium text-gray-500 dark:text-gray-400">Paramètre</th>
+              <th class="text-left py-2 font-medium text-gray-500 dark:text-gray-400">Valeur</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100 dark:divide-navy-700">
+            <% paramEntries.forEach(([k, v]) => { %>
+            <tr>
+              <td class="py-2 pr-4 font-mono text-xs text-gray-600 dark:text-gray-400"><%= k %></td>
+              <td class="py-2 font-mono text-xs text-gray-900 dark:text-white"><%= JSON.stringify(v) %></td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <% } %>
+
+    <!-- Auteur -->
+    <% if (author) { %>
+    <div class="card p-5 mb-6">
+      <h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-4">Auteur</h2>
+      <a href="/users/<%= author.id %>" class="flex items-center gap-4 group">
+        <% if (author.avatar_url) { %>
+          <img src="<%= author.avatar_url %>" alt="<%= author.display_name || 'Auteur' %>"
+               class="w-12 h-12 rounded-full object-cover border-2 border-gray-100 dark:border-navy-600 group-hover:border-violet-400 transition-colors"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="hidden w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-primary-500 items-center justify-center shrink-0">
+            <span class="text-white font-bold text-lg"><%= (author.display_name || '?')[0].toUpperCase() %></span>
+          </div>
+        <% } else { %>
+          <div class="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-primary-500 flex items-center justify-center shrink-0">
+            <span class="text-white font-bold text-lg"><%= (author.display_name || '?')[0].toUpperCase() %></span>
+          </div>
+        <% } %>
+        <div class="flex-1 min-w-0">
+          <p class="font-semibold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
+            <%= author.display_name || 'Anonyme' %>
+          </p>
+          <% if (author.title || author.organization) { %>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              <%= [author.title, author.organization].filter(Boolean).join(' · ') %>
+            </p>
+          <% } %>
+          <% if (author.bio) { %>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1 line-clamp-2"><%= author.bio %></p>
+          <% } %>
+        </div>
+        <svg class="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-violet-400 shrink-0 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
+    </div>
+    <% } %>
+  </div>
+
+  <!-- Onglet Code -->
+  <% if (model.code_snippet) { %>
+  <div id="mpanel-code" class="hidden">
+    <div class="card p-6 mb-6">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-primary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+        </svg>
+        Code
+      </h2>
+      <div class="relative">
+        <pre id="modelCodeBlock" class="bg-gray-950 text-gray-100 rounded-xl p-4 text-sm overflow-x-auto leading-relaxed font-mono whitespace-pre"><%= model.code_snippet %></pre>
+        <button onclick="copyModelCode()"
+          class="absolute top-3 right-3 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-md transition-colors" title="Copier">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
+    </div>
   </div>
   <% } %>
 
-  <!-- Citation -->
-  <div class="card p-6 mb-6">
-    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-      <svg class="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/>
-        <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/>
-      </svg>
-      Citer ce modèle
-    </h2>
-    <pre id="modelCiteBlock" class="bg-gray-950 text-gray-100 rounded-xl p-4 text-sm overflow-x-auto leading-relaxed font-mono whitespace-pre relative">
-      <button onclick="copyModelCite()" class="absolute top-3 right-3 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-md transition-colors" title="Copier">
-        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-      </button>
-    </pre>
+  <!-- Onglet Citation -->
+  <div id="mpanel-citation" class="hidden">
+    <div class="card p-6 mb-6">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/>
+          <path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/>
+        </svg>
+        Citer ce modèle
+      </h2>
+      <pre id="modelCiteBlock" class="bg-gray-950 text-gray-100 rounded-xl p-4 text-sm overflow-x-auto leading-relaxed font-mono whitespace-pre relative">
+        <button onclick="copyModelCite()" class="absolute top-3 right-3 px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-md transition-colors" title="Copier">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </pre>
+    </div>
   </div>
 
 </div>
 
 <script>
+function switchModelTab(name) {
+  const tabs = ['apercu', 'code', 'citation'];
+  tabs.forEach(t => {
+    const panel = document.getElementById('mpanel-' + t);
+    const btn   = document.getElementById('mtab-' + t);
+    if (!panel || !btn) return;
+    if (t === name) {
+      panel.classList.remove('hidden');
+      btn.classList.add('bg-white', 'dark:bg-navy-600', 'text-gray-900', 'dark:text-white', 'shadow-sm');
+      btn.classList.remove('text-gray-500', 'dark:text-gray-400');
+    } else {
+      panel.classList.add('hidden');
+      btn.classList.remove('bg-white', 'dark:bg-navy-600', 'text-gray-900', 'dark:text-white', 'shadow-sm');
+      btn.classList.add('text-gray-500', 'dark:text-gray-400');
+    }
+  });
+}
+
 (function() {
   const modelName = <%= JSON.stringify(model.name) %>;
   const modelId   = '<%= model.id %>';
