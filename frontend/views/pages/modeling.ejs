@@ -21,22 +21,22 @@
   <%- include('../partials/modeling/skills', vars) %>
 
   <%/* ── Onglets ── */%>
-  <div class="mb-4">
+  <div class="mb-4" id="tabs-bar">
     <div class="flex gap-1 p-1 bg-gray-100 dark:bg-navy-800 rounded-xl w-fit overflow-x-auto">
-      <button type="button" onclick="switchTab('exploration')" id="tab-exploration" data-active="true"
-        class="tab-page-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap cursor-pointer">
+      <button type="button" data-tab="exploration" data-active="true"
+        class="tab-page-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-all whitespace-nowrap">
         Exploration
       </button>
-      <button type="button" onclick="switchTab('modelisation')" id="tab-modelisation"
-        class="tab-page-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap cursor-pointer">
+      <button type="button" data-tab="modelisation"
+        class="tab-page-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-all whitespace-nowrap">
         Modélisation
       </button>
-      <button type="button" onclick="switchTab('communaute')" id="tab-communaute"
-        class="tab-page-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap cursor-pointer">
+      <button type="button" data-tab="communaute"
+        class="tab-page-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-all whitespace-nowrap">
         Communauté
       </button>
-      <button type="button" onclick="switchTab('docs')" id="tab-docs"
-        class="tab-page-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-colors whitespace-nowrap cursor-pointer">
+      <button type="button" data-tab="docs"
+        class="tab-page-btn px-4 py-1.5 text-sm font-medium rounded-lg transition-all whitespace-nowrap">
         Documentation
       </button>
     </div>
@@ -77,18 +77,30 @@
 </div>
 
 <script>
-function switchTab(name) {
-  const panels = ['exploration', 'modelisation', 'communaute', 'docs'];
-  panels.forEach(p => {
-    const panel = document.getElementById('panel-' + p);
-    const btn   = document.getElementById('tab-' + p);
-    if (p === name) {
-      panel.classList.remove('hidden');
-      btn.setAttribute('data-active', 'true');
-    } else {
-      panel.classList.add('hidden');
-      btn.removeAttribute('data-active');
-    }
+(function() {
+  var TABS = ['exploration', 'modelisation', 'communaute', 'docs'];
+
+  function switchTab(name) {
+    TABS.forEach(function(p) {
+      var panel = document.getElementById('panel-' + p);
+      var btn   = document.querySelector('[data-tab="' + p + '"]');
+      if (!panel || !btn) return;
+      if (p === name) {
+        panel.classList.remove('hidden');
+        btn.setAttribute('data-active', 'true');
+      } else {
+        panel.classList.add('hidden');
+        btn.removeAttribute('data-active');
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[data-tab]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        switchTab(btn.getAttribute('data-tab'));
+      });
+    });
   });
-}
+})();
 </script>

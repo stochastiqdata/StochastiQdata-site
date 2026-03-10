@@ -274,11 +274,12 @@
 
   /* Onglets de page (modeling, etc.) */
   .tab-page-btn {
-    @apply text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200;
+    @apply text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 cursor-pointer;
   }
 
   .tab-page-btn[data-active="true"] {
-    @apply bg-white dark:bg-navy-600 text-gray-900 dark:text-white shadow-sm;
+    @apply bg-white dark:bg-navy-700 text-gray-900 dark:text-white shadow-sm font-semibold;
+    border-bottom: 2px solid theme('colors.primary.500');
   }
 
   /* Cercle de score */
