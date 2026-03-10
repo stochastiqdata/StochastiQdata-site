@@ -6,451 +6,331 @@
       <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Code</h1>
       <p class="text-gray-500 dark:text-gray-400">Notebooks et scripts prêts à l'emploi — assurance, banque, fraude, pricing</p>
     </div>
-    <!-- Barre de recherche -->
     <div class="relative w-full sm:w-72">
-      <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-      </svg>
+      <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <input id="code-search" type="text" placeholder="Rechercher un notebook…"
         class="w-full pl-9 pr-4 py-2 text-sm bg-white dark:bg-navy-800 border border-gray-200 dark:border-navy-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500/50">
     </div>
   </div>
 
-  <!-- Filtres catégories -->
+  <!-- Filtres -->
   <div class="flex flex-wrap gap-2 mb-8" id="code-filters">
-    <button class="code-filter-btn active" data-filter="all">Tout</button>
-    <button class="code-filter-btn" data-filter="assurance">Assurance</button>
-    <button class="code-filter-btn" data-filter="banque">Banque</button>
-    <button class="code-filter-btn" data-filter="fraude">Fraude</button>
-    <button class="code-filter-btn" data-filter="pricing">Pricing</button>
-    <button class="code-filter-btn" data-filter="risque">Risque de crédit</button>
-    <button class="code-filter-btn" data-filter="sante">Santé</button>
-    <button class="code-filter-btn" data-filter="ml">Machine Learning</button>
+    <% [
+      {key:'all',   label:'Tout'},
+      {key:'assurance', label:'Assurance'},
+      {key:'banque',    label:'Banque'},
+      {key:'fraude',    label:'Fraude'},
+      {key:'pricing',   label:'Pricing'},
+      {key:'risque',    label:'Risque de crédit'},
+      {key:'sante',     label:'Santé'},
+      {key:'ml',        label:'Machine Learning'},
+    ].forEach((f, i) => { %>
+      <button class="filter-pill <%= i===0 ? 'active-pill' : 'inactive-pill' %>" data-filter="<%= f.key %>"><%= f.label %></button>
+    <% }); %>
   </div>
 
-  <!-- Section Trending -->
-  <section class="mb-12" id="section-trending">
+  <!-- ============================================================ -->
+  <%
+  const notebooks = [
+    /* ---- TENDANCES ---- */
+    {
+      section:'trending', sectionLabel:'Tendances', tags:'assurance pricing glm',
+      title:'GLM Fréquence Sinistres Auto (freMTPL2)',
+      dataset:'Fréquence Sinistres Auto RC France',
+      lang:'Python', langColor:'#3b82f6', updated:'il y a 2 jours', votes:47, tag:'Pricing',
+      svg:`<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="58" width="18" height="32" fill="#22d3ee" rx="3"/>
+        <rect x="34" y="42" width="18" height="48" fill="#22d3ee" rx="3"/>
+        <rect x="58" y="26" width="18" height="64" fill="#3b82f6" rx="3"/>
+        <rect x="82" y="14" width="18" height="76" fill="#3b82f6" rx="3"/>
+        <rect x="106" y="34" width="18" height="56" fill="#22d3ee" rx="3"/>
+        <rect x="130" y="48" width="18" height="42" fill="#22d3ee" rx="3"/>
+        <polyline points="19,58 43,42 67,26 91,14 115,34 139,48" fill="none" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`,
+      bg:'from-blue-900 to-navy-950',
+    },
+    {
+      section:'trending', tags:'fraude banque ml',
+      title:'Détection Fraude Carte Bancaire — XGBoost',
+      dataset:'Détection Fraude Carte Bancaire (ULB)',
+      lang:'Python', langColor:'#ef4444', updated:'il y a 3 jours', votes:38, tag:'Fraude',
+      svg:`<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="30" cy="70" r="5" fill="#6b7280" opacity="0.5"/>
+        <circle cx="55" cy="65" r="5" fill="#6b7280" opacity="0.5"/>
+        <circle cx="80" cy="72" r="5" fill="#6b7280" opacity="0.5"/>
+        <circle cx="105" cy="62" r="5" fill="#6b7280" opacity="0.5"/>
+        <circle cx="130" cy="68" r="5" fill="#6b7280" opacity="0.5"/>
+        <circle cx="40" cy="18" r="7" fill="#ef4444"/>
+        <circle cx="75" cy="12" r="6" fill="#ef4444"/>
+        <circle cx="110" cy="20" r="6" fill="#ef4444"/>
+        <circle cx="22"  cy="10" r="5" fill="#ef4444"/>
+        <line x1="0" y1="45" x2="160" y2="45" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="6"/>
+      </svg>`,
+      bg:'from-red-950 to-navy-950',
+    },
+    {
+      section:'trending', tags:'banque risque ml',
+      title:'Scoring Risque de Crédit — Random Forest',
+      dataset:'Risque de Crédit',
+      lang:'Python', langColor:'#8b5cf6', updated:'il y a 5 jours', votes:31, tag:'Risque',
+      svg:`<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
+        <rect x="8"  y="14" width="22" height="76" fill="#8b5cf6" rx="3"/>
+        <rect x="36" y="36" width="22" height="54" fill="#7c3aed" rx="3"/>
+        <rect x="64" y="20" width="22" height="70" fill="#a78bfa" rx="3"/>
+        <rect x="92" y="50" width="22" height="40" fill="#8b5cf6" rx="3"/>
+        <rect x="120" y="28" width="22" height="62" fill="#a78bfa" rx="3"/>
+      </svg>`,
+      bg:'from-violet-950 to-navy-950',
+    },
+    {
+      section:'trending', tags:'assurance sante pricing',
+      title:'Prédiction Prime Assurance Santé — GLM Gamma',
+      dataset:'Prédiction Prime Assurance Santé',
+      lang:'R', langColor:'#2dd4bf', updated:'il y a 1 semaine', votes:29, tag:'Pricing',
+      svg:`<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="5,80 30,58 55,65 80,38 105,48 130,18 155,26" fill="none" stroke="#2dd4bf" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="80"  cy="38" r="5" fill="#f59e0b"/>
+        <circle cx="130" cy="18" r="5" fill="#2dd4bf"/>
+      </svg>`,
+      bg:'from-teal-950 to-navy-950',
+    },
+
+    /* ---- ASSURANCE ---- */
+    {
+      section:'assurance', tags:'assurance pricing glm',
+      title:'Sévérité Sinistres — GLM Gamma (Tweedie)',
+      dataset:'Sévérité Sinistres Auto RC France',
+      lang:'Python', langColor:'#3b82f6', updated:'il y a 10 jours', votes:22, tag:'GLM',
+      svg:`<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="44" width="18" height="46" fill="#3b82f6" rx="3"/>
+        <rect x="34" y="28" width="18" height="62" fill="#60a5fa" rx="3"/>
+        <rect x="58" y="14" width="18" height="76" fill="#3b82f6" rx="3"/>
+        <rect x="82" y="36" width="18" height="54" fill="#60a5fa" rx="3"/>
+        <rect x="106" y="52" width="18" height="38" fill="#3b82f6" rx="3"/>
+        <rect x="130" y="22" width="18" height="68" fill="#60a5fa" rx="3"/>
+      </svg>`,
+      bg:'from-blue-950 to-slate-900',
+    },
+    {
+      section:'assurance', tags:'assurance fraude ml',
+      title:'Fraude Déclarations Assurance — LightGBM',
+      dataset:'Fraude Déclarations Sinistres Auto',
+      lang:'Python', langColor:'#f97316', updated:'il y a 2 semaines', votes:18, tag:'Fraude',
+      svg:`<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="30" cy="68" r="5" fill="#9ca3af" opacity="0.4"/>
+        <circle cx="60" cy="62" r="5" fill="#9ca3af" opacity="0.4"/>
+        <circle cx="90" cy="70" r="5" fill="#9ca3af" opacity="0.4"/>
+        <circle cx="120" cy="60" r="5" fill="#9ca3af" opacity="0.4"/>
+        <circle cx="45" cy="16" r="8" fill="#f97316"/>
+        <circle cx="85" cy="10" r="6" fill="#f97316"/>
+        <circle cx="118" cy="18" r="7" fill="#f97316"/>
+      </svg>`,
+      bg:'from-orange-950 to-slate-900',
+    },
+    {
+      section:'assurance', tags:'assurance sante ml',
+      title:'Indicateurs Diabète — Régression Logistique',
+      dataset:'Indicateurs Santé Diabète (CDC BRFSS)',
+      lang:'Python', langColor:'#10b981', updated:'il y a 3 semaines', votes:15, tag:'Santé',
+      svg:`<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="5,80 30,60 55,68 80,32 105,44 130,20 155,28" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="5,80 30,75 55,78 80,72 105,70 130,66 155,62" fill="none" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="5" stroke-linecap="round"/>
+      </svg>`,
+      bg:'from-emerald-950 to-slate-900',
+    },
+    {
+      section:'assurance', tags:'assurance ml churn',
+      title:'Résiliation Clients Assurance — CatBoost',
+      dataset:'Résiliation Clients Assurance',
+      lang:'Python', langColor:'#ec4899', updated:'il y a 1 mois', votes:12, tag:'Churn',
+      svg:`<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="80" cy="45" r="34" fill="none" stroke="#374151" stroke-width="8"/>
+        <circle cx="80" cy="45" r="34" fill="none" stroke="#ec4899" stroke-width="8" stroke-linecap="round" stroke-dasharray="134 80" stroke-dashoffset="30"/>
+        <text x="80" y="51" text-anchor="middle" fill="#f9fafb" font-size="18" font-weight="bold">73%</text>
+      </svg>`,
+      bg:'from-pink-950 to-slate-900',
+    },
+
+    /* ---- BANQUE ---- */
+    {
+      section:'banque', tags:'banque risque ml',
+      title:'Prédiction Défaut de Prêt — XGBoost',
+      dataset:'Prédiction Défaut Prêts Bancaires',
+      lang:'Python', langColor:'#fbbf24', updated:'il y a 4 jours', votes:26, tag:'Risque',
+      svg:`<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="5,78 30,52 55,62 80,28 105,40 130,12 155,20" fill="none" stroke="#fbbf24" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="80"  cy="28" r="5" fill="#f59e0b"/>
+        <circle cx="130" cy="12" r="5" fill="#ef4444"/>
+      </svg>`,
+      bg:'from-yellow-950 to-slate-900',
+    },
+    {
+      section:'banque', tags:'banque churn ml',
+      title:'Churn Bancaire — Analyse & Prédiction',
+      dataset:'Prédiction Churn Clients Bancaires',
+      lang:'Python', langColor:'#06b6d4', updated:'il y a 6 jours', votes:21, tag:'Churn',
+      svg:`<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
+        <rect x="8"  y="28" width="26" height="62" fill="#06b6d4" rx="3"/>
+        <rect x="42" y="14" width="26" height="76" fill="#22d3ee" rx="3"/>
+        <rect x="76" y="44" width="26" height="46" fill="#06b6d4" rx="3"/>
+        <rect x="110" y="20" width="26" height="70" fill="#22d3ee" rx="3"/>
+      </svg>`,
+      bg:'from-cyan-950 to-slate-900',
+    },
+    {
+      section:'banque', tags:'banque ml segmentation',
+      title:'Segmentation Clients Bancaires — K-Means',
+      dataset:'Segmentation Clients Bancaires',
+      lang:'Python', langColor:'#818cf8', updated:'il y a 2 semaines', votes:19, tag:'Clustering',
+      svg:`<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="38"  cy="28" r="18" fill="#818cf8" opacity="0.75"/>
+        <circle cx="88"  cy="20" r="14" fill="#6366f1" opacity="0.75"/>
+        <circle cx="125" cy="32" r="12" fill="#a5b4fc" opacity="0.75"/>
+        <circle cx="52"  cy="65" r="13" fill="#4f46e5" opacity="0.75"/>
+        <circle cx="105" cy="68" r="16" fill="#818cf8" opacity="0.75"/>
+      </svg>`,
+      bg:'from-indigo-950 to-slate-900',
+    },
+    {
+      section:'banque', tags:'banque ml pret',
+      title:'Approbation Prêt PME — Pipeline Complet',
+      dataset:'Approbation Prêts PME (SBA USA)',
+      lang:'Python', langColor:'#84cc16', updated:'il y a 1 mois', votes:14, tag:'Classification',
+      svg:`<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="80" cy="45" r="36" fill="none" stroke="#374151" stroke-width="8"/>
+        <circle cx="80" cy="45" r="36" fill="none" stroke="#84cc16" stroke-width="8" stroke-linecap="round" stroke-dasharray="145 82" stroke-dashoffset="30"/>
+        <text x="80" y="51" text-anchor="middle" fill="#f9fafb" font-size="18" font-weight="bold">81%</text>
+      </svg>`,
+      bg:'from-lime-950 to-slate-900',
+    },
+
+    /* ---- FRAUDE ---- */
+    {
+      section:'fraude', tags:'fraude banque ml',
+      title:'Fraude Paiements — Isolation Forest + SMOTE',
+      dataset:'Détection Fraude Paiements en Ligne',
+      lang:'Python', langColor:'#ef4444', updated:'il y a 1 semaine', votes:33, tag:'Fraude',
+      svg:`<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
+        <rect x="5" y="5" width="150" height="80" rx="5" fill="#111827" stroke="#374151" stroke-width="1.5"/>
+        <text x="14" y="28" fill="#10b981" font-size="11" font-family="monospace">precision :  0.97</text>
+        <text x="14" y="44" fill="#10b981" font-size="11" font-family="monospace">recall    :  0.84</text>
+        <text x="14" y="60" fill="#10b981" font-size="11" font-family="monospace">f1-score  :  0.90</text>
+        <text x="14" y="76" fill="#f59e0b" font-size="11" font-family="monospace">AUC-ROC   :  0.975</text>
+      </svg>`,
+      bg:'from-red-950 to-gray-900',
+    },
+    {
+      section:'fraude', tags:'fraude banque ml',
+      title:'Fraude PaySim — Random Forest & SHAP',
+      dataset:'Simulation Fraude Mobile Money (PaySim)',
+      lang:'Python', langColor:'#f43f5e', updated:'il y a 10 jours', votes:28, tag:'Fraude',
+      svg:`<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
+        <rect x="8"  y="8"  width="68" height="36" fill="#16a34a" rx="4"/><text x="42" y="30" text-anchor="middle" fill="white" font-size="13" font-weight="bold">TN</text>
+        <rect x="84" y="8"  width="68" height="36" fill="#dc2626" rx="4"/><text x="118" y="30" text-anchor="middle" fill="white" font-size="13" font-weight="bold">FP</text>
+        <rect x="8"  y="50" width="68" height="36" fill="#ea580c" rx="4"/><text x="42" y="72" text-anchor="middle" fill="white" font-size="13" font-weight="bold">FN</text>
+        <rect x="84" y="50" width="68" height="36" fill="#16a34a" rx="4"/><text x="118" y="72" text-anchor="middle" fill="white" font-size="13" font-weight="bold">TP</text>
+      </svg>`,
+      bg:'from-rose-950 to-gray-900',
+    },
+    {
+      section:'fraude', tags:'fraude banque ml',
+      title:'Anomalies Transactions — Autoencoder Neural',
+      dataset:'Détection Anomalies Transactions Bancaires',
+      lang:'Python', langColor:'#f59e0b', updated:'il y a 2 semaines', votes:24, tag:'Deep Learning',
+      svg:`<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
+        <line x1="8" y1="82" x2="152" y2="82" stroke="#374151" stroke-width="1.5"/>
+        <line x1="8" y1="82" x2="8"   y2="8"  stroke="#374151" stroke-width="1.5"/>
+        <line x1="8" y1="82" x2="152" y2="8"  stroke="#4b5563" stroke-width="1.5" stroke-dasharray="5"/>
+        <path d="M8,82 Q24,14 60,10 T152,8" fill="none" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
+        <text x="95" y="55" fill="#f59e0b" font-size="11" font-weight="bold">AUC = 0.96</text>
+      </svg>`,
+      bg:'from-amber-950 to-gray-900',
+    },
+    {
+      section:'fraude', tags:'fraude assurance ml',
+      title:'Fraude Ouverture Compte — Gradient Boosting',
+      dataset:'Fraude Ouverture Compte Bancaire — NeurIPS',
+      lang:'Python', langColor:'#a855f7', updated:'il y a 3 semaines', votes:20, tag:'Fraude',
+      svg:`<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="5,82 30,72 55,46 80,54 105,18 130,28 155,14" fill="none" stroke="#a855f7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="105" cy="18" r="6" fill="#f59e0b"/>
+        <line x1="105" y1="18" x2="105" y2="82" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4"/>
+      </svg>`,
+      bg:'from-purple-950 to-gray-900',
+    },
+  ];
+
+  // Regrouper par section
+  const sections = [
+    { key:'trending',  label:'Tendances',          icon:'trending'  },
+    { key:'assurance', label:'Assurance',           icon:'shield'    },
+    { key:'banque',    label:'Banque & Finance',    icon:'bank'      },
+    { key:'fraude',    label:'Détection de Fraude', icon:'alert'     },
+  ];
+  %>
+  <!-- ============================================================ -->
+
+  <% sections.forEach(sec => {
+    const cards = notebooks.filter(n => n.section === sec.key);
+  %>
+  <section class="mb-12 code-section" data-section="<%= sec.key %>">
     <div class="flex items-center justify-between mb-5">
       <div class="flex items-center gap-2">
-        <svg class="w-5 h-5 text-primary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
-        </svg>
-        <h2 class="text-lg font-bold text-gray-900 dark:text-white">Tendances</h2>
+        <% if (sec.icon === 'trending') { %>
+          <svg class="w-5 h-5 text-primary-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        <% } else if (sec.icon === 'shield') { %>
+          <svg class="w-5 h-5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+        <% } else if (sec.icon === 'bank') { %>
+          <svg class="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <% } else { %>
+          <svg class="w-5 h-5 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <% } %>
+        <h2 class="text-lg font-bold text-gray-900 dark:text-white"><%= sec.label %></h2>
       </div>
-      <span class="text-sm text-gray-400">4 notebooks</span>
+      <span class="text-sm text-gray-400"><%= cards.length %> notebooks</span>
     </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="trending-grid">
 
-      <!-- Card 1 -->
-      <div class="code-card group" data-tags="assurance pricing glm">
-        <div class="code-card-preview bg-gradient-to-br from-blue-900 to-navy-900">
-          <div class="w-full h-full flex items-end p-3">
-            <!-- Mini bar chart SVG -->
-            <svg viewBox="0 0 100 60" class="w-full h-20">
-              <rect x="5"  y="40" width="12" height="20" fill="#22d3ee" rx="2"/>
-              <rect x="22" y="28" width="12" height="32" fill="#22d3ee" rx="2"/>
-              <rect x="39" y="18" width="12" height="42" fill="#3b82f6" rx="2"/>
-              <rect x="56" y="10" width="12" height="50" fill="#3b82f6" rx="2"/>
-              <rect x="73" y="22" width="12" height="38" fill="#22d3ee" rx="2"/>
-              <polyline points="11,40 28,28 45,18 62,10 79,22" fill="none" stroke="#f59e0b" stroke-width="2"/>
-            </svg>
-          </div>
-          <span class="code-lang-badge bg-blue-500/20 text-blue-300">Python</span>
-        </div>
-        <div class="code-card-body">
-          <h3 class="code-card-title">GLM Fréquence Sinistres Auto (freMTPL2)</h3>
-          <p class="code-card-dataset">Fréquence Sinistres Auto RC France</p>
-          <div class="code-card-footer">
-            <div class="code-card-votes">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
-              <span>47</span>
-            </div>
-            <span class="code-tag">Pricing</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 2 -->
-      <div class="code-card group" data-tags="fraude banque ml">
-        <div class="code-card-preview bg-gradient-to-br from-red-950 to-navy-900">
-          <div class="w-full h-full flex items-center justify-center p-3">
-            <!-- Scatter plot style -->
-            <svg viewBox="0 0 100 70" class="w-full h-20">
-              <circle cx="20" cy="50" r="3" fill="#6b7280" opacity="0.6"/>
-              <circle cx="35" cy="42" r="3" fill="#6b7280" opacity="0.6"/>
-              <circle cx="50" cy="55" r="3" fill="#6b7280" opacity="0.6"/>
-              <circle cx="65" cy="38" r="3" fill="#6b7280" opacity="0.6"/>
-              <circle cx="80" cy="48" r="3" fill="#6b7280" opacity="0.6"/>
-              <circle cx="25" cy="15" r="5" fill="#ef4444"/>
-              <circle cx="60" cy="10" r="4" fill="#ef4444"/>
-              <circle cx="75" cy="18" r="4" fill="#ef4444"/>
-              <circle cx="15" cy="8"  r="3" fill="#ef4444"/>
-              <line x1="0" y1="35" x2="100" y2="35" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4"/>
-            </svg>
-          </div>
-          <span class="code-lang-badge bg-red-500/20 text-red-300">Python</span>
-        </div>
-        <div class="code-card-body">
-          <h3 class="code-card-title">Détection Fraude Carte Bancaire — XGBoost</h3>
-          <p class="code-card-dataset">Détection Fraude Carte Bancaire (ULB)</p>
-          <div class="code-card-footer">
-            <div class="code-card-votes">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
-              <span>38</span>
-            </div>
-            <span class="code-tag">Fraude</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 3 -->
-      <div class="code-card group" data-tags="banque risque ml">
-        <div class="code-card-preview bg-gradient-to-br from-violet-950 to-navy-900">
-          <div class="w-full h-full flex items-end gap-1 px-3 pb-3">
-            <svg viewBox="0 0 100 60" class="w-full h-20">
-              <rect x="5"  y="10" width="14" height="50" fill="#8b5cf6" rx="2"/>
-              <rect x="24" y="25" width="14" height="35" fill="#8b5cf6" rx="2"/>
-              <rect x="43" y="15" width="14" height="45" fill="#a78bfa" rx="2"/>
-              <rect x="62" y="35" width="14" height="25" fill="#8b5cf6" rx="2"/>
-              <rect x="81" y="20" width="14" height="40" fill="#a78bfa" rx="2"/>
-            </svg>
-          </div>
-          <span class="code-lang-badge bg-violet-500/20 text-violet-300">Python</span>
-        </div>
-        <div class="code-card-body">
-          <h3 class="code-card-title">Scoring Risque de Crédit — Random Forest</h3>
-          <p class="code-card-dataset">Risque de Crédit</p>
-          <div class="code-card-footer">
-            <div class="code-card-votes">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
-              <span>31</span>
-            </div>
-            <span class="code-tag">Risque</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Card 4 -->
-      <div class="code-card group" data-tags="assurance sante pricing">
-        <div class="code-card-preview bg-gradient-to-br from-teal-950 to-navy-900">
-          <div class="w-full h-full flex items-center justify-center p-3">
-            <svg viewBox="0 0 100 70" class="w-full h-20">
-              <polyline points="5,60 20,45 35,50 50,30 65,35 80,15 95,20" fill="none" stroke="#2dd4bf" stroke-width="2.5" stroke-linecap="round"/>
-              <circle cx="50" cy="30" r="4" fill="#f59e0b"/>
-              <circle cx="80" cy="15" r="4" fill="#2dd4bf"/>
-            </svg>
-          </div>
-          <span class="code-lang-badge bg-teal-500/20 text-teal-300">R</span>
-        </div>
-        <div class="code-card-body">
-          <h3 class="code-card-title">Prédiction Prime Assurance Santé — GLM Gamma</h3>
-          <p class="code-card-dataset">Prédiction Prime Assurance Santé</p>
-          <div class="code-card-footer">
-            <div class="code-card-votes">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
-              <span>29</span>
-            </div>
-            <span class="code-tag">Pricing</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- Section Assurance -->
-  <section class="mb-12 code-section" data-section="assurance">
-    <div class="flex items-center justify-between mb-5">
-      <div class="flex items-center gap-2">
-        <svg class="w-5 h-5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
-        </svg>
-        <h2 class="text-lg font-bold text-gray-900 dark:text-white">Assurance</h2>
-      </div>
-    </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <% cards.forEach(nb => { %>
+      <div class="code-card bg-white dark:bg-navy-800 rounded-2xl overflow-hidden border border-gray-100 dark:border-navy-700 hover:border-primary-500/50 hover:shadow-xl transition-all duration-200 cursor-pointer flex flex-col"
+           data-tags="<%= nb.tags %>">
 
-      <div class="code-card" data-tags="assurance pricing glm">
-        <div class="code-card-preview bg-gradient-to-br from-blue-950 to-slate-900">
-          <svg viewBox="0 0 100 60" class="w-full h-20 px-3 py-2">
-            <rect x="10" y="30" width="10" height="30" fill="#3b82f6" rx="1"/>
-            <rect x="25" y="20" width="10" height="40" fill="#3b82f6" rx="1"/>
-            <rect x="40" y="10" width="10" height="50" fill="#60a5fa" rx="1"/>
-            <rect x="55" y="25" width="10" height="35" fill="#3b82f6" rx="1"/>
-            <rect x="70" y="35" width="10" height="25" fill="#3b82f6" rx="1"/>
-          </svg>
-          <span class="code-lang-badge bg-blue-500/20 text-blue-300">Python</span>
+        <!-- Preview -->
+        <div class="relative h-36 bg-gradient-to-br <%= nb.bg %> flex items-center justify-center overflow-hidden">
+          <%- nb.svg %>
+          <!-- Badge langue -->
+          <span class="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style="background: <%= nb.langColor %>22; border: 1px solid <%= nb.langColor %>55; color: <%= nb.langColor %>">
+            <%= nb.lang %>
+          </span>
         </div>
-        <div class="code-card-body">
-          <h3 class="code-card-title">Sévérité Sinistres — GLM Gamma (Tweedie)</h3>
-          <p class="code-card-dataset">Sévérité Sinistres Auto RC France</p>
-          <div class="code-card-footer">
-            <div class="code-card-votes"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg><span>22</span></div>
-            <span class="code-tag">GLM</span>
+
+        <!-- Corps -->
+        <div class="flex flex-col flex-1 p-4">
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-white leading-snug line-clamp-2 mb-1.5">
+            <%= nb.title %>
+          </h3>
+          <p class="text-xs text-gray-400 dark:text-gray-500 mb-1">Mis à jour <%= nb.updated %></p>
+          <p class="text-xs text-primary-500 dark:text-primary-400 font-medium truncate mb-3"><%= nb.dataset %></p>
+
+          <!-- Footer -->
+          <div class="mt-auto flex items-center justify-between">
+            <button class="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-navy-600 rounded-full px-2.5 py-1 hover:border-primary-500 hover:text-primary-500 transition-colors">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+              <span><%= nb.votes %></span>
+            </button>
+            <span class="text-[10px] font-medium bg-gray-100 dark:bg-navy-700 text-gray-500 dark:text-gray-400 px-2 py-0.5 rounded-full">
+              <%= nb.tag %>
+            </span>
           </div>
         </div>
-      </div>
 
-      <div class="code-card" data-tags="assurance fraude ml">
-        <div class="code-card-preview bg-gradient-to-br from-orange-950 to-slate-900">
-          <svg viewBox="0 0 100 60" class="w-full h-20 px-3 py-2">
-            <circle cx="20" cy="45" r="3" fill="#9ca3af" opacity="0.5"/>
-            <circle cx="40" cy="40" r="3" fill="#9ca3af" opacity="0.5"/>
-            <circle cx="60" cy="42" r="3" fill="#9ca3af" opacity="0.5"/>
-            <circle cx="80" cy="38" r="3" fill="#9ca3af" opacity="0.5"/>
-            <circle cx="30" cy="12" r="5" fill="#f97316"/>
-            <circle cx="55" cy="8"  r="4" fill="#f97316"/>
-            <circle cx="75" cy="15" r="4" fill="#f97316"/>
-          </svg>
-          <span class="code-lang-badge bg-orange-500/20 text-orange-300">Python</span>
-        </div>
-        <div class="code-card-body">
-          <h3 class="code-card-title">Fraude Déclarations Assurance — LightGBM</h3>
-          <p class="code-card-dataset">Fraude Déclarations Sinistres Auto</p>
-          <div class="code-card-footer">
-            <div class="code-card-votes"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg><span>18</span></div>
-            <span class="code-tag">Fraude</span>
-          </div>
-        </div>
       </div>
-
-      <div class="code-card" data-tags="assurance sante ml">
-        <div class="code-card-preview bg-gradient-to-br from-emerald-950 to-slate-900">
-          <svg viewBox="0 0 100 60" class="w-full h-20 px-3 py-2">
-            <polyline points="5,55 25,40 45,45 65,20 85,25" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"/>
-            <polyline points="5,55 25,50 45,52 65,48 85,45" fill="none" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="3" stroke-linecap="round"/>
-          </svg>
-          <span class="code-lang-badge bg-emerald-500/20 text-emerald-300">Python</span>
-        </div>
-        <div class="code-card-body">
-          <h3 class="code-card-title">Indicateurs Diabète — Régression Logistique</h3>
-          <p class="code-card-dataset">Indicateurs Santé Diabète (CDC BRFSS)</p>
-          <div class="code-card-footer">
-            <div class="code-card-votes"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg><span>15</span></div>
-            <span class="code-tag">Santé</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="code-card" data-tags="assurance ml churn">
-        <div class="code-card-preview bg-gradient-to-br from-pink-950 to-slate-900">
-          <svg viewBox="0 0 100 60" class="w-full h-20 px-3 py-2">
-            <circle cx="50" cy="30" r="25" fill="none" stroke="#374151" stroke-width="6"/>
-            <circle cx="50" cy="30" r="25" fill="none" stroke="#ec4899" stroke-width="6" stroke-linecap="round"
-              stroke-dasharray="78 79" stroke-dashoffset="20"/>
-            <text x="50" y="35" text-anchor="middle" fill="#f9fafb" font-size="12" font-weight="bold">73%</text>
-          </svg>
-          <span class="code-lang-badge bg-pink-500/20 text-pink-300">Python</span>
-        </div>
-        <div class="code-card-body">
-          <h3 class="code-card-title">Résiliation Clients Assurance — CatBoost</h3>
-          <p class="code-card-dataset">Résiliation Clients Assurance</p>
-          <div class="code-card-footer">
-            <div class="code-card-votes"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg><span>12</span></div>
-            <span class="code-tag">Churn</span>
-          </div>
-        </div>
-      </div>
-
+      <% }); %>
     </div>
   </section>
+  <% }); %>
 
-  <!-- Section Banque & Finance -->
-  <section class="mb-12 code-section" data-section="banque">
-    <div class="flex items-center justify-between mb-5">
-      <div class="flex items-center gap-2">
-        <svg class="w-5 h-5 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-        </svg>
-        <h2 class="text-lg font-bold text-gray-900 dark:text-white">Banque & Finance</h2>
-      </div>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-
-      <div class="code-card" data-tags="banque risque ml">
-        <div class="code-card-preview bg-gradient-to-br from-yellow-950 to-slate-900">
-          <svg viewBox="0 0 100 60" class="w-full h-20 px-3 py-2">
-            <rect x="0" y="0" width="100" height="60" fill="none"/>
-            <polyline points="5,50 20,35 35,40 50,20 65,28 80,10 95,15" fill="none" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/>
-            <circle cx="50" cy="20" r="3.5" fill="#f59e0b"/>
-            <circle cx="80" cy="10" r="3.5" fill="#ef4444"/>
-          </svg>
-          <span class="code-lang-badge bg-yellow-500/20 text-yellow-300">Python</span>
-        </div>
-        <div class="code-card-body">
-          <h3 class="code-card-title">Prédiction Défaut de Prêt — XGBoost</h3>
-          <p class="code-card-dataset">Prédiction Défaut Prêts Bancaires</p>
-          <div class="code-card-footer">
-            <div class="code-card-votes"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg><span>26</span></div>
-            <span class="code-tag">Risque</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="code-card" data-tags="banque churn ml">
-        <div class="code-card-preview bg-gradient-to-br from-cyan-950 to-slate-900">
-          <svg viewBox="0 0 100 60" class="w-full h-20 px-3 py-2">
-            <rect x="8"  y="20" width="15" height="40" fill="#06b6d4" rx="2"/>
-            <rect x="28" y="10" width="15" height="50" fill="#22d3ee" rx="2"/>
-            <rect x="48" y="30" width="15" height="30" fill="#06b6d4" rx="2"/>
-            <rect x="68" y="15" width="15" height="45" fill="#22d3ee" rx="2"/>
-          </svg>
-          <span class="code-lang-badge bg-cyan-500/20 text-cyan-300">Python</span>
-        </div>
-        <div class="code-card-body">
-          <h3 class="code-card-title">Churn Bancaire — Analyse & Prédiction</h3>
-          <p class="code-card-dataset">Prédiction Churn Clients Bancaires</p>
-          <div class="code-card-footer">
-            <div class="code-card-votes"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg><span>21</span></div>
-            <span class="code-tag">Churn</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="code-card" data-tags="banque ml segmentation">
-        <div class="code-card-preview bg-gradient-to-br from-indigo-950 to-slate-900">
-          <svg viewBox="0 0 100 60" class="w-full h-20 px-3 py-2">
-            <circle cx="25" cy="20" r="12" fill="#818cf8" opacity="0.7"/>
-            <circle cx="55" cy="15" r="10" fill="#6366f1" opacity="0.7"/>
-            <circle cx="75" cy="25" r="8"  fill="#a5b4fc" opacity="0.7"/>
-            <circle cx="35" cy="45" r="9"  fill="#4f46e5" opacity="0.7"/>
-            <circle cx="65" cy="48" r="11" fill="#818cf8" opacity="0.7"/>
-          </svg>
-          <span class="code-lang-badge bg-indigo-500/20 text-indigo-300">Python</span>
-        </div>
-        <div class="code-card-body">
-          <h3 class="code-card-title">Segmentation Clients Bancaires — K-Means</h3>
-          <p class="code-card-dataset">Segmentation Clients Bancaires</p>
-          <div class="code-card-footer">
-            <div class="code-card-votes"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg><span>19</span></div>
-            <span class="code-tag">Clustering</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="code-card" data-tags="banque ml pret">
-        <div class="code-card-preview bg-gradient-to-br from-lime-950 to-slate-900">
-          <svg viewBox="0 0 100 60" class="w-full h-20 px-3 py-2">
-            <circle cx="50" cy="30" r="22" fill="none" stroke="#374151" stroke-width="6"/>
-            <circle cx="50" cy="30" r="22" fill="none" stroke="#84cc16" stroke-width="6" stroke-linecap="round"
-              stroke-dasharray="88 50" stroke-dashoffset="20"/>
-            <text x="50" y="35" text-anchor="middle" fill="#f9fafb" font-size="12" font-weight="bold">81%</text>
-          </svg>
-          <span class="code-lang-badge bg-lime-500/20 text-lime-300">Python</span>
-        </div>
-        <div class="code-card-body">
-          <h3 class="code-card-title">Approbation Prêt PME — Pipeline Complet</h3>
-          <p class="code-card-dataset">Approbation Prêts PME (SBA USA)</p>
-          <div class="code-card-footer">
-            <div class="code-card-votes"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg><span>14</span></div>
-            <span class="code-tag">Classification</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- Section Fraude -->
-  <section class="mb-12 code-section" data-section="fraude">
-    <div class="flex items-center justify-between mb-5">
-      <div class="flex items-center gap-2">
-        <svg class="w-5 h-5 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-        </svg>
-        <h2 class="text-lg font-bold text-gray-900 dark:text-white">Détection de Fraude</h2>
-      </div>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-
-      <div class="code-card" data-tags="fraude banque ml">
-        <div class="code-card-preview bg-gradient-to-br from-red-950 to-gray-900">
-          <svg viewBox="0 0 100 60" class="w-full h-20 px-3 py-2">
-            <rect x="5" y="5" width="90" height="50" rx="3" fill="#1f2937" stroke="#374151" stroke-width="1"/>
-            <text x="10" y="20" fill="#10b981" font-size="7" font-family="monospace">precision: 0.97</text>
-            <text x="10" y="30" fill="#10b981" font-size="7" font-family="monospace">recall:    0.84</text>
-            <text x="10" y="40" fill="#10b981" font-size="7" font-family="monospace">f1-score:  0.90</text>
-            <text x="10" y="50" fill="#f59e0b" font-size="7" font-family="monospace">AUC-ROC:   0.975</text>
-          </svg>
-          <span class="code-lang-badge bg-red-500/20 text-red-300">Python</span>
-        </div>
-        <div class="code-card-body">
-          <h3 class="code-card-title">Fraude Paiements — Isolation Forest + SMOTE</h3>
-          <p class="code-card-dataset">Détection Fraude Paiements en Ligne</p>
-          <div class="code-card-footer">
-            <div class="code-card-votes"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg><span>33</span></div>
-            <span class="code-tag">Fraude</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="code-card" data-tags="fraude banque ml">
-        <div class="code-card-preview bg-gradient-to-br from-rose-950 to-gray-900">
-          <svg viewBox="0 0 100 60" class="w-full h-20 px-3 py-2">
-            <!-- Confusion matrix -->
-            <rect x="10" y="10" width="35" height="20" fill="#22c55e" rx="2"/><text x="27" y="24" text-anchor="middle" fill="white" font-size="9" font-weight="bold">TN</text>
-            <rect x="55" y="10" width="35" height="20" fill="#ef4444" rx="2"/><text x="72" y="24" text-anchor="middle" fill="white" font-size="9" font-weight="bold">FP</text>
-            <rect x="10" y="38" width="35" height="20" fill="#f97316" rx="2"/><text x="27" y="52" text-anchor="middle" fill="white" font-size="9" font-weight="bold">FN</text>
-            <rect x="55" y="38" width="35" height="20" fill="#22c55e" rx="2"/><text x="72" y="52" text-anchor="middle" fill="white" font-size="9" font-weight="bold">TP</text>
-          </svg>
-          <span class="code-lang-badge bg-rose-500/20 text-rose-300">Python</span>
-        </div>
-        <div class="code-card-body">
-          <h3 class="code-card-title">Fraude PaySim — Random Forest & SHAP</h3>
-          <p class="code-card-dataset">Simulation Fraude Mobile Money (PaySim)</p>
-          <div class="code-card-footer">
-            <div class="code-card-votes"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg><span>28</span></div>
-            <span class="code-tag">Fraude</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="code-card" data-tags="fraude banque ml">
-        <div class="code-card-preview bg-gradient-to-br from-amber-950 to-gray-900">
-          <svg viewBox="0 0 100 60" class="w-full h-20 px-3 py-2">
-            <!-- ROC curve -->
-            <line x1="5" y1="55" x2="95" y2="55" stroke="#374151" stroke-width="1"/>
-            <line x1="5" y1="55" x2="5"  y2="5"  stroke="#374151" stroke-width="1"/>
-            <line x1="5" y1="55" x2="95" y2="5" stroke="#6b7280" stroke-width="1" stroke-dasharray="3"/>
-            <path d="M5,55 Q15,10 40,8 T95,5" fill="none" stroke="#f59e0b" stroke-width="2.5"/>
-            <text x="55" y="40" fill="#f59e0b" font-size="8">AUC=0.96</text>
-          </svg>
-          <span class="code-lang-badge bg-amber-500/20 text-amber-300">Python</span>
-        </div>
-        <div class="code-card-body">
-          <h3 class="code-card-title">Anomalies Transactions — Autoencoder Neural</h3>
-          <p class="code-card-dataset">Détection Anomalies Transactions Bancaires</p>
-          <div class="code-card-footer">
-            <div class="code-card-votes"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg><span>24</span></div>
-            <span class="code-tag">Deep Learning</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="code-card" data-tags="fraude assurance ml">
-        <div class="code-card-preview bg-gradient-to-br from-purple-950 to-gray-900">
-          <svg viewBox="0 0 100 60" class="w-full h-20 px-3 py-2">
-            <polyline points="5,55 20,48 35,30 50,35 65,12 80,18 95,10" fill="none" stroke="#a855f7" stroke-width="2.5" stroke-linecap="round"/>
-            <circle cx="65" cy="12" r="4" fill="#f59e0b"/>
-            <line x1="65" y1="12" x2="65" y2="55" stroke="#f59e0b" stroke-width="1" stroke-dasharray="2"/>
-          </svg>
-          <span class="code-lang-badge bg-purple-500/20 text-purple-300">Python</span>
-        </div>
-        <div class="code-card-body">
-          <h3 class="code-card-title">Fraude Ouverture Compte — Gradient Boosting</h3>
-          <p class="code-card-dataset">Fraude Ouverture Compte Bancaire — NeurIPS</p>
-          <div class="code-card-footer">
-            <div class="code-card-votes"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg><span>20</span></div>
-            <span class="code-tag">Fraude</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- Bientôt disponible -->
+  <!-- CTA -->
   <div class="card p-8 flex flex-col sm:flex-row items-center gap-6 mb-8">
     <div class="w-14 h-14 rounded-2xl bg-primary-500/10 flex items-center justify-center flex-shrink-0">
       <svg class="w-7 h-7 text-primary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -459,9 +339,7 @@
     </div>
     <div class="flex-1 text-center sm:text-left">
       <h3 class="font-semibold text-gray-900 dark:text-white mb-1">Partagez votre code</h3>
-      <p class="text-sm text-gray-500 dark:text-gray-400">
-        Vous avez un notebook ou un script sur des données d'assurance ou de banque ? Soumettez-le à la communauté.
-      </p>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Un notebook ou script sur des données d'assurance ou de banque ? Soumettez-le à la communauté.</p>
     </div>
     <a href="/communaute" class="flex-shrink-0 px-5 py-2.5 bg-gradient-to-r from-primary-500 to-teal-500 hover:from-primary-600 hover:to-teal-600 text-white font-semibold rounded-xl transition-all text-sm shadow hover:shadow-lg whitespace-nowrap">
       Contribuer
@@ -470,53 +348,24 @@
 
 </div>
 
-<style>
-.code-filter-btn {
-  @apply px-4 py-1.5 text-sm font-medium rounded-full border border-gray-200 dark:border-navy-600 text-gray-600 dark:text-gray-300 hover:border-primary-500 hover:text-primary-500 transition-colors cursor-pointer;
-}
-.code-filter-btn.active {
-  @apply border-primary-500 bg-primary-500/10 text-primary-600 dark:text-primary-400;
-}
-.code-card {
-  @apply bg-white dark:bg-navy-800 rounded-2xl overflow-hidden border border-gray-100 dark:border-navy-700 hover:border-primary-500/40 hover:shadow-lg transition-all duration-200 cursor-pointer;
-}
-.code-card-preview {
-  @apply relative h-28 flex items-center justify-center overflow-hidden;
-}
-.code-lang-badge {
-  @apply absolute top-2 right-2 text-[10px] font-semibold px-2 py-0.5 rounded-full backdrop-blur-sm;
-}
-.code-card-body {
-  @apply p-4;
-}
-.code-card-title {
-  @apply text-sm font-semibold text-gray-900 dark:text-white mb-1 leading-snug line-clamp-2;
-}
-.code-card-dataset {
-  @apply text-xs text-primary-500 dark:text-primary-400 mb-3 truncate;
-}
-.code-card-footer {
-  @apply flex items-center justify-between;
-}
-.code-card-votes {
-  @apply flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-navy-600 rounded-full px-2.5 py-0.5;
-}
-.code-tag {
-  @apply text-[10px] font-medium bg-gray-100 dark:bg-navy-700 text-gray-500 dark:text-gray-400 px-2 py-0.5 rounded-full;
-}
-</style>
-
 <script>
 // Filtres
 document.getElementById('code-filters').addEventListener('click', function(e) {
-  const btn = e.target.closest('.code-filter-btn');
+  const btn = e.target.closest('button[data-filter]');
   if (!btn) return;
-  document.querySelectorAll('.code-filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+  this.querySelectorAll('button').forEach(b => {
+    b.className = 'inactive-pill filter-pill';
+  });
+  btn.className = 'active-pill filter-pill';
   const filter = btn.dataset.filter;
   document.querySelectorAll('.code-card').forEach(card => {
     const tags = (card.dataset.tags || '') + ' ' + (card.closest('.code-section')?.dataset.section || '');
-    card.style.display = (filter === 'all' || tags.includes(filter)) ? '' : 'none';
+    card.closest('div').style.display = (filter === 'all' || tags.includes(filter)) ? '' : 'none';
+  });
+  // Masquer les sections vides
+  document.querySelectorAll('.code-section').forEach(sec => {
+    const visible = [...sec.querySelectorAll('.code-card')].some(c => c.closest('div').style.display !== 'none');
+    sec.style.display = visible ? '' : 'none';
   });
 });
 
@@ -525,7 +374,39 @@ document.getElementById('code-search').addEventListener('input', function() {
   const q = this.value.toLowerCase().trim();
   document.querySelectorAll('.code-card').forEach(card => {
     const text = card.textContent.toLowerCase();
-    card.style.display = (!q || text.includes(q)) ? '' : 'none';
+    card.closest('div').style.display = (!q || text.includes(q)) ? '' : 'none';
   });
 });
 </script>
+
+<style>
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  border: 1px solid;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.inactive-pill {
+  border-color: #e5e7eb;
+  color: #6b7280;
+  background: transparent;
+}
+.dark .inactive-pill {
+  border-color: #334155;
+  color: #9ca3af;
+}
+.inactive-pill:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+.active-pill {
+  border-color: #3b82f6;
+  background: rgba(59,130,246,0.12);
+  color: #3b82f6;
+}
+</style>
