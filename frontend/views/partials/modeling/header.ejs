@@ -165,14 +165,20 @@ async function trackAndDownload(datasetId, fallbackUrl) {
     if (badge && data.download_count) {
       badge.textContent = '· ' + data.download_count.toLocaleString('fr-FR');
     }
+    // Fetch as blob to force download (cross-origin download attr is ignored by browsers)
+    const fileRes = await fetch(url);
+    if (!fileRes.ok) throw new Error('fetch failed');
+    const blob = await fileRes.blob();
+    const blobUrl = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url;
-    a.download = '';
+    a.href = blobUrl;
+    a.download = url.split('/').pop().split('?')[0] || 'dataset.csv';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
   } catch {
-    window.location.href = fallbackUrl;
+    window.open(fallbackUrl, '_blank');
   }
 }
 
