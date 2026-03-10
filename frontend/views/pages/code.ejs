@@ -424,13 +424,13 @@
       <span class="text-sm text-gray-400"><%= cards.length %> notebooks</span>
     </div>
 
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-3">
       <% cards.forEach(nb => { %>
       <div class="code-card bg-white dark:bg-navy-800 rounded-xl overflow-hidden border border-white/5 hover:border-primary-500/40 hover:shadow-lg hover:shadow-primary-900/20 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex flex-col"
            data-tags="<%= nb.tags %>">
 
         <!-- Preview -->
-        <div class="relative h-28 flex items-center justify-center overflow-hidden" style="background: linear-gradient(135deg, var(--tw-gradient-stops));">
+        <div class="relative h-20 flex items-center justify-center overflow-hidden" style="background: linear-gradient(135deg, var(--tw-gradient-stops));">
           <div class="absolute inset-0 bg-gradient-to-br <%= nb.bg %>"></div>
           <div class="relative z-10 w-full h-full"><%- nb.svg %></div>
           <!-- overlay bas -->
