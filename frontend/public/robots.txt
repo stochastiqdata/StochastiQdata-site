@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Pages privées / sans intérêt SEO
+Disallow: /profile
+Disallow: /settings
+Disallow: /favorites
+Disallow: /api/
+
+Sitemap: https://www.stochastiqdata.com/sitemap.xml

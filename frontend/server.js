@@ -96,6 +96,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
 }));
 
 // Common data middleware
+const SITE_URL = process.env.SITE_URL || 'https://www.stochastiqdata.com';
 app.use((req, res, next) => {
   res.locals.currentPath = req.path;
   res.locals.currentDate = new Date().toLocaleDateString('fr-FR', {
@@ -108,7 +109,25 @@ app.use((req, res, next) => {
     hour: '2-digit',
     minute: '2-digit'
   });
-
+  // SEO defaults (overridable per route)
+  res.locals.siteUrl = SITE_URL;
+  res.locals.pageTitle = null;
+  res.locals.pageDescription = null;
+  res.locals.canonicalPath = null;
+  res.locals.ogType = 'website';
+  res.locals.noIndex = false;
+  res.locals.jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'StochastiQdata',
+    url: SITE_URL,
+    description: 'Plateforme de référence pour les professionnels de l\'assurance et de la banque : actuaires, data scientists, analystes risque, souscripteurs.',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: { '@type': 'EntryPoint', urlTemplate: SITE_URL + '/?search={search_term_string}' },
+      'query-input': 'required name=search_term_string'
+    }
+  };
   next();
 });
 
@@ -183,36 +202,39 @@ app.get('/', async (req, res, next) => {
       page: parseInt(page),
       totalPages: Math.ceil((response.data.total || 0) / 12),
       filters: { source, tags, search, sortBy, modelingTypes },
-      TAG_LABELS,
-      SOURCE_LABELS,
-      MODEL_LABELS,
-      MODELING_TYPE_LABELS
+      TAG_LABELS, SOURCE_LABELS, MODEL_LABELS, MODELING_TYPE_LABELS,
+      pageTitle: 'Datasets Assurance & Banque',
+      pageDescription: 'Explorez et téléchargez des datasets qualifiés pour la modélisation en assurance et en banque : tarification IARD, provisionnement, détection de fraude, risque de crédit, mortalité.',
     });
   } catch (error) {
     logger.error('Dashboard error', { error: error.message, stack: error.stack });
     res.render('pages/dashboard', {
-      datasets: [],
-      total: 0,
-      page: 1,
-      totalPages: 0,
-      filters: {},
-      TAG_LABELS,
-      SOURCE_LABELS,
-      MODEL_LABELS,
-      MODELING_TYPE_LABELS,
-      error: 'Impossible de charger les datasets'
+      datasets: [], total: 0, page: 1, totalPages: 0, filters: {},
+      TAG_LABELS, SOURCE_LABELS, MODEL_LABELS, MODELING_TYPE_LABELS,
+      error: 'Impossible de charger les datasets',
+      pageTitle: 'Datasets Assurance & Banque',
+      pageDescription: 'Plateforme de datasets pour les professionnels de l\'assurance et de la banque.',
     });
   }
 });
 
 // Modeling overview
 app.get('/modeling', (req, res) => {
-  res.render('pages/modelisation', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
+  res.render('pages/modelisation', {
+    TAG_LABELS, SOURCE_LABELS, MODEL_LABELS,
+    pageTitle: 'Modélisation & Machine Learning',
+    pageDescription: 'Workflows de modélisation pour l\'assurance et la banque : GLM, XGBoost, réseaux de neurones, séries temporelles. Benchmarks et comparatifs pour actuaires et data scientists.',
+  });
 });
 
 // Alias français pour modeling
 app.get('/modelisation', (req, res) => {
-  res.render('pages/modelisation', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
+  res.render('pages/modelisation', {
+    TAG_LABELS, SOURCE_LABELS, MODEL_LABELS,
+    pageTitle: 'Modélisation & Machine Learning',
+    pageDescription: 'Workflows de modélisation pour l\'assurance et la banque : GLM, XGBoost, réseaux de neurones, séries temporelles. Benchmarks et comparatifs pour actuaires et data scientists.',
+    canonicalPath: '/modeling',
+  });
 });
 
 // Comparateur de datasets
@@ -277,18 +299,30 @@ app.get('/modeling/preview/:type', (req, res) => {
 app.get('/modeling/:id', async (req, res, next) => {
   try {
     const response = await axios.get(`${API_URL}/datasets/${req.params.id}`);
+    const ds = response.data;
+    const dsTitle = ds.name || 'Dataset';
+    const dsTags = (ds.tags || []).join(', ');
     res.render('pages/modeling', {
-      dataset: response.data,
+      dataset: ds,
       notebooks: [],
-      TAG_LABELS,
-      SOURCE_LABELS,
-      MODEL_LABELS
+      TAG_LABELS, SOURCE_LABELS, MODEL_LABELS,
+      pageTitle: dsTitle,
+      pageDescription: ds.description ? ds.description.slice(0, 160) : `Explorez et modélisez le dataset ${dsTitle} — ${dsTags}. Score qualité, aperçu des données, benchmarks et notebooks.`,
+      ogType: 'article',
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': 'Dataset',
+        name: dsTitle,
+        description: ds.description || '',
+        url: `${SITE_URL}/modeling/${ds.id}`,
+        keywords: dsTags,
+        creator: { '@type': 'Organization', name: 'StochastiQdata', url: SITE_URL },
+        ...(ds.row_count && { size: `${ds.row_count} lignes` }),
+        ...(ds.license && { license: ds.license }),
+      },
     });
   } catch (error) {
-    logger.error('Dataset fetch error', {
-      datasetId: req.params.id,
-      error: error.message
-    });
+    logger.error('Dataset fetch error', { datasetId: req.params.id, error: error.message });
     next(error);
   }
 });
@@ -297,10 +331,12 @@ app.get('/modeling/:id', async (req, res, next) => {
 app.get('/modeling/:id/docs', async (req, res, next) => {
   try {
     const response = await axios.get(`${API_URL}/datasets/${req.params.id}`);
+    const ds = response.data;
     res.render('pages/dataset-docs', {
-      dataset: response.data,
-      TAG_LABELS,
-      SOURCE_LABELS
+      dataset: ds,
+      TAG_LABELS, SOURCE_LABELS,
+      pageTitle: `Documentation — ${ds.name || 'Dataset'}`,
+      pageDescription: `Documentation complète du dataset ${ds.name} : dictionnaire des variables, guide d'utilisation, citation et licence.`,
     });
   } catch (error) {
     next(error);
@@ -313,14 +349,12 @@ app.get('/models/:id', async (req, res, next) => {
     const modelRes = await axios.get(`${API_URL}/models/${req.params.id}`);
     const model = modelRes.data;
 
-    // Fetch affiliated dataset for breadcrumb + link badge
     let dataset = null;
     try {
       const dsRes = await axios.get(`${API_URL}/datasets/${model.dataset_id}`);
       dataset = dsRes.data;
     } catch {}
 
-    // Fetch author profile
     let author = null;
     if (model.created_by && model.created_by !== 'anonymous') {
       try {
@@ -329,7 +363,12 @@ app.get('/models/:id', async (req, res, next) => {
       } catch {}
     }
 
-    res.render('pages/model', { model, dataset, author, TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
+    res.render('pages/model', {
+      model, dataset, author, TAG_LABELS, SOURCE_LABELS, MODEL_LABELS,
+      pageTitle: model.name || 'Modèle',
+      pageDescription: model.description ? model.description.slice(0, 160) : `Modèle ${model.name} — performances, métriques et code source.`,
+      ogType: 'article',
+    });
   } catch (error) {
     logger.error('Model fetch error', { modelId: req.params.id, error: error.message });
     next(error);
@@ -359,50 +398,113 @@ app.get('/notebooks', async (req, res) => {
   } catch (e) {
     logger.error('Notebooks fetch error', { error: e.message });
   }
-  res.render('pages/notebooks', { notebooks, TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
+  res.render('pages/notebooks', {
+    notebooks, TAG_LABELS, SOURCE_LABELS, MODEL_LABELS,
+    pageTitle: 'Notebooks & Tutoriels',
+    pageDescription: 'Notebooks Jupyter et tutoriels de modélisation pour l\'assurance et la banque : tarification GLM, détection de fraude, provisionnement, machine learning.',
+  });
 });
 
 // Profile
 app.get('/profile', (req, res) => {
-  res.render('pages/profile', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
+  res.render('pages/profile', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS, noIndex: true });
 });
 
 // Settings
 app.get('/settings', (req, res) => {
-  res.render('pages/settings', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
+  res.render('pages/settings', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS, noIndex: true });
 });
 
 // Add dataset
 app.get('/add-dataset', (req, res) => {
-  res.render('pages/add-dataset', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
+  res.render('pages/add-dataset', {
+    TAG_LABELS, SOURCE_LABELS, MODEL_LABELS,
+    pageTitle: 'Proposer un Dataset',
+    pageDescription: 'Partagez un dataset assurance ou bancaire avec la communauté des professionnels de la donnée.',
+  });
 });
 
 // Guide
 app.get('/guide', (req, res) => {
-  res.render('pages/guide', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
+  res.render('pages/guide', {
+    TAG_LABELS, SOURCE_LABELS, MODEL_LABELS,
+    pageTitle: 'Guide d\'utilisation',
+    pageDescription: 'Comment utiliser StochastiQdata : explorer les datasets, lire les scores qualité, télécharger et contribuer à la communauté.',
+  });
 });
 
 // FAQ
 app.get('/faq', (req, res) => {
-  res.render('pages/faq', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
+  res.render('pages/faq', {
+    TAG_LABELS, SOURCE_LABELS, MODEL_LABELS,
+    pageTitle: 'FAQ',
+    pageDescription: 'Réponses aux questions fréquentes sur StochastiQdata : datasets disponibles, méthodologie de scoring, profils métier et contribution.',
+  });
 });
 
 // Mission
 app.get('/mission', (req, res) => {
-  res.render('pages/mission', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
+  res.render('pages/mission', {
+    TAG_LABELS, SOURCE_LABELS, MODEL_LABELS,
+    pageTitle: 'Notre Mission',
+    pageDescription: 'StochastiQdata : rendre les données de l\'assurance et de la banque accessibles et utilisables par tous les professionnels de la donnée.',
+  });
 });
 
 // Legal pages
 app.get('/mentions-legales', (req, res) => {
-  res.render('pages/mentions-legales', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
+  res.render('pages/mentions-legales', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS, pageTitle: 'Mentions Légales', noIndex: true });
 });
 
 app.get('/politique-confidentialite', (req, res) => {
-  res.render('pages/politique-confidentialite', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
+  res.render('pages/politique-confidentialite', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS, pageTitle: 'Politique de Confidentialité', noIndex: true });
 });
 
 app.get('/cgu', (req, res) => {
-  res.render('pages/cgu', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS });
+  res.render('pages/cgu', { TAG_LABELS, SOURCE_LABELS, MODEL_LABELS, pageTitle: 'Conditions Générales d\'Utilisation', noIndex: true });
+});
+
+// Sitemap XML dynamique
+app.get('/sitemap.xml', async (_req, res) => {
+  const staticPages = [
+    { path: '/', priority: '1.0', changefreq: 'daily' },
+    { path: '/modeling', priority: '0.9', changefreq: 'weekly' },
+    { path: '/notebooks', priority: '0.8', changefreq: 'weekly' },
+    { path: '/compare', priority: '0.7', changefreq: 'monthly' },
+    { path: '/guide', priority: '0.6', changefreq: 'monthly' },
+    { path: '/faq', priority: '0.6', changefreq: 'monthly' },
+    { path: '/mission', priority: '0.5', changefreq: 'monthly' },
+  ];
+
+  let datasetUrls = [];
+  try {
+    const response = await axios.get(`${API_URL}/datasets?page_size=200&sort_by=created_at`);
+    const datasets = response.data.datasets || [];
+    datasetUrls = datasets.map(ds => ({
+      path: `/modeling/${ds.id}`,
+      priority: '0.8',
+      changefreq: 'weekly',
+      lastmod: ds.updated_at ? ds.updated_at.slice(0, 10) : undefined,
+    }));
+  } catch (e) {
+    logger.error('Sitemap datasets fetch error', { error: e.message });
+  }
+
+  const allUrls = [...staticPages, ...datasetUrls];
+  const today = new Date().toISOString().slice(0, 10);
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${allUrls.map(u => `  <url>
+    <loc>${SITE_URL}${u.path}</loc>
+    <lastmod>${u.lastmod || today}</lastmod>
+    <changefreq>${u.changefreq}</changefreq>
+    <priority>${u.priority}</priority>
+  </url>`).join('\n')}
+</urlset>`;
+
+  res.header('Content-Type', 'application/xml');
+  res.send(xml);
 });
 
 // ============================================

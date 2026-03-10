@@ -3,13 +3,51 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>StochastiQdata - Datasets pour Actuaires</title>
+  <!-- ── Titre dynamique ── -->
+  <title><%= typeof pageTitle !== 'undefined' && pageTitle ? pageTitle + ' — StochastiQdata' : 'StochastiQdata — Datasets Assurance & Banque' %></title>
+
+  <!-- ── SEO ── -->
+  <meta name="description" content="<%= typeof pageDescription !== 'undefined' && pageDescription ? pageDescription : 'Plateforme de référence pour les professionnels de l\'assurance et de la banque : actuaires, data scientists, analystes risque, souscripteurs. Datasets qualifiés, modèles et notebooks.' %>">
+  <meta name="keywords" content="datasets assurance, données actuarielles, modélisation IARD, data science assurance, pricing, provisionnement, fraude, risque crédit, banque, machine learning assurance, actuariat">
+  <meta name="robots" content="<%= typeof noIndex !== 'undefined' && noIndex ? 'noindex, nofollow' : 'index, follow' %>">
+  <meta name="author" content="StochastiQdata">
+  <link rel="canonical" href="<%= siteUrl %><%- typeof canonicalPath !== 'undefined' && canonicalPath ? canonicalPath : currentPath %>">
+
+  <!-- ── Open Graph ── -->
+  <meta property="og:title" content="<%= typeof pageTitle !== 'undefined' && pageTitle ? pageTitle + ' — StochastiQdata' : 'StochastiQdata — Datasets Assurance & Banque' %>">
+  <meta property="og:description" content="<%= typeof pageDescription !== 'undefined' && pageDescription ? pageDescription : 'Plateforme de référence pour les professionnels de l\'assurance et de la banque.' %>">
+  <meta property="og:type" content="<%= typeof ogType !== 'undefined' && ogType ? ogType : 'website' %>">
+  <meta property="og:url" content="<%= siteUrl %><%- currentPath %>">
+  <meta property="og:image" content="<%= siteUrl %>/images/og-cover.png">
+  <meta property="og:site_name" content="StochastiQdata">
+  <meta property="og:locale" content="fr_FR">
+
+  <!-- ── Twitter Card ── -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="<%= typeof pageTitle !== 'undefined' && pageTitle ? pageTitle + ' — StochastiQdata' : 'StochastiQdata' %>">
+  <meta name="twitter:description" content="<%= typeof pageDescription !== 'undefined' && pageDescription ? pageDescription : 'Plateforme de référence pour les professionnels de l\'assurance et de la banque.' %>">
+  <meta name="twitter:image" content="<%= siteUrl %>/images/og-cover.png">
+
+  <!-- ── Favicon ── -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" href="/images/logo.png">
+
+  <!-- ── CSS critique (préchargé) ── -->
+  <link rel="preload" href="/css/output.css" as="style">
   <link rel="stylesheet" href="/css/output.css">
+
+  <!-- ── Fonts ── -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" href="/images/logo.png">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <!-- ── Chart.js (différé — non bloquant au rendu) ── -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+
+  <!-- ── JSON-LD ── -->
+  <% if (typeof jsonLd !== 'undefined' && jsonLd) { %>
+  <script type="application/ld+json"><%- JSON.stringify(jsonLd) %></script>
+  <% } %>
 </head>
 <body class="bg-mesh min-h-screen transition-colors duration-300">
   <!-- Background decorations -->
