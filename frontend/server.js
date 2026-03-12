@@ -137,7 +137,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// ============================================ ligne 16
+// ============================================
 // CONSTANTS
 // ============================================
 const TAG_LABELS = {
@@ -184,8 +184,17 @@ const MODELING_TYPE_LABELS = {
 // PAGE ROUTES
 // ============================================
 
-// Dashboard
-app.get('/', async (req, res, next) => {
+// Landing page
+app.get('/', (_req, res) => {
+  res.render('pages/landing', {
+    pageTitle: null,
+    pageDescription: 'Plateforme de référence pour les actuaires et data scientists. Datasets qualifiés, modèles, notebooks et benchmarks pour l\'assurance et la banque.',
+    canonicalPath: '/',
+  });
+});
+
+// Dashboard — explorateur de datasets
+app.get('/datasets', async (req, res) => {
   try {
     const { source, tags, search, sortBy = 'created_at', page = 1, modelingTypes } = req.query;
 
