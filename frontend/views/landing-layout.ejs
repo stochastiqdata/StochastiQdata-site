@@ -28,6 +28,15 @@
   <link rel="shortcut icon" href="/favicon.svg">
   <link rel="apple-touch-icon" href="/images/logo.png">
 
+  <!-- ── Applique le thème AVANT le rendu (évite le flash blanc) ── -->
+  <!-- Par défaut dark ; respecte le choix explicite "light" de l'utilisateur -->
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme');
+      if (t !== 'light') document.documentElement.classList.add('dark');
+    })();
+  </script>
+
   <link rel="preload" href="/css/output.css" as="style">
   <link rel="stylesheet" href="/css/output.css">
 
@@ -96,30 +105,48 @@
   <!-- ════════════════════════════════════════
        TOP NAVIGATION BAR
   ════════════════════════════════════════ -->
-  <nav id="topLandingNav" class="fixed top-0 left-0 right-0 z-[70] px-4 pt-4">
-    <div class="max-w-7xl mx-auto glass rounded-2xl px-4 py-3 flex items-center justify-between gap-4 shadow-glass">
+  <nav id="topLandingNav" class="fixed top-0 left-0 right-0 z-[70] lg:px-4 lg:pt-4">
+    <!--
+      Mobile : strip pleine largeur, bord bas, pas de border-radius
+      Desktop : pill glassmorphism centrée avec border-radius
+    -->
+    <div class="glass lg:rounded-2xl lg:max-w-7xl lg:mx-auto
+                px-4 py-2.5 lg:py-3
+                flex items-center justify-between gap-3
+                border-b border-white/6 lg:border lg:border-white/10
+                shadow-none lg:shadow-glass">
 
       <!-- Logo -->
-      <a href="/" class="flex items-center gap-3 flex-shrink-0 group">
-        <div class="w-9 h-9 rounded-xl overflow-hidden shadow-md group-hover:shadow-primary-500/30 transition-shadow duration-300 group-hover:scale-105 transform transition-transform">
+      <a href="/" class="flex items-center gap-2.5 flex-shrink-0 group">
+        <div class="w-8 h-8 lg:w-9 lg:h-9 rounded-xl overflow-hidden shadow-md group-hover:shadow-primary-500/30 group-hover:scale-105 transition-all duration-300">
           <img src="/images/logo.png" alt="StochastiQdata" class="w-full h-full object-cover">
         </div>
-        <span class="text-base font-bold text-white hidden sm:block">
+        <span class="text-sm lg:text-base font-bold text-white">
           StochastiQ<span class="text-primary-400">data</span>
         </span>
       </a>
 
-      <!-- Nav links — desktop -->
+      <!-- Nav links — desktop uniquement -->
       <div class="hidden lg:flex items-center gap-1 flex-1 justify-center">
-        <a href="/datasets"    class="top-nav-link px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/6 transition-colors">Datasets</a>
+        <a href="/datasets"     class="top-nav-link px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/6 transition-colors">Datasets</a>
         <a href="/modelisation" class="top-nav-link px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/6 transition-colors">Modèles</a>
-        <a href="/code"        class="top-nav-link px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/6 transition-colors">Code</a>
-        <a href="/communaute"  class="top-nav-link px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/6 transition-colors">Communauté</a>
-        <a href="/docs"        class="top-nav-link px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/6 transition-colors">Docs</a>
+        <a href="/code"         class="top-nav-link px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/6 transition-colors">Code</a>
+        <a href="/communaute"   class="top-nav-link px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/6 transition-colors">Communauté</a>
+        <a href="/docs"         class="top-nav-link px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/6 transition-colors">Docs</a>
       </div>
 
-      <!-- Actions — droite -->
-      <div class="flex items-center gap-2 flex-shrink-0">
+      <!-- Actions droite -->
+      <div class="flex items-center gap-1.5 flex-shrink-0">
+        <!-- CTA explorer (mobile uniquement — petit) -->
+        <a href="/datasets"
+           class="lg:hidden inline-flex items-center gap-1.5 px-3 py-2 bg-primary-500 hover:bg-primary-600 text-white text-xs font-semibold rounded-lg transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+          Explorer
+        </a>
+
         <!-- CTA Ajouter (desktop) -->
         <a href="/add-dataset"
            class="hidden lg:inline-flex items-center gap-1.5 px-4 py-2 bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 hover:border-primary-500/50 text-primary-400 hover:text-primary-300 text-sm font-medium rounded-xl transition-all duration-200">
@@ -129,24 +156,24 @@
 
         <!-- Dark mode toggle -->
         <button id="themeToggle"
-                class="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-primary-400 transition-all duration-200"
+                class="w-8 h-8 lg:w-9 lg:h-9 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-primary-400 transition-all duration-200"
                 title="Toggle dark mode">
-          <svg id="sunIcon" class="w-4.5 h-4.5 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg id="sunIcon" class="w-4 h-4 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/>
             <path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/>
             <path d="M2 12h2"/><path d="M20 12h2"/>
             <path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
           </svg>
-          <svg id="moonIcon" class="w-4.5 h-4.5 block dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg id="moonIcon" class="w-4 h-4 block dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
           </svg>
         </button>
 
-        <!-- Hamburger — ouvre la sidebar en drawer -->
+        <!-- Hamburger -->
         <button id="hamburgerBtn"
-                class="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all duration-200"
+                class="w-8 h-8 lg:w-9 lg:h-9 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all duration-200"
                 aria-label="Menu">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <svg class="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
             <path d="M3 12h18"/><path d="M3 6h18"/><path d="M3 18h18"/>
           </svg>
         </button>
@@ -155,7 +182,8 @@
   </nav>
 
   <!-- Page Content — full width, centré -->
-  <main class="pt-24 pb-8 px-4 lg:px-6">
+  <!-- pt-[52px] = hauteur nav mobile ; lg:pt-24 = pill + padding desktop -->
+  <main class="pt-[52px] lg:pt-24 pb-8 px-4 lg:px-6">
     <div class="max-w-7xl mx-auto">
       <%- body %>
     </div>

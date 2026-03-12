@@ -70,72 +70,72 @@
 <!-- ══════════════════════════════════════════════
      HERO — full width
 ══════════════════════════════════════════════ -->
-<section class="relative overflow-hidden rounded-3xl min-h-[560px] flex items-center mb-8 border border-white/5">
-  <div class="absolute inset-0 hero-grid rounded-3xl"></div>
-  <div class="absolute inset-0 bg-gradient-to-br from-navy-900/70 via-transparent to-navy-900/50 rounded-3xl"></div>
+<section class="relative overflow-hidden rounded-2xl sm:rounded-3xl min-h-[440px] sm:min-h-[520px] lg:min-h-[580px] flex items-center mb-6 sm:mb-8 border border-white/5">
+  <div class="absolute inset-0 hero-grid rounded-2xl sm:rounded-3xl"></div>
+  <div class="absolute inset-0 bg-gradient-to-br from-navy-900/80 via-transparent to-navy-900/60 rounded-2xl sm:rounded-3xl"></div>
   <!-- Blobs -->
-  <div class="absolute top-0 right-0 w-[480px] h-[480px] bg-primary-500/10 rounded-full blur-3xl pointer-events-none"></div>
-  <div class="absolute bottom-0 left-0 w-80 h-80 bg-violet-500/10 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute top-0 right-0 w-72 sm:w-[480px] h-72 sm:h-[480px] bg-primary-500/10 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute bottom-0 left-0 w-52 sm:w-80 h-52 sm:h-80 bg-violet-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-  <div class="relative z-10 w-full px-6 lg:px-16 py-16">
+  <div class="relative z-10 w-full px-5 sm:px-8 lg:px-16 py-10 sm:py-12 lg:py-16">
     <div class="max-w-2xl xl:max-w-3xl">
       <!-- Badge -->
-      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-500/10 border border-primary-500/25 text-primary-400 text-xs font-medium mb-6" data-reveal>
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-500/10 border border-primary-500/25 text-primary-400 text-[11px] sm:text-xs font-medium mb-5" data-reveal>
         <span class="w-1.5 h-1.5 rounded-full bg-primary-400 animate-pulse"></span>
-        Plateforme data &middot; Assurance &amp; Banque &middot; Accès gratuit
+        <span class="hidden sm:inline">Plateforme data &middot; Assurance &amp; Banque &middot; Accès gratuit</span>
+        <span class="sm:hidden">Assurance &amp; Banque &middot; Gratuit</span>
       </div>
 
       <!-- Headline -->
-      <h1 class="text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight mb-6" data-reveal style="transition-delay:80ms">
-        Les données de<br>
-        <span class="gradient-text">l'assurance & de la banque</span>,<br>
-        <span class="text-white/80 text-3xl lg:text-4xl xl:text-5xl font-semibold">qualifiées &amp; prêtes à l'emploi</span><span class="cursor text-primary-400">_</span>
+      <h1 class="font-bold text-white leading-tight mb-5" data-reveal style="transition-delay:80ms">
+        <span class="block text-2xl sm:text-3xl lg:text-5xl xl:text-6xl">Les données de</span>
+        <span class="gradient-text text-2xl sm:text-3xl lg:text-5xl xl:text-6xl">l'assurance &amp; de la banque</span><span class="text-white text-2xl sm:text-3xl lg:text-5xl xl:text-6xl">,</span>
+        <span class="block text-lg sm:text-2xl lg:text-3xl xl:text-4xl text-white/75 font-semibold mt-1">qualifiées &amp; prêtes à l'emploi</span><span class="cursor text-primary-400 text-lg sm:text-2xl">_</span>
       </h1>
 
       <!-- Subtitle -->
-      <p class="text-base lg:text-lg text-gray-400 leading-relaxed mb-8 max-w-xl" data-reveal style="transition-delay:160ms">
+      <p class="text-sm sm:text-base lg:text-lg text-gray-400 leading-relaxed mb-6 sm:mb-8 max-w-xl" data-reveal style="transition-delay:160ms">
         La plateforme de référence pour les <strong class="text-gray-300 font-medium">data scientists, analystes, ingénieurs ML, actuaires et BI analysts</strong> du secteur financier.
-        Des datasets notés, documentés, avec modèles et notebooks inclus.
       </p>
 
       <!-- CTAs -->
-      <div class="flex flex-wrap items-center gap-3" data-reveal style="transition-delay:240ms">
+      <div class="flex flex-col sm:flex-row gap-3 sm:gap-3" data-reveal style="transition-delay:240ms">
         <a href="/datasets"
-           class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-teal-500 hover:from-primary-600 hover:to-teal-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-primary-500/30 hover:scale-[1.02] transition-all duration-300">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+           class="flex items-center justify-center gap-2 px-5 sm:px-6 py-3 bg-gradient-to-r from-primary-500 to-teal-500 hover:from-primary-600 hover:to-teal-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-primary-500/30 hover:scale-[1.02] transition-all duration-300 text-sm sm:text-base">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
             <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
           </svg>
           Explorer les datasets
         </a>
         <a href="/add-dataset"
-           class="inline-flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white font-semibold rounded-xl transition-all duration-300">
-          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+           class="flex items-center justify-center gap-2 px-5 sm:px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white font-semibold rounded-xl transition-all duration-300 text-sm sm:text-base">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M12 5v14"/><path d="M5 12h14"/>
           </svg>
           Contribuer un dataset
         </a>
       </div>
 
-      <!-- Trust pills -->
-      <div class="flex flex-wrap items-center gap-4 mt-6" data-reveal style="transition-delay:320ms">
+      <!-- Trust pills — compactes sur mobile -->
+      <div class="flex items-center gap-3 mt-5 flex-wrap" data-reveal style="transition-delay:320ms">
         <span class="flex items-center gap-1.5 text-xs text-gray-500">
-          <svg class="w-3.5 h-3.5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <svg class="w-3.5 h-3.5 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           Open source
         </span>
-        <span class="text-gray-700">·</span>
-        <span class="flex items-center gap-1.5 text-xs text-gray-500">
-          <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+        <span class="text-gray-700 hidden sm:inline">·</span>
+        <span class="flex items-center gap-1.5 text-xs text-gray-500 hidden sm:flex">
+          <svg class="w-3.5 h-3.5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
           Données vérifiées
         </span>
-        <span class="text-gray-700">·</span>
+        <span class="text-gray-700 hidden sm:inline">·</span>
         <span class="flex items-center gap-1.5 text-xs text-gray-500">
-          <svg class="w-3.5 h-3.5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          <svg class="w-3.5 h-3.5 text-violet-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
           Notebooks inclus
         </span>
-        <span class="text-gray-700">·</span>
-        <span class="flex items-center gap-1.5 text-xs text-gray-500">
-          <svg class="w-3.5 h-3.5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span class="text-gray-700 hidden sm:inline">·</span>
+        <span class="flex items-center gap-1.5 text-xs text-gray-500 hidden sm:flex">
+          <svg class="w-3.5 h-3.5 text-orange-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           Communauté active
         </span>
       </div>
@@ -311,15 +311,18 @@
         </a>
       </div>
 
-      <div class="flex-1 flex flex-wrap gap-3" data-reveal="right" style="transition-delay:80ms">
-        <a href="/datasets?tags=iard"             class="domain-tag flex items-center gap-2 px-4 py-2.5 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-400 text-sm font-medium hover:bg-orange-500/20 hover:border-orange-500/40"><span class="w-2 h-2 rounded-full bg-orange-400"></span>IARD</a>
-        <a href="/datasets?tags=sante"            class="domain-tag flex items-center gap-2 px-4 py-2.5 rounded-xl bg-teal-500/10   border border-teal-500/20   text-teal-400   text-sm font-medium hover:bg-teal-500/20   hover:border-teal-500/40"><span class="w-2 h-2 rounded-full bg-teal-400"></span>Santé</a>
-        <a href="/datasets?tags=vie"              class="domain-tag flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-500/10   border border-blue-500/20   text-blue-400   text-sm font-medium hover:bg-blue-500/20   hover:border-blue-500/40"><span class="w-2 h-2 rounded-full bg-blue-400"></span>Vie</a>
-        <a href="/datasets?tags=fraude"           class="domain-tag flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10    border border-red-500/20    text-red-400    text-sm font-medium hover:bg-red-500/20    hover:border-red-500/40"><span class="w-2 h-2 rounded-full bg-red-400"></span>Fraude</a>
-        <a href="/datasets?tags=glm"              class="domain-tag flex items-center gap-2 px-4 py-2.5 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 text-sm font-medium hover:bg-violet-500/20 hover:border-violet-500/40"><span class="w-2 h-2 rounded-full bg-violet-400"></span>GLM / Pricing</a>
-        <a href="/datasets?tags=reserving"        class="domain-tag flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-500/10   border border-cyan-500/20   text-cyan-400   text-sm font-medium hover:bg-cyan-500/20   hover:border-cyan-500/40"><span class="w-2 h-2 rounded-full bg-cyan-400"></span>Provisionnement</a>
-        <a href="/datasets?tags=machine_learning" class="domain-tag flex items-center gap-2 px-4 py-2.5 rounded-xl bg-pink-500/10   border border-pink-500/20   text-pink-400   text-sm font-medium hover:bg-pink-500/20   hover:border-pink-500/40"><span class="w-2 h-2 rounded-full bg-pink-400"></span>Machine Learning</a>
-        <a href="/datasets"                       class="domain-tag flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5       border border-white/10      text-gray-400   text-sm font-medium hover:bg-white/10      hover:border-white/20"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>Tous</a>
+      <!-- Scroll horizontal sur mobile, wrap sur desktop -->
+      <div class="flex-1 overflow-x-auto lg:overflow-visible -mx-2 px-2 lg:mx-0 lg:px-0" data-reveal="right" style="transition-delay:80ms">
+        <div class="flex gap-2.5 lg:flex-wrap pb-2 lg:pb-0 w-max lg:w-auto">
+          <a href="/datasets?tags=iard"             class="domain-tag flex-shrink-0 flex items-center gap-2 px-3.5 py-2 lg:px-4 lg:py-2.5 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs lg:text-sm font-medium hover:bg-orange-500/20 hover:border-orange-500/40"><span class="w-2 h-2 rounded-full bg-orange-400"></span>IARD</a>
+          <a href="/datasets?tags=sante"            class="domain-tag flex-shrink-0 flex items-center gap-2 px-3.5 py-2 lg:px-4 lg:py-2.5 rounded-xl bg-teal-500/10   border border-teal-500/20   text-teal-400   text-xs lg:text-sm font-medium hover:bg-teal-500/20   hover:border-teal-500/40"><span class="w-2 h-2 rounded-full bg-teal-400"></span>Santé</a>
+          <a href="/datasets?tags=vie"              class="domain-tag flex-shrink-0 flex items-center gap-2 px-3.5 py-2 lg:px-4 lg:py-2.5 rounded-xl bg-blue-500/10   border border-blue-500/20   text-blue-400   text-xs lg:text-sm font-medium hover:bg-blue-500/20   hover:border-blue-500/40"><span class="w-2 h-2 rounded-full bg-blue-400"></span>Vie</a>
+          <a href="/datasets?tags=fraude"           class="domain-tag flex-shrink-0 flex items-center gap-2 px-3.5 py-2 lg:px-4 lg:py-2.5 rounded-xl bg-red-500/10    border border-red-500/20    text-red-400    text-xs lg:text-sm font-medium hover:bg-red-500/20    hover:border-red-500/40"><span class="w-2 h-2 rounded-full bg-red-400"></span>Fraude</a>
+          <a href="/datasets?tags=glm"              class="domain-tag flex-shrink-0 flex items-center gap-2 px-3.5 py-2 lg:px-4 lg:py-2.5 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs lg:text-sm font-medium hover:bg-violet-500/20 hover:border-violet-500/40"><span class="w-2 h-2 rounded-full bg-violet-400"></span>Pricing</a>
+          <a href="/datasets?tags=reserving"        class="domain-tag flex-shrink-0 flex items-center gap-2 px-3.5 py-2 lg:px-4 lg:py-2.5 rounded-xl bg-cyan-500/10   border border-cyan-500/20   text-cyan-400   text-xs lg:text-sm font-medium hover:bg-cyan-500/20   hover:border-cyan-500/40"><span class="w-2 h-2 rounded-full bg-cyan-400"></span>Reserving</a>
+          <a href="/datasets?tags=machine_learning" class="domain-tag flex-shrink-0 flex items-center gap-2 px-3.5 py-2 lg:px-4 lg:py-2.5 rounded-xl bg-pink-500/10   border border-pink-500/20   text-pink-400   text-xs lg:text-sm font-medium hover:bg-pink-500/20   hover:border-pink-500/40"><span class="w-2 h-2 rounded-full bg-pink-400"></span>ML</a>
+          <a href="/datasets"                       class="domain-tag flex-shrink-0 flex items-center gap-2 px-3.5 py-2 lg:px-4 lg:py-2.5 rounded-xl bg-white/5       border border-white/10      text-gray-400   text-xs lg:text-sm font-medium hover:bg-white/10      hover:border-white/20"><svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>Tous</a>
+        </div>
       </div>
     </div>
   </div>
