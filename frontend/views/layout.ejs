@@ -51,6 +51,26 @@
   <% if (typeof jsonLd !== 'undefined' && jsonLd) { %>
   <script type="application/ld+json"><%- JSON.stringify(jsonLd) %></script>
   <% } %>
+  <style>
+    /* ── Sidebar entrance animation (desktop, une seule fois au chargement) ── */
+    @keyframes sidebar-enter {
+      from { opacity: 0; transform: translateX(-18px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @media (min-width: 1024px) {
+      #sidebar {
+        animation: sidebar-enter 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+      }
+    }
+    /* ── Main content entrance ── */
+    @keyframes content-enter {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .main-content-area {
+      animation: content-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+    }
+  </style>
 </head>
 <body class="bg-mesh min-h-screen transition-colors duration-300">
   <!-- Background decorations -->
@@ -68,7 +88,7 @@
     <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[80] lg:hidden hidden"></div>
 
     <!-- Main Content Area -->
-    <div class="flex-1 min-w-0 lg:ml-72 p-3 sm:p-4 lg:p-6">
+    <div class="main-content-area flex-1 min-w-0 lg:ml-72 p-3 sm:p-4 lg:p-6">
       <!-- Header -->
       <%- include('partials/header') %>
 

@@ -187,8 +187,9 @@ const MODELING_TYPE_LABELS = {
 // Landing page
 app.get('/', (_req, res) => {
   res.render('pages/landing', {
+    layout: 'landing-layout',
     pageTitle: null,
-    pageDescription: 'Plateforme de référence pour les actuaires et data scientists. Datasets qualifiés, modèles, notebooks et benchmarks pour l\'assurance et la banque.',
+    pageDescription: 'La plateforme data pour les professionnels de l\'assurance et de la banque. Datasets qualifiés, modèles de référence, notebooks et benchmarks.',
     canonicalPath: '/',
   });
 });

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="fr" class="">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof pageTitle !== 'undefined' && pageTitle ? pageTitle + ' — StochastiQdata' : 'StochastiQdata — La plateforme data pour l\'assurance & la banque' %></title>
+
+  <meta name="description" content="<%= typeof pageDescription !== 'undefined' && pageDescription ? pageDescription : 'Datasets qualifiés, modèles de référence et notebooks pour les professionnels de la data en assurance et banque.' %>">
+  <meta name="robots" content="<%= typeof noIndex !== 'undefined' && noIndex ? 'noindex, nofollow' : 'index, follow' %>">
+  <meta name="author" content="StochastiQdata">
+  <link rel="canonical" href="<%= siteUrl %><%- typeof canonicalPath !== 'undefined' && canonicalPath ? canonicalPath : currentPath %>">
+
+  <meta property="og:title" content="StochastiQdata — La plateforme data pour l'assurance & la banque">
+  <meta property="og:description" content="<%= typeof pageDescription !== 'undefined' && pageDescription ? pageDescription : 'Datasets qualifiés, modèles et notebooks pour les pros de la data.' %>">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="<%= siteUrl %>">
+  <meta property="og:image" content="<%= siteUrl %>/images/og-cover.png">
+  <meta property="og:site_name" content="StochastiQdata">
+  <meta property="og:locale" content="fr_FR">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="StochastiQdata — La plateforme data pour l'assurance & la banque">
+  <meta name="twitter:description" content="<%= typeof pageDescription !== 'undefined' && pageDescription ? pageDescription : 'Datasets qualifiés pour les pros de la data.' %>">
+  <meta name="twitter:image" content="<%= siteUrl %>/images/og-cover.png">
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="/images/logo.png">
+  <link rel="shortcut icon" href="/favicon.svg">
+  <link rel="apple-touch-icon" href="/images/logo.png">
+
+  <link rel="preload" href="/css/output.css" as="style">
+  <link rel="stylesheet" href="/css/output.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <% if (typeof jsonLd !== 'undefined' && jsonLd) { %>
+  <script type="application/ld+json"><%- JSON.stringify(jsonLd) %></script>
+  <% } %>
+
+  <style>
+    /* Sidebar toujours en drawer (même sur desktop) dans le landing layout */
+    #sidebar {
+      transform: translateX(calc(-100% - 3rem)) !important;
+      transition: transform 0.3s ease-in-out !important;
+    }
+    #sidebar.sidebar-open {
+      transform: translateX(0) !important;
+    }
+    /* Top nav slide-in animation */
+    @keyframes nav-drop {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    #topLandingNav {
+      animation: nav-drop 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    /* Nav link active underline */
+    .top-nav-link {
+      position: relative;
+      transition: color 0.2s ease;
+    }
+    .top-nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: #14B8A6;
+      border-radius: 2px;
+      transition: width 0.25s ease, left 0.25s ease;
+    }
+    .top-nav-link:hover::after {
+      width: 80%;
+      left: 10%;
+    }
+  </style>
+</head>
+<body class="bg-mesh min-h-screen transition-colors duration-300">
+
+  <!-- Background decorations -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+    <div class="absolute -top-40 -right-40 w-[600px] h-[600px] bg-gradient-to-br from-pink-500/20 to-purple-600/20 dark:from-pink-500/30 dark:to-purple-600/30 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-40 -left-40 w-[600px] h-[600px] bg-gradient-to-tr from-teal-400/20 to-cyan-500/20 dark:from-teal-400/30 dark:to-cyan-500/30 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-gradient-to-r from-indigo-500/10 to-purple-500/10 dark:from-indigo-500/20 dark:to-purple-500/20 rounded-full blur-3xl"></div>
+  </div>
+
+  <!-- Sidebar (drawer — toujours caché, s'ouvre au clic hamburger) -->
+  <%- include('partials/sidebar') %>
+
+  <!-- Overlay sidebar -->
+  <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[80] hidden"></div>
+
+  <!-- ════════════════════════════════════════
+       TOP NAVIGATION BAR
+  ════════════════════════════════════════ -->
+  <nav id="topLandingNav" class="fixed top-0 left-0 right-0 z-[70] px-4 pt-4">
+    <div class="max-w-7xl mx-auto glass rounded-2xl px-4 py-3 flex items-center justify-between gap-4 shadow-glass">
+
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-3 flex-shrink-0 group">
+        <div class="w-9 h-9 rounded-xl overflow-hidden shadow-md group-hover:shadow-primary-500/30 transition-shadow duration-300 group-hover:scale-105 transform transition-transform">
+          <img src="/images/logo.png" alt="StochastiQdata" class="w-full h-full object-cover">
+        </div>
+        <span class="text-base font-bold text-white hidden sm:block">
+          StochastiQ<span class="text-primary-400">data</span>
+        </span>
+      </a>
+
+      <!-- Nav links — desktop -->
+      <div class="hidden lg:flex items-center gap-1 flex-1 justify-center">
+        <a href="/datasets"    class="top-nav-link px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/6 transition-colors">Datasets</a>
+        <a href="/modelisation" class="top-nav-link px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/6 transition-colors">Modèles</a>
+        <a href="/code"        class="top-nav-link px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/6 transition-colors">Code</a>
+        <a href="/communaute"  class="top-nav-link px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/6 transition-colors">Communauté</a>
+        <a href="/docs"        class="top-nav-link px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/6 transition-colors">Docs</a>
+      </div>
+
+      <!-- Actions — droite -->
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <!-- CTA Ajouter (desktop) -->
+        <a href="/add-dataset"
+           class="hidden lg:inline-flex items-center gap-1.5 px-4 py-2 bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 hover:border-primary-500/50 text-primary-400 hover:text-primary-300 text-sm font-medium rounded-xl transition-all duration-200">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+          Ajouter
+        </a>
+
+        <!-- Dark mode toggle -->
+        <button id="themeToggle"
+                class="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-primary-400 transition-all duration-200"
+                title="Toggle dark mode">
+          <svg id="sunIcon" class="w-4.5 h-4.5 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/>
+            <path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/>
+            <path d="M2 12h2"/><path d="M20 12h2"/>
+            <path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+          </svg>
+          <svg id="moonIcon" class="w-4.5 h-4.5 block dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+          </svg>
+        </button>
+
+        <!-- Hamburger — ouvre la sidebar en drawer -->
+        <button id="hamburgerBtn"
+                class="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all duration-200"
+                aria-label="Menu">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path d="M3 12h18"/><path d="M3 6h18"/><path d="M3 18h18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Content — full width, centré -->
+  <main class="pt-24 pb-8 px-4 lg:px-6">
+    <div class="max-w-7xl mx-auto">
+      <%- body %>
+    </div>
+  </main>
+
+  <script src="/js/main.js"></script>
+
+  <!-- Page transitions -->
+  <div id="pt-overlay"></div>
+  <script>
+  (function () {
+    var ov = document.getElementById('pt-overlay');
+    document.addEventListener('DOMContentLoaded', function () {
+      ov.classList.add('pt-out');
+    });
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest('a[href]');
+      if (!a) return;
+      var href = a.getAttribute('href');
+      if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto') || a.target === '_blank') return;
+      e.preventDefault();
+      ov.classList.remove('pt-out');
+      ov.classList.add('pt-in');
+      setTimeout(function () { window.location.href = href; }, 180);
+    });
+  })();
+  </script>
+</body>
+</html>
