@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html lang="fr" class="">
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- ── Anti-FOUC : dark forcé AVANT tout rendu ── -->
+  <script>document.documentElement.classList.add('dark');</script>
   <title><%= typeof pageTitle !== 'undefined' && pageTitle ? pageTitle + ' — StochastiQdata' : 'StochastiQdata — La plateforme data pour l\'assurance & la banque' %></title>
 
   <meta name="description" content="<%= typeof pageDescription !== 'undefined' && pageDescription ? pageDescription : 'Datasets qualifiés, modèles de référence et notebooks pour les professionnels de la data en assurance et banque.' %>">
@@ -27,9 +29,6 @@
   <link rel="icon" type="image/png" sizes="192x192" href="/images/logo.png">
   <link rel="shortcut icon" href="/favicon.svg">
   <link rel="apple-touch-icon" href="/images/logo.png">
-
-  <!-- ── Landing page : toujours en dark mode ── -->
-  <script>document.documentElement.classList.add('dark');</script>
 
   <link rel="preload" href="/css/output.css" as="style">
   <link rel="stylesheet" href="/css/output.css">
