@@ -39,6 +39,12 @@
   <link rel="preload" href="/css/output.css" as="style">
   <link rel="stylesheet" href="/css/output.css">
 
+  <!-- ── Prefetch pages nav ── -->
+  <link rel="prefetch" href="/datasets">
+  <link rel="prefetch" href="/modelisation">
+  <link rel="prefetch" href="/code">
+  <link rel="prefetch" href="/communaute">
+
   <!-- ── Fonts ── -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,16 +65,16 @@
     }
     @media (min-width: 1024px) {
       #sidebar {
-        animation: sidebar-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
+        animation: sidebar-enter 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
       }
     }
     /* ── Main content entrance ── */
     @keyframes content-enter {
-      from { opacity: 0; transform: translateY(14px) scale(0.99); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
     .main-content-area {
-      animation: content-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
+      animation: content-enter 0.25s ease-out both;
     }
   </style>
 </head>
@@ -102,26 +108,5 @@
   <!-- Authentification supprimée - Sera réimplémentée -->
 
   <script src="/js/main.js"></script>
-
-  <!-- ── Transitions de page fluides ── -->
-  <div id="pt-overlay"></div>
-  <script>
-  (function () {
-    var ov = document.getElementById('pt-overlay');
-    document.addEventListener('DOMContentLoaded', function () {
-      ov.classList.add('pt-out');
-    });
-    document.addEventListener('click', function (e) {
-      var a = e.target.closest('a[href]');
-      if (!a) return;
-      var href = a.getAttribute('href');
-      if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto') || a.target === '_blank') return;
-      e.preventDefault();
-      ov.classList.remove('pt-out');
-      ov.classList.add('pt-in');
-      setTimeout(function () { window.location.href = href; }, 260);
-    });
-  })();
-  </script>
 </body>
 </html>

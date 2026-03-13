@@ -308,25 +308,23 @@
     @apply text-gray-500 dark:text-gray-400;
   }
 
-  /* ── Transition de page ── */
-  #pt-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 9998;
-    background: radial-gradient(ellipse at 60% 40%, #0f1e38 0%, #0c1425 100%);
-    pointer-events: none;
-    opacity: 1;
-    transform: scale(1.04);
-    transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1),
-                transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  #pt-overlay.pt-out {
-    opacity: 0;
-    transform: scale(1);
-  }
-  #pt-overlay.pt-in {
-    opacity: 1;
-    transform: scale(1.04);
-    pointer-events: all;
-  }
+}
+
+/* ── View Transitions API — crossfade natif entre pages ── */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: 100ms ease-out both fade-out-page;
+}
+::view-transition-new(root) {
+  animation: 150ms ease-out both fade-in-page;
+}
+
+@keyframes fade-out-page {
+  to { opacity: 0; }
+}
+@keyframes fade-in-page {
+  from { opacity: 0; }
 }

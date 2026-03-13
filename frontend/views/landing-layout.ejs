@@ -53,19 +53,19 @@
     }
     /* ── Main content entrance ── */
     @keyframes landing-enter {
-      from { opacity: 0; transform: translateY(14px) scale(0.99); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
     main > div {
-      animation: landing-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
+      animation: landing-enter 0.25s ease-out both;
     }
     /* Header slide-in */
     @keyframes nav-drop {
-      from { opacity: 0; transform: translateY(-10px); }
+      from { opacity: 0; transform: translateY(-6px); }
       to   { opacity: 1; transform: translateY(0); }
     }
     #landingHeader {
-      animation: nav-drop 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+      animation: nav-drop 0.2s ease-out both;
     }
   </style>
 </head>
@@ -153,26 +153,6 @@
   </main>
 
   <script src="/js/main.js"></script>
-
-  <!-- Page transitions -->
-  <div id="pt-overlay"></div>
-  <script>
-  (function () {
-    var ov = document.getElementById('pt-overlay');
-    document.addEventListener('DOMContentLoaded', function () {
-      ov.classList.add('pt-out');
-    });
-    document.addEventListener('click', function (e) {
-      var a = e.target.closest('a[href]');
-      if (!a) return;
-      var href = a.getAttribute('href');
-      if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto') || a.target === '_blank') return;
-      e.preventDefault();
-      ov.classList.remove('pt-out');
-      ov.classList.add('pt-in');
-      setTimeout(function () { window.location.href = href; }, 260);
-    });
-  })();
   </script>
 </body>
 </html>

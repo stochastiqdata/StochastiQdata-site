@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initSearch();
   initUserMenu();
   initMobileSidebar();
+  initPrefetchOnHover();
 });
 
 // ============================================
@@ -208,6 +209,30 @@ function initMobileSidebar() {
       }
     });
   });
+}
+
+// ============================================
+// PREFETCH AU SURVOL — navigation quasi-instantanée
+// ============================================
+function initPrefetchOnHover() {
+  const prefetched = new Set();
+
+  document.addEventListener('mouseover', (e) => {
+    const link = e.target.closest('a[href]');
+    if (!link) return;
+    const href = link.href;
+    if (!href || link.target === '_blank' || prefetched.has(href)) return;
+    try {
+      const url = new URL(href);
+      if (url.origin !== window.location.origin) return;
+      if (url.pathname === window.location.pathname) return;
+      prefetched.add(href);
+      const el = document.createElement('link');
+      el.rel = 'prefetch';
+      el.href = href;
+      document.head.appendChild(el);
+    } catch (_) {}
+  }, { passive: true });
 }
 
 // ============================================

@@ -476,6 +476,15 @@ app.get('/mission', (req, res) => {
   });
 });
 
+// Contributeurs
+app.get('/contributeurs', (_req, res) => {
+  res.render('pages/contributeurs', {
+    TAG_LABELS, SOURCE_LABELS, MODEL_LABELS,
+    pageTitle: 'Contributeurs',
+    pageDescription: 'Les personnes qui construisent et font vivre StochastiQdata — datasets, code, modèles et documentation.',
+  });
+});
+
 app.get('/docs', (_req, res) => {
   res.render('pages/docs', {
     TAG_LABELS, SOURCE_LABELS, MODEL_LABELS,
