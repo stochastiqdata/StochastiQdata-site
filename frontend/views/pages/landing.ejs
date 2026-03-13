@@ -22,15 +22,27 @@
     gap: 0.5rem;
   }
   .stat-card {
-    background: rgba(30, 41, 59, 0.6);
-    border: 1px solid rgba(51, 65, 85, 0.8);
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(226, 232, 240, 0.9);
     border-radius: 0.75rem;
     padding: 0.6rem;
     text-align: center;
     backdrop-filter: blur(12px);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  }
+  html.dark .stat-card {
+    background: rgba(30, 41, 59, 0.6);
+    border-color: rgba(51, 65, 85, 0.8);
+    box-shadow: none;
   }
   .stat-val  { font-size: 1.2rem; font-weight: 700; }
   .stat-lbl  { font-size: 0.68rem; color: #64748b; margin-top: 2px; }
+
+  /* ── Titre et description adaptatifs ── */
+  .hero-title { color: #111827; }
+  html.dark .hero-title { color: #ffffff; }
+  .hero-desc { color: #4b5563; }
+  html.dark .hero-desc { color: #94a3b8; }
 
   /* ── Gradient text ── */
   .gradient-text {
@@ -49,13 +61,25 @@
     border-radius: 999px;
     font-size: 0.7rem;
     font-weight: 500;
-    background: rgba(30, 41, 59, 0.7);
-    border: 1px solid rgba(99, 102, 241, 0.25);
-    color: #cbd5e1;
+    background: rgba(241, 245, 249, 0.9);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    color: #475569;
     transition: all 0.2s ease;
     cursor: default;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
   }
   .audience-pill:hover {
+    border-color: rgba(20, 184, 166, 0.5);
+    color: #0f766e;
+    background: rgba(20, 184, 166, 0.08);
+  }
+  html.dark .audience-pill {
+    background: rgba(30, 41, 59, 0.7);
+    border-color: rgba(99, 102, 241, 0.25);
+    color: #cbd5e1;
+    box-shadow: none;
+  }
+  html.dark .audience-pill:hover {
     border-color: rgba(20, 184, 166, 0.5);
     color: #f1f5f9;
     background: rgba(20, 184, 166, 0.12);
@@ -286,11 +310,11 @@
 
       <!-- Titre + description -->
       <div style="display:flex; flex-direction:column; gap:0.7rem;">
-        <h1 style="font-size:clamp(1.7rem,2.8vw,2.5rem); font-weight:700; color:#fff; line-height:1.15; margin:0;">
+        <h1 class="hero-title" style="font-size:clamp(1.7rem,2.8vw,2.5rem); font-weight:700; line-height:1.15; margin:0;">
           La référence data<br>pour
           <span class="gradient-text">l'assurance &amp; la banque</span>
         </h1>
-        <p style="font-size:.88rem; color:#94a3b8; line-height:1.65; margin:0;">
+        <p class="hero-desc" style="font-size:.88rem; line-height:1.65; margin:0;">
           Datasets qualifiés, modèles de référence et notebooks prêts à l'emploi —
           tout ce dont les professionnels de la data ont besoin pour transformer
           les données en décisions.
