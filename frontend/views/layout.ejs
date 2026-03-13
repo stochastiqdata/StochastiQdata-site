@@ -52,23 +52,23 @@
   <script type="application/ld+json"><%- JSON.stringify(jsonLd) %></script>
   <% } %>
   <style>
-    /* ── Sidebar entrance animation (desktop, une seule fois au chargement) ── */
+    /* ── Sidebar entrance ── */
     @keyframes sidebar-enter {
-      from { opacity: 0; transform: translateX(-18px); }
+      from { opacity: 0; transform: translateX(-22px); }
       to   { opacity: 1; transform: translateX(0); }
     }
     @media (min-width: 1024px) {
       #sidebar {
-        animation: sidebar-enter 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+        animation: sidebar-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
       }
     }
     /* ── Main content entrance ── */
     @keyframes content-enter {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(14px) scale(0.99); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
     }
     .main-content-area {
-      animation: content-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+      animation: content-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
     }
   </style>
 </head>
@@ -119,7 +119,7 @@
       e.preventDefault();
       ov.classList.remove('pt-out');
       ov.classList.add('pt-in');
-      setTimeout(function () { window.location.href = href; }, 180);
+      setTimeout(function () { window.location.href = href; }, 260);
     });
   })();
   </script>

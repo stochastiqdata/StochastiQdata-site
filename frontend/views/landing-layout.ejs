@@ -28,14 +28,8 @@
   <link rel="shortcut icon" href="/favicon.svg">
   <link rel="apple-touch-icon" href="/images/logo.png">
 
-  <!-- ── Applique le thème AVANT le rendu (évite le flash blanc) ── -->
-  <!-- Par défaut dark ; respecte le choix explicite "light" de l'utilisateur -->
-  <script>
-    (function() {
-      var t = localStorage.getItem('theme');
-      if (t !== 'light') document.documentElement.classList.add('dark');
-    })();
-  </script>
+  <!-- ── Landing page : toujours en dark mode ── -->
+  <script>document.documentElement.classList.add('dark');</script>
 
   <link rel="preload" href="/css/output.css" as="style">
   <link rel="stylesheet" href="/css/output.css">
@@ -54,36 +48,24 @@
       transform: translateX(calc(-100% - 3rem)) !important;
       transition: transform 0.3s ease-in-out !important;
     }
-    #sidebar.sidebar-open {
+    #sidebar.translate-x-0 {
       transform: translateX(0) !important;
     }
-    /* Top nav slide-in animation */
+    /* ── Main content entrance ── */
+    @keyframes landing-enter {
+      from { opacity: 0; transform: translateY(14px) scale(0.99); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    main > div {
+      animation: landing-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
+    }
+    /* Header slide-in */
     @keyframes nav-drop {
-      from { opacity: 0; transform: translateY(-8px); }
+      from { opacity: 0; transform: translateY(-10px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-    #topLandingNav {
-      animation: nav-drop 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-    /* Nav link active underline */
-    .top-nav-link {
-      position: relative;
-      transition: color 0.2s ease;
-    }
-    .top-nav-link::after {
-      content: '';
-      position: absolute;
-      bottom: -2px;
-      left: 50%;
-      width: 0;
-      height: 2px;
-      background: #14B8A6;
-      border-radius: 2px;
-      transition: width 0.25s ease, left 0.25s ease;
-    }
-    .top-nav-link:hover::after {
-      width: 80%;
-      left: 10%;
+    #landingHeader {
+      animation: nav-drop 0.45s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
     }
   </style>
 </head>
@@ -103,87 +85,68 @@
   <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[80] hidden"></div>
 
   <!-- ════════════════════════════════════════
-       TOP NAVIGATION BAR
+       HEADER
   ════════════════════════════════════════ -->
-  <nav id="topLandingNav" class="fixed top-0 left-0 right-0 z-[70] lg:px-4 lg:pt-4">
-    <!--
-      Mobile : strip pleine largeur, bord bas, pas de border-radius
-      Desktop : pill glassmorphism centrée avec border-radius
-    -->
-    <div class="glass lg:rounded-2xl lg:max-w-7xl lg:mx-auto
-                px-4 py-2.5 lg:py-3
-                flex items-center justify-between gap-3
-                border-b border-white/6 lg:border lg:border-white/10
-                shadow-none lg:shadow-glass">
+  <div id="landingHeader" class="fixed top-0 left-0 right-0 z-[70] px-3 sm:px-4 lg:px-6 pt-3 lg:pt-4">
+    <header class="glass rounded-xl lg:rounded-2xl px-3 sm:px-4 lg:px-6 py-3 lg:py-4 flex items-center gap-3 max-w-7xl mx-auto">
+
+      <!-- Hamburger (mobile) -->
+      <button id="hamburgerBtn"
+              class="lg:hidden w-9 h-9 flex items-center justify-center text-gray-600 dark:text-gray-300"
+              aria-label="Menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <path d="M3 12h18"/><path d="M3 6h18"/><path d="M3 18h18"/>
+        </svg>
+      </button>
 
       <!-- Logo -->
-      <a href="/" class="flex items-center gap-2.5 flex-shrink-0 group">
-        <div class="w-8 h-8 lg:w-9 lg:h-9 rounded-xl overflow-hidden shadow-md group-hover:shadow-primary-500/30 group-hover:scale-105 transition-all duration-300">
+      <a href="/" class="flex items-center gap-2 flex-shrink-0">
+        <div class="w-8 h-8 rounded-lg overflow-hidden">
           <img src="/images/logo.png" alt="StochastiQdata" class="w-full h-full object-cover">
         </div>
-        <span class="text-sm lg:text-base font-bold text-white">
-          StochastiQ<span class="text-primary-400">data</span>
-        </span>
+        <span class="text-xl font-bold text-gray-900 dark:text-white">StochastiQdata</span>
       </a>
 
       <!-- Nav links — desktop uniquement -->
-      <div class="hidden lg:flex items-center gap-1 flex-1 justify-center">
-        <a href="/datasets"     class="top-nav-link px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/6 transition-colors">Datasets</a>
-        <a href="/modelisation" class="top-nav-link px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/6 transition-colors">Modèles</a>
-        <a href="/code"         class="top-nav-link px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/6 transition-colors">Code</a>
-        <a href="/communaute"   class="top-nav-link px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/6 transition-colors">Communauté</a>
-        <a href="/docs"         class="top-nav-link px-3 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/6 transition-colors">Docs</a>
-      </div>
+      <nav class="hidden lg:flex items-center gap-1 ml-4">
+        <a href="/datasets"     class="px-3 py-2 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors">Datasets</a>
+        <a href="/modelisation" class="px-3 py-2 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors">Modèles</a>
+        <a href="/code"         class="px-3 py-2 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors">Code</a>
+        <a href="/communaute"   class="px-3 py-2 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors">Communauté</a>
+        <a href="/docs"         class="px-3 py-2 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors">Docs</a>
+      </nav>
+
+      <!-- Spacer -->
+      <div class="flex-1"></div>
 
       <!-- Actions droite -->
-      <div class="flex items-center gap-1.5 flex-shrink-0">
-        <!-- CTA explorer (mobile uniquement — petit) -->
-        <a href="/datasets"
-           class="lg:hidden inline-flex items-center gap-1.5 px-3 py-2 bg-primary-500 hover:bg-primary-600 text-white text-xs font-semibold rounded-lg transition-colors">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-            <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-          </svg>
-          Explorer
-        </a>
+      <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
 
-        <!-- CTA Ajouter (desktop) -->
-        <a href="/add-dataset"
-           class="hidden lg:inline-flex items-center gap-1.5 px-4 py-2 bg-primary-500/15 hover:bg-primary-500/25 border border-primary-500/30 hover:border-primary-500/50 text-primary-400 hover:text-primary-300 text-sm font-medium rounded-xl transition-all duration-200">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
-          Ajouter
-        </a>
+        <!-- Date (desktop) -->
+        <div class="hidden xl:flex flex-col items-end text-sm">
+          <span id="currentDate" class="text-gray-600 dark:text-gray-300 font-medium"><%= currentDate %></span>
+        </div>
 
-        <!-- Dark mode toggle -->
+<!-- Dark mode toggle -->
         <button id="themeToggle"
-                class="w-8 h-8 lg:w-9 lg:h-9 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-primary-400 transition-all duration-200"
+                class="w-9 h-9 lg:w-10 lg:h-10 rounded-xl bg-gray-100 dark:bg-navy-700 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-navy-600 transition-all"
                 title="Toggle dark mode">
-          <svg id="sunIcon" class="w-4 h-4 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg id="sunIcon" class="w-5 h-5 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/>
             <path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/>
             <path d="M2 12h2"/><path d="M20 12h2"/>
             <path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
           </svg>
-          <svg id="moonIcon" class="w-4 h-4 block dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg id="moonIcon" class="w-5 h-5 block dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
           </svg>
         </button>
-
-        <!-- Hamburger -->
-        <button id="hamburgerBtn"
-                class="w-8 h-8 lg:w-9 lg:h-9 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all duration-200"
-                aria-label="Menu">
-          <svg class="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-            <path d="M3 12h18"/><path d="M3 6h18"/><path d="M3 18h18"/>
-          </svg>
-        </button>
       </div>
-    </div>
-  </nav>
+    </header>
+  </div>
 
-  <!-- Page Content — full width, centré -->
-  <!-- pt-[52px] = hauteur nav mobile ; lg:pt-24 = pill + padding desktop -->
-  <main class="pt-[52px] lg:pt-24 pb-8 px-4 lg:px-6">
+  <!-- Page Content -->
+  <main class="pt-[72px] lg:pt-24 pb-8 px-4 lg:px-6">
     <div class="max-w-7xl mx-auto">
       <%- body %>
     </div>
@@ -207,7 +170,7 @@
       e.preventDefault();
       ov.classList.remove('pt-out');
       ov.classList.add('pt-in');
-      setTimeout(function () { window.location.href = href; }, 180);
+      setTimeout(function () { window.location.href = href; }, 260);
     });
   })();
   </script>

@@ -1,491 +1,406 @@
-<style>
-  /* ── Reveal animations ── */
-  [data-reveal] {
-    opacity: 0;
-    transform: translateY(28px);
-    transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  [data-reveal="left"]  { transform: translateX(-28px); opacity: 0; }
-  [data-reveal="right"] { transform: translateX(28px);  opacity: 0; }
-  [data-reveal="scale"] { transform: scale(0.92);       opacity: 0; }
-  [data-reveal].revealed { opacity: 1; transform: none; }
+<%# Landing page — Hero section %>
 
-  /* ── Gradient headline ── */
+<style>
+  /* ── Layout deux colonnes garanti ── */
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    align-items: center;
+    width: 100%;
+  }
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero-col-svg { order: 2; }
+    .hero-col-text { order: 1; }
+  }
+
+  /* ── Stats row ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+  }
+  .stat-card {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(51, 65, 85, 0.8);
+    border-radius: 0.75rem;
+    padding: 0.6rem;
+    text-align: center;
+    backdrop-filter: blur(12px);
+  }
+  .stat-val  { font-size: 1.2rem; font-weight: 700; }
+  .stat-lbl  { font-size: 0.68rem; color: #64748b; margin-top: 2px; }
+
+  /* ── Gradient text ── */
   .gradient-text {
-    background: linear-gradient(135deg, #14B8A6 0%, #0EA5E9 45%, #8B5CF6 100%);
+    background: linear-gradient(135deg, #14B8A6 0%, #6366F1 60%, #EC4899 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  /* ── Hero grid ── */
-  .hero-grid {
-    background-image:
-      linear-gradient(rgba(20, 184, 166, 0.055) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(20, 184, 166, 0.055) 1px, transparent 1px);
-    background-size: 44px 44px;
+  /* ── Audience pills ── */
+  .audience-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    color: #cbd5e1;
+    transition: all 0.2s ease;
+    cursor: default;
+  }
+  .audience-pill:hover {
+    border-color: rgba(20, 184, 166, 0.5);
+    color: #f1f5f9;
+    background: rgba(20, 184, 166, 0.12);
   }
 
-  /* ── Floating cards ── */
-  @keyframes float-a { 0%,100%{transform:translateY(0)}   50%{transform:translateY(-10px)} }
-  @keyframes float-b { 0%,100%{transform:translateY(0)}   50%{transform:translateY(-7px)}  }
-  @keyframes float-c { 0%,100%{transform:translateY(0)}   50%{transform:translateY(-13px)} }
-  .float-a { animation: float-a 4.2s ease-in-out infinite; }
-  .float-b { animation: float-b 5.1s ease-in-out infinite 0.9s; }
-  .float-c { animation: float-c 3.7s ease-in-out infinite 1.7s; }
-
-  /* ── Typing cursor ── */
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
-  .cursor { animation: blink 1s step-end infinite; }
-
-  /* ── Shimmer progress bar ── */
-  @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
-  .shimmer-bar {
-    background: linear-gradient(90deg, rgba(20,184,166,0.12) 25%, rgba(20,184,166,0.35) 50%, rgba(20,184,166,0.12) 75%);
-    background-size: 200% 100%;
-    animation: shimmer 3s linear infinite;
+  /* ── Hero text staggered reveal ── */
+  .hero-col-text > * {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: heroReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
+  @keyframes heroReveal { to { opacity: 1; transform: translateY(0); } }
+  .hero-col-text > *:nth-child(1) { animation-delay: 0.15s; }
+  .hero-col-text > *:nth-child(2) { animation-delay: 0.27s; }
+  .hero-col-text > *:nth-child(3) { animation-delay: 0.39s; }
+  .hero-col-text > *:nth-child(4) { animation-delay: 0.51s; }
+  .hero-col-text > *:nth-child(5) { animation-delay: 0.63s; }
+  .hero-col-text > *:nth-child(6) { animation-delay: 0.75s; }
 
-  /* ── Domain tags ── */
-  .domain-tag { transition: transform 0.22s ease, background-color 0.22s ease, border-color 0.22s ease; }
-  .domain-tag:hover { transform: translateY(-3px) scale(1.04); }
-
-  /* ── Feature card ── */
-  .feature-card { transition: transform 0.3s ease, border-color 0.3s ease; }
-  .feature-card:hover { transform: translateY(-4px); }
-
-  /* ── Scroll indicator ── */
-  @keyframes scroll-bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
-  .scroll-indicator { animation: scroll-bounce 2s ease-in-out infinite; }
-
-  /* ── Trending ticker ── */
-  @keyframes ticker {
-    0%   { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+  /* ── SVG slide-in ── */
+  .hero-col-svg {
+    opacity: 0;
+    transform: translateX(-24px);
+    animation: svgIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
   }
-  .ticker-track { animation: ticker 28s linear infinite; }
-  .ticker-track:hover { animation-play-state: paused; }
+  @keyframes svgIn { to { opacity: 1; transform: translateX(0); } }
+
+  /* ── SVG line draw ── */
+  #mainLine   { stroke-dasharray: 900; stroke-dashoffset: 900; animation: drawLine 2s   cubic-bezier(0.4,0,0.2,1) 0.6s forwards; }
+  #secondLine { stroke-dasharray: 900; stroke-dashoffset: 900; animation: drawLine 2.4s cubic-bezier(0.4,0,0.2,1) 0.9s forwards; }
+  @keyframes drawLine { to { stroke-dashoffset: 0; } }
+
+  /* ── Area fade ── */
+  #areaPath { opacity: 0; animation: areaIn 1s ease 2.2s forwards; }
+  @keyframes areaIn { to { opacity: 1; } }
+
+  /* ── Data point pop ── */
+  .data-point { transform-box: fill-box; transform-origin: center; opacity: 0; transform: scale(0); animation: ptPop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+  #dp1 { animation-delay: 1.3s; }
+  #dp2 { animation-delay: 1.6s; }
+  #dp3 { animation-delay: 1.9s; }
+  @keyframes ptPop { 0%{opacity:0;transform:scale(0)} 70%{opacity:1;transform:scale(1.5)} 100%{opacity:1;transform:scale(1)} }
+
+  /* ── Pulse ring ── */
+  .pulse-ring { transform-box: fill-box; transform-origin: center; animation: pRing 2.2s ease-out 2s infinite; }
+  @keyframes pRing { 0%{transform:scale(1);opacity:.8} 100%{transform:scale(3.5);opacity:0} }
+
+  /* ── Metric cards float ── */
+  #mc1 { animation: floatY 4.2s ease-in-out 0s    infinite; }
+  #mc2 { animation: floatY 4.2s ease-in-out 1.4s  infinite; }
+  #mc3 { animation: floatY 4.2s ease-in-out 2.8s  infinite; }
+  #mc4 { animation: floatY 4.2s ease-in-out 0.7s  infinite; }
+  @keyframes floatY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+
+  /* ── Nodes ── */
+  .nd { animation: ndPulse 2.5s ease-in-out infinite; }
+  .nd:nth-child(2){animation-delay:.6s} .nd:nth-child(3){animation-delay:1.2s} .nd:nth-child(4){animation-delay:1.8s}
+  @keyframes ndPulse { 0%,100%{opacity:.6} 50%{opacity:1} }
+  .ne { animation: neFlow 1.2s linear infinite; }
+  @keyframes neFlow { from{stroke-dashoffset:12} to{stroke-dashoffset:0} }
+
+  /* ── Scatter ── */
+  .sc { animation: scFloat 3.2s ease-in-out infinite; }
+  .sc:nth-child(odd){animation-duration:3.8s} .sc:nth-child(even){animation-duration:2.9s}
+  @keyframes scFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
 </style>
 
-<!-- ══════════════════════════════════════════════
-     HERO — full width
-══════════════════════════════════════════════ -->
-<section class="relative overflow-hidden rounded-2xl sm:rounded-3xl min-h-[440px] sm:min-h-[520px] lg:min-h-[580px] flex items-center mb-6 sm:mb-8 border border-white/5">
-  <div class="absolute inset-0 hero-grid rounded-2xl sm:rounded-3xl"></div>
-  <div class="absolute inset-0 bg-gradient-to-br from-navy-900/80 via-transparent to-navy-900/60 rounded-2xl sm:rounded-3xl"></div>
-  <!-- Blobs -->
-  <div class="absolute top-0 right-0 w-72 sm:w-[480px] h-72 sm:h-[480px] bg-primary-500/10 rounded-full blur-3xl pointer-events-none"></div>
-  <div class="absolute bottom-0 left-0 w-52 sm:w-80 h-52 sm:h-80 bg-violet-500/10 rounded-full blur-3xl pointer-events-none"></div>
+<!-- ══════════════════════════════════════
+     HERO
+══════════════════════════════════════ -->
+<section style="min-height:calc(100vh - 5rem); display:flex; align-items:center; padding: 1.5rem 0;">
+  <div class="hero-grid w-full">
 
-  <div class="relative z-10 w-full px-5 sm:px-8 lg:px-16 py-10 sm:py-12 lg:py-16">
-    <div class="max-w-2xl xl:max-w-3xl">
+    <!-- ── COL GAUCHE : SVG ── -->
+    <div class="hero-col-svg" style="display:flex; justify-content:center; align-items:center;">
+      <div style="position:relative; width:100%; max-width:480px;">
+        <!-- Glow -->
+        <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(20,184,166,.18),rgba(99,102,241,.12),transparent 70%);border-radius:1.5rem;filter:blur(32px);z-index:-1;"></div>
+
+        <svg viewBox="0 0 520 450" xmlns="http://www.w3.org/2000/svg"
+             style="width:100%;height:auto;display:block;" aria-hidden="true">
+          <defs>
+            <linearGradient id="lgLine" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%"   stop-color="#14B8A6"/>
+              <stop offset="100%" stop-color="#6366F1"/>
+            </linearGradient>
+            <linearGradient id="lgArea" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%"   stop-color="#14B8A6" stop-opacity=".22"/>
+              <stop offset="100%" stop-color="#14B8A6" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="lgB1" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#6366F1" stop-opacity=".9"/>
+              <stop offset="100%" stop-color="#6366F1" stop-opacity=".1"/>
+            </linearGradient>
+            <linearGradient id="lgB2" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#14B8A6" stop-opacity=".9"/>
+              <stop offset="100%" stop-color="#14B8A6" stop-opacity=".1"/>
+            </linearGradient>
+            <linearGradient id="lgB3" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#EC4899" stop-opacity=".9"/>
+              <stop offset="100%" stop-color="#EC4899" stop-opacity=".1"/>
+            </linearGradient>
+            <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="3.5" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <pattern id="dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+              <circle cx="10" cy="10" r=".9" fill="#334155" opacity=".5"/>
+            </pattern>
+          </defs>
+
+          <!-- Card bg -->
+          <rect x="14" y="14" width="492" height="422" rx="22" fill="#0f172a" opacity=".9"/>
+          <rect x="14" y="14" width="492" height="422" rx="22" fill="url(#dots)"/>
+          <rect x="14" y="14" width="492" height="422" rx="22" fill="none" stroke="#1e293b" stroke-width="1.5"/>
+
+          <!-- Grid lines -->
+          <line x1="36" y1="160" x2="306" y2="160" stroke="#1e293b" stroke-width="1"/>
+          <line x1="36" y1="205" x2="306" y2="205" stroke="#1e293b" stroke-width="1"/>
+          <line x1="36" y1="250" x2="306" y2="250" stroke="#1e293b" stroke-width="1"/>
+          <line x1="36" y1="295" x2="306" y2="295" stroke="#1e293b" stroke-width="1"/>
+          <line x1="36" y1="338" x2="306" y2="338" stroke="#1e293b" stroke-width="1.5"/>
+
+          <!-- Area -->
+          <path id="areaPath"
+                d="M 40,284 C 78,263 116,233 155,210 C 194,187 233,202 272,172 L 272,338 L 40,338 Z"
+                fill="url(#lgArea)"/>
+
+          <!-- Main line -->
+          <path id="mainLine"
+                d="M 40,284 C 78,263 116,233 155,210 C 194,187 233,202 272,172"
+                fill="none" stroke="url(#lgLine)" stroke-width="2.5"
+                stroke-linecap="round" filter="url(#glow)"/>
+
+          <!-- Secondary dashed line -->
+          <path id="secondLine"
+                d="M 40,312 C 78,302 116,290 155,285 C 194,280 233,295 272,268"
+                fill="none" stroke="#8B5CF6" stroke-width="1.5"
+                stroke-dasharray="5,4" stroke-linecap="round" opacity=".65"/>
+
+          <!-- Data points -->
+          <circle id="dp1" class="data-point" cx="155" cy="210" r="5" fill="#14B8A6" filter="url(#glow)"/>
+          <circle id="dp2" class="data-point" cx="233" cy="202" r="5" fill="#6366F1" filter="url(#glow)"/>
+          <circle id="dp3" class="data-point" cx="272" cy="172" r="5" fill="#14B8A6" filter="url(#glow)"/>
+          <circle class="pulse-ring" cx="233" cy="202" r="5" fill="none" stroke="#6366F1" stroke-width="1.5"/>
+
+          <!-- Bars -->
+          <rect id="b1" x="42"  y="338" width="23" height="0" rx="3" fill="url(#lgB1)"/>
+          <rect id="b2" x="74"  y="338" width="23" height="0" rx="3" fill="url(#lgB2)"/>
+          <rect id="b3" x="106" y="338" width="23" height="0" rx="3" fill="url(#lgB3)"/>
+          <rect id="b4" x="138" y="338" width="23" height="0" rx="3" fill="url(#lgB1)"/>
+          <rect id="b5" x="170" y="338" width="23" height="0" rx="3" fill="url(#lgB2)"/>
+          <rect id="b6" x="202" y="338" width="23" height="0" rx="3" fill="url(#lgB3)"/>
+          <rect id="b7" x="234" y="338" width="23" height="0" rx="3" fill="url(#lgB1)"/>
+
+          <!-- Scatter -->
+          <circle class="sc" cx="62"  cy="324" r="2.5" fill="#6366F1" opacity=".55"/>
+          <circle class="sc" cx="94"  cy="314" r="2"   fill="#14B8A6" opacity=".5"/>
+          <circle class="sc" cx="128" cy="328" r="3"   fill="#EC4899" opacity=".45"/>
+          <circle class="sc" cx="168" cy="308" r="2"   fill="#6366F1" opacity=".55"/>
+          <circle class="sc" cx="200" cy="322" r="2.5" fill="#14B8A6" opacity=".5"/>
+          <circle class="sc" cx="242" cy="312" r="2"   fill="#F59E0B" opacity=".45"/>
+          <circle class="sc" cx="272" cy="326" r="2.5" fill="#6366F1" opacity=".5"/>
+
+          <!-- Network nodes -->
+          <circle class="nd" cx="80"  cy="86"  r="8" fill="#1e293b" stroke="#6366F1" stroke-width="2" filter="url(#glow)"/>
+          <circle class="nd" cx="124" cy="62"  r="6" fill="#1e293b" stroke="#14B8A6" stroke-width="1.5"/>
+          <circle class="nd" cx="136" cy="108" r="5" fill="#1e293b" stroke="#EC4899" stroke-width="1.5"/>
+          <circle class="nd" cx="54"  cy="114" r="5" fill="#1e293b" stroke="#F59E0B" stroke-width="1.5"/>
+          <line class="ne" x1="80"  y1="86"  x2="124" y2="62"  stroke="#6366F1" stroke-width="1"   stroke-dasharray="3,3" opacity=".5"/>
+          <line class="ne" x1="80"  y1="86"  x2="136" y2="108" stroke="#14B8A6" stroke-width="1"   stroke-dasharray="3,3" opacity=".5"/>
+          <line class="ne" x1="80"  y1="86"  x2="54"  y2="114" stroke="#EC4899" stroke-width="1"   stroke-dasharray="3,3" opacity=".5"/>
+          <line class="ne" x1="124" y1="62"  x2="136" y2="108" stroke="#F59E0B" stroke-width=".8"  stroke-dasharray="3,3" opacity=".4"/>
+
+          <!-- Metric cards -->
+          <g id="mc1">
+            <rect x="316" y="26"  width="162" height="55" rx="11" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+            <text x="330" y="47"  fill="#94a3b8" font-size="9"  font-family="Inter,sans-serif" font-weight="500">Risque sinistre</text>
+            <text x="330" y="67"  fill="#14B8A6" font-size="16" font-weight="700" font-family="Inter,sans-serif">0.847</text>
+            <rect x="398" y="49"  width="62" height="13" rx="5" fill="#14B8A6" fill-opacity=".15"/>
+            <text x="408" y="60"  fill="#14B8A6" font-size="8" font-family="Inter,sans-serif" font-weight="600">▲ +2.3%</text>
+          </g>
+          <g id="mc2">
+            <rect x="316" y="95"  width="162" height="55" rx="11" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+            <text x="330" y="116" fill="#94a3b8" font-size="9"  font-family="Inter,sans-serif" font-weight="500">Score AUC</text>
+            <text x="330" y="136" fill="#6366F1" font-size="16" font-weight="700" font-family="Inter,sans-serif">92.4%</text>
+            <rect x="398" y="118" width="62" height="13" rx="5" fill="#6366F1" fill-opacity=".15"/>
+            <text x="405" y="129" fill="#6366F1" font-size="8" font-family="Inter,sans-serif" font-weight="600">GLM · IARD</text>
+          </g>
+          <g id="mc3">
+            <rect x="316" y="164" width="162" height="55" rx="11" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+            <text x="330" y="185" fill="#94a3b8" font-size="9"  font-family="Inter,sans-serif" font-weight="500">Provision (Chain Ladder)</text>
+            <text x="330" y="205" fill="#EC4899" font-size="16" font-weight="700" font-family="Inter,sans-serif">€2.4M</text>
+          </g>
+          <g id="mc4">
+            <rect x="316" y="233" width="162" height="55" rx="11" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+            <text x="330" y="254" fill="#94a3b8" font-size="9"  font-family="Inter,sans-serif" font-weight="500">Datasets actifs</text>
+            <text x="330" y="274" fill="#F59E0B" font-size="16" font-weight="700" font-family="Inter,sans-serif">48</text>
+            <rect x="398" y="256" width="62" height="13" rx="5" fill="#F59E0B" fill-opacity=".15"/>
+            <text x="405" y="267" fill="#F59E0B" font-size="8" font-family="Inter,sans-serif" font-weight="600">Banque · IARD</text>
+          </g>
+
+          <!-- Légende -->
+          <circle cx="42"  cy="394" r="3.5" fill="#14B8A6"/>
+          <text x="51"  y="398" fill="#475569" font-size="8" font-family="Inter,sans-serif">Série principale</text>
+          <circle cx="156" cy="394" r="3.5" fill="#8B5CF6"/>
+          <text x="165" y="398" fill="#475569" font-size="8" font-family="Inter,sans-serif">Secondaire</text>
+          <circle cx="244" cy="394" r="3.5" fill="#EC4899"/>
+          <text x="253" y="398" fill="#475569" font-size="8" font-family="Inter,sans-serif">Anomalies</text>
+
+          <!-- Années -->
+          <text x="54"  y="354" fill="#475569" font-size="7.5" font-family="Inter,sans-serif" text-anchor="middle">2019</text>
+          <text x="120" y="354" fill="#475569" font-size="7.5" font-family="Inter,sans-serif" text-anchor="middle">2020</text>
+          <text x="186" y="354" fill="#475569" font-size="7.5" font-family="Inter,sans-serif" text-anchor="middle">2021</text>
+          <text x="252" y="354" fill="#475569" font-size="7.5" font-family="Inter,sans-serif" text-anchor="middle">2022</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- ── COL DROITE : Texte ── -->
+    <div class="hero-col-text" style="display:flex; flex-direction:column; gap:1.1rem;">
+
       <!-- Badge -->
-      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-500/10 border border-primary-500/25 text-primary-400 text-[11px] sm:text-xs font-medium mb-5" data-reveal>
-        <span class="w-1.5 h-1.5 rounded-full bg-primary-400 animate-pulse"></span>
-        <span class="hidden sm:inline">Plateforme data &middot; Assurance &amp; Banque &middot; Accès gratuit</span>
-        <span class="sm:hidden">Assurance &amp; Banque &middot; Gratuit</span>
+      <div style="display:inline-flex; align-items:center; gap:8px; padding:5px 14px; border-radius:999px; background:rgba(20,184,166,.1); border:1px solid rgba(20,184,166,.3); color:#2dd4bf; font-size:.75rem; font-weight:600; width:fit-content;">
+        <span style="width:7px;height:7px;border-radius:50%;background:#2dd4bf;animation:pulse 2s infinite;flex-shrink:0;"></span>
+        Plateforme data spécialisée
       </div>
 
-      <!-- Headline -->
-      <h1 class="font-bold text-white leading-tight mb-5" data-reveal style="transition-delay:80ms">
-        <span class="block text-2xl sm:text-3xl lg:text-5xl xl:text-6xl">Les données de</span>
-        <span class="gradient-text text-2xl sm:text-3xl lg:text-5xl xl:text-6xl">l'assurance &amp; de la banque</span><span class="text-white text-2xl sm:text-3xl lg:text-5xl xl:text-6xl">,</span>
-        <span class="block text-lg sm:text-2xl lg:text-3xl xl:text-4xl text-white/75 font-semibold mt-1">qualifiées &amp; prêtes à l'emploi</span><span class="cursor text-primary-400 text-lg sm:text-2xl">_</span>
-      </h1>
+      <!-- Titre + description -->
+      <div style="display:flex; flex-direction:column; gap:0.7rem;">
+        <h1 style="font-size:clamp(1.7rem,2.8vw,2.5rem); font-weight:700; color:#fff; line-height:1.15; margin:0;">
+          La référence data<br>pour
+          <span class="gradient-text">l'assurance &amp; la banque</span>
+        </h1>
+        <p style="font-size:.88rem; color:#94a3b8; line-height:1.65; margin:0;">
+          Datasets qualifiés, modèles de référence et notebooks prêts à l'emploi —
+          tout ce dont les professionnels de la data ont besoin pour transformer
+          les données en décisions.
+        </p>
+      </div>
 
-      <!-- Subtitle -->
-      <p class="text-sm sm:text-base lg:text-lg text-gray-400 leading-relaxed mb-6 sm:mb-8 max-w-xl" data-reveal style="transition-delay:160ms">
-        La plateforme de référence pour les <strong class="text-gray-300 font-medium">data scientists, analystes, ingénieurs ML, actuaires et BI analysts</strong> du secteur financier.
-      </p>
+      <!-- Audience pills -->
+      <div style="display:flex; flex-wrap:wrap; gap:6px;">
+        <span class="audience-pill">🧮 Actuaires</span>
+        <span class="audience-pill">🤖 Data Scientists</span>
+        <span class="audience-pill">🔍 Data Analystes</span>
+        <span class="audience-pill">📊 BI Analysts</span>
+        <span class="audience-pill">⚙️ ML Engineers</span>
+      </div>
 
-      <!-- CTAs -->
-      <div class="flex flex-col sm:flex-row gap-3 sm:gap-3" data-reveal style="transition-delay:240ms">
-        <a href="/datasets"
-           class="flex items-center justify-center gap-2 px-5 sm:px-6 py-3 bg-gradient-to-r from-primary-500 to-teal-500 hover:from-primary-600 hover:to-teal-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-primary-500/30 hover:scale-[1.02] transition-all duration-300 text-sm sm:text-base">
-          <svg class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-            <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-          </svg>
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-val" style="color:#2dd4bf;"><span class="counter" data-target="50">0</span>+</div>
+          <div class="stat-lbl">Datasets</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" style="color:#14b8a6;"><span class="counter" data-target="30">0</span>+</div>
+          <div class="stat-lbl">Modèles</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" style="color:#a78bfa;"><span class="counter" data-target="100">0</span>+</div>
+          <div class="stat-lbl">Notebooks</div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+        <a href="/datasets" class="btn-primary" style="font-size:.85rem; padding:0.55rem 1.4rem;">
           Explorer les datasets
-        </a>
-        <a href="/add-dataset"
-           class="flex items-center justify-center gap-2 px-5 sm:px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white font-semibold rounded-xl transition-all duration-300 text-sm sm:text-base">
-          <svg class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 5v14"/><path d="M5 12h14"/>
+          <svg style="width:14px;height:14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+            <path d="m9 18 6-6-6-6"/>
           </svg>
-          Contribuer un dataset
+        </a>
+        <a href="/mission" class="btn-secondary" style="font-size:.85rem; padding:0.55rem 1.4rem;">
+          Notre mission
         </a>
       </div>
 
-      <!-- Trust pills — compactes sur mobile -->
-      <div class="flex items-center gap-3 mt-5 flex-wrap" data-reveal style="transition-delay:320ms">
-        <span class="flex items-center gap-1.5 text-xs text-gray-500">
-          <svg class="w-3.5 h-3.5 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          Open source
-        </span>
-        <span class="text-gray-700 hidden sm:inline">·</span>
-        <span class="flex items-center gap-1.5 text-xs text-gray-500 hidden sm:flex">
-          <svg class="w-3.5 h-3.5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
-          Données vérifiées
-        </span>
-        <span class="text-gray-700 hidden sm:inline">·</span>
-        <span class="flex items-center gap-1.5 text-xs text-gray-500">
-          <svg class="w-3.5 h-3.5 text-violet-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-          Notebooks inclus
-        </span>
-        <span class="text-gray-700 hidden sm:inline">·</span>
-        <span class="flex items-center gap-1.5 text-xs text-gray-500 hidden sm:flex">
-          <svg class="w-3.5 h-3.5 text-orange-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          Communauté active
-        </span>
-      </div>
-    </div>
+    </div><!-- /col-text -->
 
-    <!-- Floating preview cards (visible dès lg) -->
-    <div class="hidden lg:block absolute right-8 xl:right-16 top-1/2 -translate-y-1/2 space-y-4">
-      <div class="float-a bg-navy-800/85 backdrop-blur-md border border-navy-700/50 rounded-2xl p-4 w-64 shadow-glass">
-        <div class="flex items-center gap-2 mb-3">
-          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-500/20 text-orange-400">IARD</span>
-          <span class="text-xs text-gray-300 truncate">freMTPL2freq</span>
-        </div>
-        <div class="space-y-1.5">
-          <div class="flex items-center justify-between text-xs">
-            <span class="text-gray-500">Score qualité</span>
-            <span class="font-bold text-primary-400">8.8 / 10</span>
-          </div>
-          <div class="h-1.5 rounded-full bg-navy-700 overflow-hidden">
-            <div class="h-full rounded-full shimmer-bar" style="width:88%"></div>
-          </div>
-        </div>
-        <div class="flex items-center gap-3 mt-3 text-[10px] text-gray-500">
-          <span class="flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>312</span>
-          <span class="flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>28 avis</span>
-        </div>
-      </div>
-
-      <div class="float-b bg-navy-800/85 backdrop-blur-md border border-navy-700/50 rounded-2xl p-4 w-64 shadow-glass ml-10">
-        <div class="flex items-center gap-2 mb-2">
-          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-400">Vie</span>
-          <span class="text-xs text-gray-300 truncate">mortality_tables</span>
-        </div>
-        <div class="text-[10px] text-gray-500">Modèle recommandé</div>
-        <div class="text-xs font-semibold text-violet-400 mt-0.5">Chain Ladder &middot; GLM</div>
-        <div class="flex items-center gap-1 mt-2 text-[10px] text-gray-500">
-          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          142 téléchargements
-        </div>
-      </div>
-
-      <div class="float-c bg-navy-800/85 backdrop-blur-md border border-navy-700/50 rounded-2xl p-4 w-64 shadow-glass">
-        <div class="flex items-center gap-2 mb-2">
-          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-500/20 text-red-400">Fraude</span>
-          <span class="text-xs text-gray-300 truncate">claims_fraud_det.</span>
-        </div>
-        <div class="flex items-center gap-2 mt-1.5">
-          <div class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></div>
-          <span class="text-[10px] text-gray-400">Nouveau &middot; ajouté il y a 3j</span>
-        </div>
-        <div class="text-[10px] text-gray-500 mt-1.5">Recommandé : <span class="text-pink-400 font-medium">XGBoost</span></div>
-      </div>
-    </div>
-
-    <!-- Scroll down indicator -->
-    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 scroll-indicator hidden lg:flex flex-col items-center gap-1 text-gray-600">
-      <span class="text-[10px] uppercase tracking-widest">Défiler</span>
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
-    </div>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════════
-     TICKER — profils ciblés
-══════════════════════════════════════════════ -->
-<div class="overflow-hidden rounded-2xl glass mb-8 py-3 border-none" data-reveal>
-  <div class="flex whitespace-nowrap ticker-track">
-    <% const roles = [
-      { icon: '📊', label: 'Data Scientists' },
-      { icon: '📐', label: 'Actuaires' },
-      { icon: '🤖', label: 'Ingénieurs ML' },
-      { icon: '📈', label: 'Analystes BI' },
-      { icon: '💳', label: 'Risk Analysts' },
-      { icon: '🔍', label: 'Fraud Analysts' },
-      { icon: '🏦', label: 'Quants Banque' },
-      { icon: '🩺', label: 'Santé & Prévoyance' },
-      { icon: '📊', label: 'Data Scientists' },
-      { icon: '📐', label: 'Actuaires' },
-      { icon: '🤖', label: 'Ingénieurs ML' },
-      { icon: '📈', label: 'Analystes BI' },
-      { icon: '💳', label: 'Risk Analysts' },
-      { icon: '🔍', label: 'Fraud Analysts' },
-      { icon: '🏦', label: 'Quants Banque' },
-      { icon: '🩺', label: 'Santé & Prévoyance' },
-    ]; %>
-    <% roles.forEach(function(r) { %>
-    <span class="inline-flex items-center gap-2 px-5 text-sm text-gray-400">
-      <span><%= r.icon %></span>
-      <span class="font-medium text-gray-300"><%= r.label %></span>
-      <span class="text-gray-700 ml-3">·</span>
-    </span>
-    <% }); %>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════
-     STATS
-══════════════════════════════════════════════ -->
-<section class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-  <div class="glass rounded-2xl p-5 text-center group hover:border-primary-500/30 transition-colors duration-300" data-reveal style="transition-delay:0ms">
-    <div class="text-3xl font-bold text-white mb-1 group-hover:text-primary-400 transition-colors duration-300">
-      <span class="counter-value" data-target="42" data-suffix="+">0</span>
-    </div>
-    <div class="text-xs text-gray-500 uppercase tracking-wider">Datasets</div>
-  </div>
-  <div class="glass rounded-2xl p-5 text-center group hover:border-primary-500/30 transition-colors duration-300" data-reveal style="transition-delay:80ms">
-    <div class="text-3xl font-bold text-primary-400 mb-1">
-      <span class="counter-value" data-target="1200" data-suffix="+">0</span>
-    </div>
-    <div class="text-xs text-gray-500 uppercase tracking-wider">Téléchargements</div>
-  </div>
-  <div class="glass rounded-2xl p-5 text-center group hover:border-primary-500/30 transition-colors duration-300" data-reveal style="transition-delay:160ms">
-    <div class="text-3xl font-bold text-white mb-1 group-hover:text-primary-400 transition-colors duration-300">
-      <span class="counter-value" data-target="8" data-suffix="">0</span>
-    </div>
-    <div class="text-xs text-gray-500 uppercase tracking-wider">Domaines métier</div>
-  </div>
-  <div class="glass rounded-2xl p-5 text-center group hover:border-primary-500/30 transition-colors duration-300" data-reveal style="transition-delay:240ms">
-    <div class="text-3xl font-bold text-primary-400 mb-1">
-      <span class="counter-value" data-target="15" data-suffix="+">0</span>
-    </div>
-    <div class="text-xs text-gray-500 uppercase tracking-wider">Contributeurs</div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════
-     FEATURES
-══════════════════════════════════════════════ -->
-<section class="mb-10">
-  <div class="text-center mb-8" data-reveal>
-    <h2 class="text-2xl font-bold text-white mb-2">Pourquoi StochastiQdata ?</h2>
-    <p class="text-gray-500 text-sm">Tout ce dont un professionnel de la data financière a besoin pour démarrer</p>
-  </div>
-
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-    <div class="feature-card glass rounded-2xl p-6 border border-transparent hover:border-primary-500/25" data-reveal style="transition-delay:0ms">
-      <div class="w-12 h-12 rounded-xl bg-primary-500/10 flex items-center justify-center mb-4">
-        <svg class="w-6 h-6 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-      </div>
-      <h3 class="font-semibold text-white mb-2">Données qualifiées</h3>
-      <p class="text-sm text-gray-400 leading-relaxed">Chaque dataset évalué sur 10 critères&nbsp;: complétude, documentation, pertinence métier, intégrité statistique et reproductibilité.</p>
-    </div>
-
-    <div class="feature-card glass rounded-2xl p-6 border border-transparent hover:border-blue-500/25" data-reveal style="transition-delay:100ms">
-      <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4">
-        <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-      </div>
-      <h3 class="font-semibold text-white mb-2">Modèles de référence</h3>
-      <p class="text-sm text-gray-400 leading-relaxed">GLM, XGBoost, Chain Ladder, réseaux de neurones&nbsp;— chaque dataset livré avec le modèle recommandé et ses benchmarks.</p>
-    </div>
-
-    <div class="feature-card glass rounded-2xl p-6 border border-transparent hover:border-violet-500/25" data-reveal style="transition-delay:200ms">
-      <div class="w-12 h-12 rounded-xl bg-violet-500/10 flex items-center justify-center mb-4">
-        <svg class="w-6 h-6 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-      </div>
-      <h3 class="font-semibold text-white mb-2">Notebooks prêts à l'emploi</h3>
-      <p class="text-sm text-gray-400 leading-relaxed">Python, R, SQL&nbsp;— des notebooks reproductibles pour le pricing, le provisionnement, le scoring crédit et la détection de fraude.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════
-     DOMAINS
-══════════════════════════════════════════════ -->
-<section class="mb-10">
-  <div class="glass rounded-2xl p-6 lg:p-8">
-    <div class="flex flex-col lg:flex-row lg:items-center gap-8">
-      <div class="lg:w-56 flex-shrink-0" data-reveal="left">
-        <h2 class="text-xl font-bold text-white mb-2">Explorer par domaine</h2>
-        <p class="text-sm text-gray-500 leading-relaxed">Des données couvrant tous les métiers de l'assurance et de la banque</p>
-        <a href="/datasets" class="inline-flex items-center gap-1.5 text-primary-400 text-sm font-medium mt-4 hover:text-primary-300 transition-colors group">
-          Voir tous les datasets
-          <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-        </a>
-      </div>
-
-      <!-- Scroll horizontal sur mobile, wrap sur desktop -->
-      <div class="flex-1 overflow-x-auto lg:overflow-visible -mx-2 px-2 lg:mx-0 lg:px-0" data-reveal="right" style="transition-delay:80ms">
-        <div class="flex gap-2.5 lg:flex-wrap pb-2 lg:pb-0 w-max lg:w-auto">
-          <a href="/datasets?tags=iard"             class="domain-tag flex-shrink-0 flex items-center gap-2 px-3.5 py-2 lg:px-4 lg:py-2.5 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-400 text-xs lg:text-sm font-medium hover:bg-orange-500/20 hover:border-orange-500/40"><span class="w-2 h-2 rounded-full bg-orange-400"></span>IARD</a>
-          <a href="/datasets?tags=sante"            class="domain-tag flex-shrink-0 flex items-center gap-2 px-3.5 py-2 lg:px-4 lg:py-2.5 rounded-xl bg-teal-500/10   border border-teal-500/20   text-teal-400   text-xs lg:text-sm font-medium hover:bg-teal-500/20   hover:border-teal-500/40"><span class="w-2 h-2 rounded-full bg-teal-400"></span>Santé</a>
-          <a href="/datasets?tags=vie"              class="domain-tag flex-shrink-0 flex items-center gap-2 px-3.5 py-2 lg:px-4 lg:py-2.5 rounded-xl bg-blue-500/10   border border-blue-500/20   text-blue-400   text-xs lg:text-sm font-medium hover:bg-blue-500/20   hover:border-blue-500/40"><span class="w-2 h-2 rounded-full bg-blue-400"></span>Vie</a>
-          <a href="/datasets?tags=fraude"           class="domain-tag flex-shrink-0 flex items-center gap-2 px-3.5 py-2 lg:px-4 lg:py-2.5 rounded-xl bg-red-500/10    border border-red-500/20    text-red-400    text-xs lg:text-sm font-medium hover:bg-red-500/20    hover:border-red-500/40"><span class="w-2 h-2 rounded-full bg-red-400"></span>Fraude</a>
-          <a href="/datasets?tags=glm"              class="domain-tag flex-shrink-0 flex items-center gap-2 px-3.5 py-2 lg:px-4 lg:py-2.5 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs lg:text-sm font-medium hover:bg-violet-500/20 hover:border-violet-500/40"><span class="w-2 h-2 rounded-full bg-violet-400"></span>Pricing</a>
-          <a href="/datasets?tags=reserving"        class="domain-tag flex-shrink-0 flex items-center gap-2 px-3.5 py-2 lg:px-4 lg:py-2.5 rounded-xl bg-cyan-500/10   border border-cyan-500/20   text-cyan-400   text-xs lg:text-sm font-medium hover:bg-cyan-500/20   hover:border-cyan-500/40"><span class="w-2 h-2 rounded-full bg-cyan-400"></span>Reserving</a>
-          <a href="/datasets?tags=machine_learning" class="domain-tag flex-shrink-0 flex items-center gap-2 px-3.5 py-2 lg:px-4 lg:py-2.5 rounded-xl bg-pink-500/10   border border-pink-500/20   text-pink-400   text-xs lg:text-sm font-medium hover:bg-pink-500/20   hover:border-pink-500/40"><span class="w-2 h-2 rounded-full bg-pink-400"></span>ML</a>
-          <a href="/datasets"                       class="domain-tag flex-shrink-0 flex items-center gap-2 px-3.5 py-2 lg:px-4 lg:py-2.5 rounded-xl bg-white/5       border border-white/10      text-gray-400   text-xs lg:text-sm font-medium hover:bg-white/10      hover:border-white/20"><svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>Tous</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════
-     HOW IT WORKS
-══════════════════════════════════════════════ -->
-<section class="mb-10">
-  <div class="text-center mb-8" data-reveal>
-    <h2 class="text-2xl font-bold text-white mb-2">Comment ça marche&nbsp;?</h2>
-    <p class="text-gray-500 text-sm">De la recherche au modèle en production&nbsp;— en 3 étapes</p>
-  </div>
-
-  <div class="flex flex-col lg:flex-row items-stretch gap-4">
-    <div class="flex-1 glass rounded-2xl p-6 border border-transparent hover:border-primary-500/25 transition-all duration-300" data-reveal style="transition-delay:0ms">
-      <div class="w-10 h-10 rounded-xl bg-primary-500/20 flex items-center justify-center mb-4">
-        <span class="text-base font-bold text-primary-400">1</span>
-      </div>
-      <h3 class="font-semibold text-white mb-2">Cherchez un dataset</h3>
-      <p class="text-sm text-gray-400 leading-relaxed">Filtrez par domaine, type de modèle ou source. Consultez les scores et la documentation avant de télécharger.</p>
-    </div>
-
-    <div class="hidden lg:flex items-center justify-center w-8 flex-shrink-0 opacity-25">
-      <svg class="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-    </div>
-
-    <div class="flex-1 glass rounded-2xl p-6 border border-transparent hover:border-blue-500/25 transition-all duration-300" data-reveal style="transition-delay:100ms">
-      <div class="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center mb-4">
-        <span class="text-base font-bold text-blue-400">2</span>
-      </div>
-      <h3 class="font-semibold text-white mb-2">Évaluez & comparez</h3>
-      <p class="text-sm text-gray-400 leading-relaxed">Explorez les statistiques descriptives, la matrice de corrélation et les benchmarks de modèles.</p>
-    </div>
-
-    <div class="hidden lg:flex items-center justify-center w-8 flex-shrink-0 opacity-25">
-      <svg class="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-    </div>
-
-    <div class="flex-1 glass rounded-2xl p-6 border border-transparent hover:border-violet-500/25 transition-all duration-300" data-reveal style="transition-delay:200ms">
-      <div class="w-10 h-10 rounded-xl bg-violet-500/20 flex items-center justify-center mb-4">
-        <span class="text-base font-bold text-violet-400">3</span>
-      </div>
-      <h3 class="font-semibold text-white mb-2">Téléchargez & codez</h3>
-      <p class="text-sm text-gray-400 leading-relaxed">Récupérez le dataset et lancez le notebook Python ou R associé directement dans votre environnement.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════
-     FINAL CTA
-══════════════════════════════════════════════ -->
-<section class="relative overflow-hidden rounded-3xl p-8 lg:p-14 mb-4 text-center" data-reveal>
-  <div class="absolute inset-0 bg-gradient-to-br from-primary-600/15 via-teal-600/8 to-violet-600/15 rounded-3xl"></div>
-  <div class="absolute inset-0 hero-grid rounded-3xl opacity-40"></div>
-  <div class="absolute -top-24 -right-24 w-72 h-72 bg-primary-500/12 rounded-full blur-3xl pointer-events-none"></div>
-  <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-violet-500/12 rounded-full blur-3xl pointer-events-none"></div>
-  <div class="absolute inset-0 border border-white/5 rounded-3xl"></div>
-
-  <div class="relative z-10">
-    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-400 text-xs font-medium mb-5">
-      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-      Accès gratuit, sans inscription
-    </div>
-    <h2 class="text-3xl lg:text-4xl font-bold text-white mb-4">Prêt à explorer les données&nbsp;?</h2>
-    <p class="text-gray-400 mb-8 max-w-lg mx-auto text-sm lg:text-base leading-relaxed">
-      Plus de 42 datasets qualifiés couvrant l'IARD, la vie, la fraude, le provisionnement et le ML financier.
-      Avec notebooks et modèles inclus.
-    </p>
-    <div class="flex flex-wrap items-center justify-center gap-4">
-      <a href="/datasets"
-         class="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-primary-500 to-teal-500 hover:from-primary-600 hover:to-teal-600 text-white font-semibold rounded-xl shadow-xl hover:shadow-primary-500/30 hover:scale-[1.02] transition-all duration-300">
-        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-          <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-        </svg>
-        Voir les datasets
-      </a>
-      <a href="/communaute"
-         class="inline-flex items-center gap-2 px-8 py-3.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white font-semibold rounded-xl transition-all duration-300">
-        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-        </svg>
-        Rejoindre la communauté
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════════════════════════════
-     JS ANIMATIONS
-══════════════════════════════════════════════ -->
 <script>
 (function () {
-  'use strict';
+  var BASE = 338;
 
-  // ── 1. Reveal on scroll ──
-  var reveals = document.querySelectorAll('[data-reveal]');
-
-  var revealObs = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (e.isIntersecting) { e.target.classList.add('revealed'); revealObs.unobserve(e.target); }
+  // ── Compteurs ──────────────────────────────────────────────
+  function runCounters() {
+    document.querySelectorAll('.counter').forEach(function (el) {
+      var target = parseInt(el.dataset.target, 10);
+      var start  = null;
+      (function step(ts) {
+        if (!start) start = ts;
+        var p = Math.min((ts - start) / 1800, 1);
+        el.textContent = Math.floor((1 - Math.pow(1 - p, 3)) * target);
+        if (p < 1) requestAnimationFrame(step); else el.textContent = target;
+      })(performance.now());
     });
-  }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
-
-  reveals.forEach(function (el) { revealObs.observe(el); });
-
-  setTimeout(function () {
-    reveals.forEach(function (el) {
-      if (el.getBoundingClientRect().top < window.innerHeight * 0.92) el.classList.add('revealed');
-    });
-  }, 60);
-
-  // ── 2. Counter animation ──
-  function animateCounter(el) {
-    var target = parseInt(el.dataset.target, 10);
-    var suffix = el.dataset.suffix || '';
-    var dur = 1600, t0 = performance.now();
-    (function tick(now) {
-      var p = Math.min((now - t0) / dur, 1);
-      var eased = 1 - Math.pow(1 - p, 3);
-      el.textContent = Math.round(eased * target).toLocaleString('fr-FR') + suffix;
-      if (p < 1) requestAnimationFrame(tick);
-    })(t0);
   }
 
-  var cntObs = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (e.isIntersecting) { animateCounter(e.target); cntObs.unobserve(e.target); }
+  // ── Barres : croissance ────────────────────────────────────
+  var bars = [
+    {id:'b1',h:66},{id:'b2',h:96},{id:'b3',h:50},
+    {id:'b4',h:80},{id:'b5',h:110},{id:'b6',h:74},{id:'b7',h:88}
+  ];
+
+  function growBars() {
+    bars.forEach(function (bar, i) {
+      setTimeout(function () {
+        var el = document.getElementById(bar.id); if (!el) return;
+        var s = null;
+        (function tick(ts) {
+          if (!s) s = ts;
+          var p = Math.min((ts - s) / 680, 1);
+          var h = Math.round((1 - Math.pow(1 - p, 3)) * bar.h);
+          el.setAttribute('y', BASE - h);
+          el.setAttribute('height', h);
+          if (p < 1) requestAnimationFrame(tick);
+        })(performance.now());
+      }, 900 + i * 85);
     });
-  }, { threshold: 0.6 });
-
-  document.querySelectorAll('.counter-value').forEach(function (el) { cntObs.observe(el); });
-
-  // ── 3. Parallax blobs on mousemove ──
-  var hero = document.querySelector('section');
-  if (hero) {
-    document.addEventListener('mousemove', function (e) {
-      var dx = (e.clientX / window.innerWidth  - 0.5) * 2;
-      var dy = (e.clientY / window.innerHeight - 0.5) * 2;
-      hero.querySelectorAll('.blur-3xl').forEach(function (b, i) {
-        var f = (i % 2 === 0 ? 1 : -1) * 14;
-        b.style.transform  = 'translate(' + (dx * f) + 'px,' + (dy * f) + 'px)';
-        b.style.transition = 'transform 0.9s ease-out';
-      });
-    }, { passive: true });
   }
 
-  // ── 4. Top nav shadow on scroll ──
-  var nav = document.getElementById('topLandingNav');
-  if (nav) {
-    window.addEventListener('scroll', function () {
-      var inner = nav.querySelector('div');
-      if (window.scrollY > 30) {
-        inner.classList.add('shadow-2xl');
-        inner.classList.remove('shadow-glass');
-      } else {
-        inner.classList.remove('shadow-2xl');
-        inner.classList.add('shadow-glass');
-      }
-    }, { passive: true });
+  // ── Barres : respiration ───────────────────────────────────
+  function breatheBars() {
+    bars.forEach(function (bar, i) {
+      var el = document.getElementById(bar.id); if (!el) return;
+      var amp   = bar.h * 0.07;
+      var speed = 2600 + i * 270;
+      var phase = i * (Math.PI / bars.length);
+      (function tick() {
+        var h = Math.round(bar.h + amp * Math.sin(Date.now() / speed * 2 * Math.PI + phase));
+        el.setAttribute('y', BASE - h);
+        el.setAttribute('height', h);
+        requestAnimationFrame(tick);
+      })();
+    });
   }
 
+  document.addEventListener('DOMContentLoaded', function () {
+    runCounters();
+    growBars();
+    setTimeout(breatheBars, 2700);
+  });
 })();
 </script>

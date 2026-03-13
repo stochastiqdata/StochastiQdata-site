@@ -185,12 +185,21 @@ const MODELING_TYPE_LABELS = {
 // ============================================
 
 // Landing page
-app.get('/', (_req, res) => {
+app.get('/', async (_req, res) => {
+  let featuredDatasets = [];
+  try {
+    const r = await axios.get(`${API_URL}/datasets?page=1&page_size=4&sort_by=global_score&sort_order=desc`);
+    featuredDatasets = (r.data.datasets || []).slice(0, 4);
+  } catch (_) { /* silently degrade — page still renders without datasets */ }
+
   res.render('pages/landing', {
     layout: 'landing-layout',
     pageTitle: null,
     pageDescription: 'La plateforme data pour les professionnels de l\'assurance et de la banque. Datasets qualifiés, modèles de référence, notebooks et benchmarks.',
     canonicalPath: '/',
+    featuredDatasets,
+    TAG_LABELS,
+    SOURCE_LABELS,
   });
 });
 
